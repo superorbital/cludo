@@ -91,8 +91,5 @@ func TestConfig(t *testing.T) {
 		yaml.Unmarshal([]byte(tc.input), got)
 
 		assert.EqualValuesf(t, tc.want, got, "expected: %#v, got: %#v", tc.want, got)
-		// if !reflect.DeepEqual(tc.want, got) {
-		// 	t.Fatalf("", tc.want, got)
-		// }
 	}
 }
