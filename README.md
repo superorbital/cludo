@@ -81,19 +81,3 @@ Environment Variable | Description
 3. Run `cludo-server -c /path/to/cludo-server.yaml`
 
 We also provide a docker image (`superorbital/cludo-server`) with `cludo-server` pre-installed. Just provide a `/etc/cludo-server/cludo-server.yaml` config file.
-
-
-# Development
-
-## Release
-
-$ go get github.com/mitchellh/gox
-$ gox -osarch='darwin/amd64 darwin/arm64 linux/386 linux/amd64 linux/arm linux/arm64 windows/386 windows/amd64' -output './builds/wordchain_{{.OS}}_{{.Arch}}'
-
-* Create a release in Github with the resulting binaries.
-
-# Acknowledgements
-
-* Cobra & Viper integration code heavily inspired by:
-  * [https://github.com/carolynvs/stingoftheviper](https://github.com/carolynvs/stingoftheviper)
-  * **License**: MIT
