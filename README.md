@@ -75,24 +75,37 @@ Environment Variable | Description
 ```
 # cludo-server.yaml
 
-port: 80
-
-environments:
-  aws:
-    sessionLength: 10m
-    awsAccessKeyID: ...
-    awsSecretAccessKey: ...
-    awsAssumeRoleARN: ...
-
-users:
-  - publicKey: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489..."
-    roles:
-      aws:
-        - "aws:arn:iam:..."
-  - publicKey: "ssh-rsa ..."
-    roles:
-      aws:
-        - "aws:arn:iam:...
+client:
+  default:
+    server_url: https://www.example.com/
+    key_path: ~/.ssh/id_rsa
+    shell_path: /usr/local/bin/bash
+    roles: default
+server:
+  port: 443
+  plugins:
+    aws:
+      sessionLength: 10m
+      awsAccessKeyID: ...
+      awsSecretAccessKey: ...
+      awsAssumeRoleARN: ...
+  users:
+    - publicKey: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489..."
+      roles:
+        aws:
+          so_org:
+            arn: "aws:arn:iam:..."
+          so_dev:
+            arn: "aws:arn:iam:..."
+      default_role: aws_so_org
+    - publicKey: "ssh-rsa ..."
+      roles:
+        aws:
+          so_org:
+            arn: "aws:arn:iam:..."
+          so_dev:
+            arn: "aws:arn:iam:..."
+      default_role: aws_so_dev
 ```
 
 We also provide a docker image (`superorbital/cludo-server`) with `cludo-server` pre-installed. Just provide a `/etc/cludo-server/cludo-server.yaml` config file.

@@ -22,18 +22,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// listenCmd represents the listen command
-var listenCmd = &cobra.Command{
-	Use:   "exec",
-	Short: "Execute a command with the correct AWS credentials",
-	Long:  `This will connect to the cludo server, retrieve a temporary token and then execute your command with the AWS credential variables set correctly.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("exec something")
-	},
-}
-
 func AddExec(rootCmd *cobra.Command) {
-	rootCmd.AddCommand(listenCmd)
+	// execCmd represents the exec command
+	var execCmd = &cobra.Command{
+		Use:   "exec",
+		Short: "Execute a command with the correct AWS credentials",
+		Long:  `This will connect to the cludo server, retrieve a temporary token and then execute your command with the AWS credential variables set correctly.`,
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("exec something")
+		},
+	}
+
+	rootCmd.AddCommand(execCmd)
 
 	// Here you will define your flags and configuration settings.
 
@@ -44,5 +44,5 @@ func AddExec(rootCmd *cobra.Command) {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// listenCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	listenCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	execCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

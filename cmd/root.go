@@ -66,7 +66,7 @@ func NewRootCommand() *cobra.Command {
 	rootCmd.Flags().IntVarP(&number, "number", "n", 7, "What is the magic number?")
 	rootCmd.Flags().StringVarP(&color, "favorite-color", "c", "red", "Should come from flag first, then env var CLUDO_FAVORITE_COLOR then the config file, then the default last")
 
-	//AddExec(rootCmd)
+	AddExec(rootCmd)
 
 	return rootCmd
 }
