@@ -15,6 +15,7 @@ Distributing AWS credentials is painful and dangerous.  Leaked credentials resul
 TODO: Installation
 
 `go install github.com/superorbital/cludo/cmd/cludo/cludo`
+
 `go install github.com/superorbital/cludo/cmd/cludo-server/cludo-server`
 
 ## Setup
@@ -27,6 +28,7 @@ Environment Variable | YAML path | Description
 -------------------- | --------- | -----------
 `CLUDO_SERVER_URL` | `server_url` | URL of the `cludo-server` instance to connect to.
 `CLUDO_PRIVATE_KEY` | `private_key` | Path to a private key for authentication.
+`CLUDO_SHELL` | `shell` | Path to the shell to launch when requested. Defaults to user's login shell.
 
 ## Usage
 
@@ -36,22 +38,8 @@ cludo <command> [options]
 Main commands:
 
     exec    - Runs the provided command with credentials provided through environment variables
-    login   - Authenticate with a `cludo-server` instance
-    logout  - Forget current authentication state (if any)
     shell   - Opens an interactive shell with credentials provided through environment variables
-    status  - Prints the current authentication state for cludo
-
-Administration:
-
-    users-list    - Print all users
-    users-new     - Create a new user and assign its role
-    users-delete  - Delete a user
-    users-assign  - Assign a role to a user
-
-    roles-list    - Print all roles
-    roles-new     - Creates a new role using $EDITOR
-    roles-delete  - Removes a role. Also unassigns role from all users.
-    roles-edit    - Opens an $EDITOR instance to edit a role definition.
+    version - Prints the cludo client and server versions
 ```
 
 
@@ -67,7 +55,9 @@ When enabled, the AWS environment provides the following environment variables:
 
 Environment Variable | Description
 -------------------- | -----------
-`CLUDO_SERVER_URL` | URL of the `cludo-server` instance to connect to.
+`AWS_ACCESS_KEY_ID` |
+`AWS_SECRET_ACCESS_KEY` |
+`AWS_REGION` |
 
 ## Running a server
 
