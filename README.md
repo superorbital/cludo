@@ -14,8 +14,10 @@ Distributing AWS credentials is painful and dangerous.  Leaked credentials resul
 
 TODO: Installation
 
-`go install github.com/superorbital/cludo/cmd/cludo/cludo`
-`go install github.com/superorbital/cludo/cmd/cludo-server/cludo-server`
+```shell
+go install github.com/superorbital/cludo/cmd/cludo/cludo
+go install github.com/superorbital/cludo/cmd/cludo-server/cludo-server
+```
 
 ## Setup
 
@@ -23,35 +25,27 @@ TODO: Installation
 
 The following configuration options are supported:
 
-Environment Variable | YAML path | Description
--------------------- | --------- | -----------
-`CLUDO_SERVER_URL` | `server_url` | URL of the `cludo-server` instance to connect to.
-`CLUDO_PRIVATE_KEY` | `private_key` | Path to a private key for authentication.
+```yaml
+# cludo.yaml
+
+client:
+  default:
+    server_url: "https://www.example.com/"
+    key_path: "~/.ssh/id_rsa"
+    shell_path: "/usr/local/bin/bash"
+    roles: ["default"]
+```
 
 ## Usage
 
-```
+```shell
 cludo <command> [options]
 
 Main commands:
 
     exec    - Runs the provided command with credentials provided through environment variables
-    login   - Authenticate with a `cludo-server` instance
-    logout  - Forget current authentication state (if any)
     shell   - Opens an interactive shell with credentials provided through environment variables
-    status  - Prints the current authentication state for cludo
-
-Administration:
-
-    users-list    - Print all users
-    users-new     - Create a new user and assign its role
-    users-delete  - Delete a user
-    users-assign  - Assign a role to a user
-
-    roles-list    - Print all roles
-    roles-new     - Creates a new role using $EDITOR
-    roles-delete  - Removes a role. Also unassigns role from all users.
-    roles-edit    - Opens an $EDITOR instance to edit a role definition.
+    version - Prints the cludo client and server versions
 ```
 
 
@@ -67,17 +61,59 @@ When enabled, the AWS environment provides the following environment variables:
 
 Environment Variable | Description
 -------------------- | -----------
-`CLUDO_SERVER_URL` | URL of the `cludo-server` instance to connect to.
+`AWS_ACCESS_KEY_ID` |
+`AWS_SECRET_ACCESS_KEY` |
+`AWS_REGION` |
 
 ## Running a server
 
 1. Install `cludo-server`:
 
-   ```
+   ```shell
    go install github.com/superorbital/cludo/cmd/cludo-server/cludo-server
    ```
 
 2. Configure `cludo-server` by providing a `cludo-server.yaml` file.
 3. Run `cludo-server -c /path/to/cludo-server.yaml`
 
+`cludo-server` supports the following configuration options:
+
+```yaml
+# cludo.yaml
+
+server:
+  port: 443
+  users:
+    - public_key: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489..."
+      roles:
+        aws:
+          so_org:
+            arn: "aws:arn:iam:..."
+            session_duration: "10m"
+            access_key_id: "456DEF..."
+            secret_access_key: "UVW789..."
+          so_dev:
+            arn: "aws:arn:iam:..."
+            session_duration: "8h"
+            access_key_id: "123ABC..."
+            secret_access_key: "ZXY098..."
+      default_role: "aws_so_org"
+```
+
 We also provide a docker image (`superorbital/cludo-server`) with `cludo-server` pre-installed. Just provide a `/etc/cludo-server/cludo-server.yaml` config file.
+
+
+## Development
+
+### Release
+
+$ go get github.com/mitchellh/gox
+$ gox -osarch='darwin/amd64 darwin/arm64 linux/386 linux/amd64 linux/arm linux/arm64 windows/386 windows/amd64' -output './builds/wordchain_{{.OS}}_{{.Arch}}'
+
+* Create a release in Github with the resulting binaries.
+
+## Acknowledgements
+
+* Cobra & Viper integration code heavily inspired by:
+  * [https://github.com/carolynvs/stingoftheviper](https://github.com/carolynvs/stingoftheviper)
+  * **License**: MIT
