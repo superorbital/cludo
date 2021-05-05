@@ -18,7 +18,7 @@ import (
 type ModelsEnvironmentRequest struct {
 
 	// The id of the role to apply.
-	RoleID []string `json:"roleID"`
+	RoleID []string `json:"role_id"`
 }
 
 // Validate validates this models environment request
