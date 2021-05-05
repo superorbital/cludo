@@ -17,7 +17,11 @@
 #gox
 builds
 
-#cludo
-cludo
-.cludo
+#swagger
+swagger
 
+#cludo
+.cludo
+cmd/cli/cli
+cmd/clientCLI/clientCLI
+cmd/server/server
