@@ -13,11 +13,9 @@ require (
 	github.com/go-openapi/strfmt v0.20.1
 	github.com/go-openapi/swag v0.19.15
 	github.com/go-openapi/validate v0.20.2
-	github.com/jessevdk/go-flags v1.5.0
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/mitchellh/gox v1.0.1 // indirect
 	github.com/pelletier/go-toml v1.9.0 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
@@ -29,5 +27,5 @@ require (
 	golang.org/x/net v0.0.0-20210505024714-0287a6fb4125
 	golang.org/x/sys v0.0.0-20210503173754-0981d6026fa6 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0
 )
