@@ -65,7 +65,7 @@ func printOperationRoleListRolesResult(resp0 *role.ListRolesOK, respErr error) e
 		return respErr
 	}
 
-	if resp0.Payload != nil {
+	if resp0.Payload != "" {
 		msgStr, err := json.Marshal(resp0.Payload)
 		if err != nil {
 			return err
