@@ -55,7 +55,7 @@ We recommend adding `.cludo/` to your `.gitignore` files to avoid accidentally c
 
 `cludo` environments configure different environment variables. `cludo` currently only supports the AWS environment.
 
-### Environments - AWS
+### AWS
 
 When enabled, the AWS environment provides the following environment variables:
 
