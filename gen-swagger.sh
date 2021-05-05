@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-go-swagger generate server -f ./swagger.yaml --main-package=server
-go-swagger generate client -f ./swagger.yaml
-go-swagger generate cli -f ./swagger.yaml
+./swagger generate server -f ./swagger.yaml --main-package=server --template-dir=./templates
+./swagger generate client -f ./swagger.yaml --template-dir=./templates
+./swagger generate cli -f ./swagger.yaml --template-dir=./templates

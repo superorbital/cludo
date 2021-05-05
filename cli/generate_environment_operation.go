@@ -42,10 +42,47 @@ func runOperationEnvironmentGenerateEnvironment(cmd *cobra.Command, args []strin
 	if err, _ := retrieveOperationEnvironmentGenerateEnvironmentBodyFlag(params, "", cmd); err != nil {
 		return err
 	}
+	if dryRun {
+
+		logDebugf("dry-run flag specified. Skip sending request.")
+		return nil
+	}
 	// make request and then print result
-	if err := printOperationEnvironmentGenerateEnvironmentResult(appCli.Environment.GenerateEnvironment(params)); err != nil {
+	msgStr, err := parseOperationEnvironmentGenerateEnvironmentResult(appCli.Environment.GenerateEnvironment(params))
+	if err != nil {
 		return err
 	}
+	if !debug {
+
+		fmt.Println(msgStr)
+	}
+	return nil
+}
+
+// registerOperationEnvironmentGenerateEnvironmentParamFlags registers all flags needed to fill params
+func registerOperationEnvironmentGenerateEnvironmentParamFlags(cmd *cobra.Command) error {
+	if err := registerOperationEnvironmentGenerateEnvironmentBodyParamFlags("", cmd); err != nil {
+		return err
+	}
+	return nil
+}
+
+func registerOperationEnvironmentGenerateEnvironmentBodyParamFlags(cmdPrefix string, cmd *cobra.Command) error {
+
+	var bodyFlagName string
+	if cmdPrefix == "" {
+		bodyFlagName = "body"
+	} else {
+		bodyFlagName = fmt.Sprintf("%v.body", cmdPrefix)
+	}
+
+	_ = cmd.PersistentFlags().String(bodyFlagName, "", "Optional json string for [body]. Temporary Environment Request definition")
+
+	// add flags for body
+	if err := registerModelModelsEnvironmentRequestFlags(0, "modelsEnvironmentRequest", cmd); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -68,80 +105,76 @@ func retrieveOperationEnvironmentGenerateEnvironmentBodyFlag(m *environment.Gene
 	if swag.IsZero(bodyValueModel) {
 		bodyValueModel = &models.ModelsEnvironmentRequest{}
 	}
-	err, added := retrieveModelsEnvironmentRequestFlags(bodyValueModel, "modelsEnvironmentRequest", cmd)
+	err, added := retrieveModelModelsEnvironmentRequestFlags(0, bodyValueModel, "modelsEnvironmentRequest", cmd)
 	if err != nil {
 		return err, false
 	}
 	if added {
 		m.Body = bodyValueModel
 	}
-	bodyValueDebugBytes, err := json.Marshal(m.Body)
-	if err != nil {
-		return err, false
+	if dryRun && debug {
+
+		bodyValueDebugBytes, err := json.Marshal(m.Body)
+		if err != nil {
+			return err, false
+		}
+		logDebugf("Body dry-run payload: %v", string(bodyValueDebugBytes))
 	}
-	logDebugf("Body payload: %v", string(bodyValueDebugBytes))
+	retAdded = retAdded || added
+
 	return nil, retAdded
 }
 
-// printOperationEnvironmentGenerateEnvironmentResult prints output to stdout
-func printOperationEnvironmentGenerateEnvironmentResult(resp0 *environment.GenerateEnvironmentOK, respErr error) error {
+// parseOperationEnvironmentGenerateEnvironmentResult parses request result and return the string content
+func parseOperationEnvironmentGenerateEnvironmentResult(resp0 *environment.GenerateEnvironmentOK, respErr error) (string, error) {
 	if respErr != nil {
 
-		var iResp interface{} = respErr
-		defaultResp, ok := iResp.(*environment.GenerateEnvironmentDefault)
-		if !ok {
-			return respErr
-		}
-		if defaultResp.Payload != nil {
-			msgStr, err := json.Marshal(defaultResp.Payload)
-			if err != nil {
-				return err
+		var iRespD interface{} = respErr
+		respD, ok := iRespD.(*environment.GenerateEnvironmentDefault)
+		if ok {
+			if !swag.IsZero(respD.Payload) {
+				msgStr, err := json.Marshal(respD.Payload)
+				if err != nil {
+					return "", err
+				}
+				return string(msgStr), nil
 			}
-			fmt.Println(string(msgStr))
-			return nil
 		}
 
-		return respErr
+		var iResp0 interface{} = respErr
+		resp0, ok := iResp0.(*environment.GenerateEnvironmentOK)
+		if ok {
+			if !swag.IsZero(resp0.Payload) {
+				msgStr, err := json.Marshal(resp0.Payload)
+				if err != nil {
+					return "", err
+				}
+				return string(msgStr), nil
+			}
+		}
+
+		var iResp1 interface{} = respErr
+		resp1, ok := iResp1.(*environment.GenerateEnvironmentBadRequest)
+		if ok {
+			if !swag.IsZero(resp1.Payload) {
+				msgStr, err := json.Marshal(resp1.Payload)
+				if err != nil {
+					return "", err
+				}
+				return string(msgStr), nil
+			}
+		}
+
+		return "", respErr
 	}
 
-	if resp0.Payload != nil {
+	if !swag.IsZero(resp0.Payload) {
 		msgStr, err := json.Marshal(resp0.Payload)
 		if err != nil {
-			return err
+			return "", err
 		}
-		fmt.Println(string(msgStr))
+		return string(msgStr), nil
 	}
 
-	return nil
-}
-
-// registerOperationEnvironmentGenerateEnvironmentParamFlags registers all flags needed to fill params
-func registerOperationEnvironmentGenerateEnvironmentParamFlags(cmd *cobra.Command) error {
-	if err := registerOperationEnvironmentGenerateEnvironmentBodyParamFlags("", cmd); err != nil {
-		return err
-	}
-	return nil
-}
-
-func registerOperationEnvironmentGenerateEnvironmentBodyParamFlags(cmdPrefix string, cmd *cobra.Command) error {
-
-	var bodyFlagName string
-	if cmdPrefix == "" {
-		bodyFlagName = "body"
-	} else {
-		bodyFlagName = fmt.Sprintf("%v.body", cmdPrefix)
-	}
-
-	exampleBodyStr, err := json.Marshal(&models.ModelsEnvironmentRequest{})
-	if err != nil {
-		return err
-	}
-	_ = cmd.PersistentFlags().String(bodyFlagName, "", fmt.Sprintf("Optional json string for [body] of form %v.Temporary Environment Request definition", string(exampleBodyStr)))
-
-	// add flags for body
-	if err := registerModelsEnvironmentRequestFlags("modelsEnvironmentRequest", cmd); err != nil {
-		return err
-	}
-
-	return nil
+	return "", nil
 }

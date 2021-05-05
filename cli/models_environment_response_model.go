@@ -12,27 +12,33 @@ import (
 	"github.com/superorbital/cludo/models"
 )
 
-// register flags to command
-func registerModelsEnvironmentResponseFlags(cmdPrefix string, cmd *cobra.Command) error {
+// Schema cli for ModelsEnvironmentResponse
 
-	if err := registerModelsEnvironmentResponseBundle(cmdPrefix, cmd); err != nil {
+// register flags to command
+func registerModelModelsEnvironmentResponseFlags(depth int, cmdPrefix string, cmd *cobra.Command) error {
+
+	if err := registerModelsEnvironmentResponseBundle(depth, cmdPrefix, cmd); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func registerModelsEnvironmentResponseBundle(cmdPrefix string, cmd *cobra.Command) error {
+func registerModelsEnvironmentResponseBundle(depth int, cmdPrefix string, cmd *cobra.Command) error {
+	if depth > maxDepth {
+		return nil
+	}
+
 	// warning: bundle ModelsEnvironmentBundle map type is not supported by go-swagger cli yet
 
 	return nil
 }
 
 // retrieve flags from commands, and set value in model. Return true if any flag is passed by user to fill model field.
-func retrieveModelsEnvironmentResponseFlags(m *models.ModelsEnvironmentResponse, cmdPrefix string, cmd *cobra.Command) (error, bool) {
+func retrieveModelModelsEnvironmentResponseFlags(depth int, m *models.ModelsEnvironmentResponse, cmdPrefix string, cmd *cobra.Command) (error, bool) {
 	retAdded := false
 
-	err, bundleAdded := retrieveModelsEnvironmentResponseBundleFlags(m, cmdPrefix, cmd)
+	err, bundleAdded := retrieveModelsEnvironmentResponseBundleFlags(depth, m, cmdPrefix, cmd)
 	if err != nil {
 		return err, false
 	}
@@ -41,11 +47,16 @@ func retrieveModelsEnvironmentResponseFlags(m *models.ModelsEnvironmentResponse,
 	return nil, retAdded
 }
 
-func retrieveModelsEnvironmentResponseBundleFlags(m *models.ModelsEnvironmentResponse, cmdPrefix string, cmd *cobra.Command) (error, bool) {
+func retrieveModelsEnvironmentResponseBundleFlags(depth int, m *models.ModelsEnvironmentResponse, cmdPrefix string, cmd *cobra.Command) (error, bool) {
+	if depth > maxDepth {
+		return nil, false
+	}
 	retAdded := false
+
 	bundleFlagName := fmt.Sprintf("%v.bundle", cmdPrefix)
 	if cmd.Flags().Changed(bundleFlagName) {
 		// warning: bundle map type ModelsEnvironmentBundle is not supported by go-swagger cli yet
 	}
+
 	return nil, retAdded
 }
