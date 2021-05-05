@@ -3,12 +3,11 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
 	"github.com/go-openapi/loads"
-	flag "github.com/spf13/pflag"
+	flags "github.com/jessevdk/go-flags"
 
 	"github.com/superorbital/cludo/restapi"
 	"github.com/superorbital/cludo/restapi/operations"
@@ -24,29 +23,33 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	var server *restapi.Server // make sure init is called
-
-	flag.Usage = func() {
-		fmt.Fprint(os.Stderr, "Usage:\n")
-		fmt.Fprint(os.Stderr, "  cludo-api-server [OPTIONS]\n\n")
-
-		title := "Cludo API"
-		fmt.Fprint(os.Stderr, title+"\n\n")
-		desc := "Cludo - Cloud Sudo"
-		if desc != "" {
-			fmt.Fprintf(os.Stderr, desc+"\n\n")
-		}
-		fmt.Fprintln(os.Stderr, flag.CommandLine.FlagUsages())
-	}
-	// parse the CLI flags
-	flag.Parse()
-
-	api := operations.NewCludoAPIAPI(swaggerSpec)
-	// get server with flag values filled out
-	server = restapi.NewServer(api)
+	api := operations.NewCludoDAPI(swaggerSpec)
+	server := restapi.NewServer(api)
 	defer server.Shutdown()
 
+	parser := flags.NewParser(server, flags.Default)
+	parser.ShortDescription = "CludoD"
+	parser.LongDescription = "CludoD - Cloud Sudo Server"
+	server.ConfigureFlags()
+	for _, optsGroup := range api.CommandLineOptionsGroups {
+		_, err := parser.AddGroup(optsGroup.ShortDescription, optsGroup.LongDescription, optsGroup.Options)
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}
+
+	if _, err := parser.Parse(); err != nil {
+		code := 1
+		if fe, ok := err.(*flags.Error); ok {
+			if fe.Type == flags.ErrHelp {
+				code = 0
+			}
+		}
+		os.Exit(code)
+	}
+
 	server.ConfigureAPI()
+
 	if err := server.Serve(); err != nil {
 		log.Fatalln(err)
 	}

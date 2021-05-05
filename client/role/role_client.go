@@ -28,7 +28,7 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
-	ListRoles(params *ListRolesParams, opts ...ClientOption) (*ListRolesOK, error)
+	ListRoles(params *ListRolesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListRolesOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
 }
@@ -38,7 +38,7 @@ type ClientService interface {
 
   List all roles available to current user
 */
-func (a *Client) ListRoles(params *ListRolesParams, opts ...ClientOption) (*ListRolesOK, error) {
+func (a *Client) ListRoles(params *ListRolesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListRolesOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewListRolesParams()
@@ -52,6 +52,7 @@ func (a *Client) ListRoles(params *ListRolesParams, opts ...ClientOption) (*List
 		Schemes:            []string{"http", "https"},
 		Params:             params,
 		Reader:             &ListRolesReader{formats: a.formats},
+		AuthInfo:           authInfo,
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	}

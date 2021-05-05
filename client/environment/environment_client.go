@@ -28,7 +28,7 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
-	GenerateEnvironment(params *GenerateEnvironmentParams, opts ...ClientOption) (*GenerateEnvironmentOK, error)
+	GenerateEnvironment(params *GenerateEnvironmentParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GenerateEnvironmentOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
 }
@@ -38,7 +38,7 @@ type ClientService interface {
 
   Generate a temporary environment (set of environment variables)
 */
-func (a *Client) GenerateEnvironment(params *GenerateEnvironmentParams, opts ...ClientOption) (*GenerateEnvironmentOK, error) {
+func (a *Client) GenerateEnvironment(params *GenerateEnvironmentParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GenerateEnvironmentOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewGenerateEnvironmentParams()
@@ -52,6 +52,7 @@ func (a *Client) GenerateEnvironment(params *GenerateEnvironmentParams, opts ...
 		Schemes:            []string{"http", "https"},
 		Params:             params,
 		Reader:             &GenerateEnvironmentReader{formats: a.formats},
+		AuthInfo:           authInfo,
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	}

@@ -8,18 +8,23 @@ schemes:
 - http
 - https
 info:
-  description: Cludo - Cloud Sudo
-  title: Cludo API
+  description: CludoD - Cloud Sudo Server
+  title: CludoD
   contact:
     name: SuperOrbital
     url: http://superorbital.io/
     email: info@superorbital.io
   version: 1.0.0
+securityDefinitions:
+  APIKeyHeader:
+    type: apiKey
+    in: header
+    name: X-CLUDO-KEY
 definitions:
   models.EnvironmentRequest:
     type: object
     properties:
-      roleID:
+      role_id:
         description: The id of the role to apply.
         type: array
         items:
@@ -36,6 +41,20 @@ definitions:
     example:
       ENV_VAR_1: Hello!
       ENV_VAR_2: Bonjour!
+  models.RoleIDsResponse:
+    type: object
+    properties:
+      roles:
+        type: array
+        items:
+          type: string
+  models.HealthResponse:
+    type: object
+    properties:
+      status:
+        type: boolean
+      version:
+        type: string
   error:
     type: object
     required:
@@ -47,9 +66,31 @@ definitions:
       message:
         type: string
 paths:
+  "/health":
+    get:
+      description: Reports server status
+      tags:
+      - system
+      summary: Reports server status
+      operationId: health
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: "#/definitions/models.HealthResponse"
+        '400':
+          description: Bad Request
+          schema:
+            type: string
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
   "/role":
     get:
       description: List all roles available to current user
+      security:
+      - APIKeyHeader: []
       tags:
       - role
       summary: List all roles
@@ -58,7 +99,7 @@ paths:
         '200':
           description: OK
           schema:
-            type: string
+            $ref: "#/definitions/models.RoleIDsResponse"
         '400':
           description: Bad Request
           schema:
@@ -70,6 +111,8 @@ paths:
   "/environment":
     post:
       description: Generate a temporary environment (set of environment variables)
+      security:
+      - APIKeyHeader: []
       tags:
       - environment
       summary: Generate a temporary environment

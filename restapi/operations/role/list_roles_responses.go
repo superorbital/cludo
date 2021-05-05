@@ -25,7 +25,7 @@ type ListRolesOK struct {
 	/*
 	  In: Body
 	*/
-	Payload string `json:"body,omitempty"`
+	Payload *models.ModelsRoleIDsResponse `json:"body,omitempty"`
 }
 
 // NewListRolesOK creates ListRolesOK with default headers values
@@ -35,13 +35,13 @@ func NewListRolesOK() *ListRolesOK {
 }
 
 // WithPayload adds the payload to the list roles o k response
-func (o *ListRolesOK) WithPayload(payload string) *ListRolesOK {
+func (o *ListRolesOK) WithPayload(payload *models.ModelsRoleIDsResponse) *ListRolesOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the list roles o k response
-func (o *ListRolesOK) SetPayload(payload string) {
+func (o *ListRolesOK) SetPayload(payload *models.ModelsRoleIDsResponse) {
 	o.Payload = payload
 }
 
@@ -49,9 +49,11 @@ func (o *ListRolesOK) SetPayload(payload string) {
 func (o *ListRolesOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
-	payload := o.Payload
-	if err := producer.Produce(rw, payload); err != nil {
-		panic(err) // let the recovery middleware deal with this
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
 	}
 }
 

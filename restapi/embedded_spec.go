@@ -30,8 +30,8 @@ func init() {
   ],
   "swagger": "2.0",
   "info": {
-    "description": "Cludo - Cloud Sudo",
-    "title": "Cludo API",
+    "description": "CludoD - Cloud Sudo Server",
+    "title": "CludoD",
     "contact": {
       "name": "SuperOrbital",
       "url": "http://superorbital.io/",
@@ -43,6 +43,11 @@ func init() {
   "paths": {
     "/environment": {
       "post": {
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
         "description": "Generate a temporary environment (set of environment variables)",
         "tags": [
           "environment"
@@ -82,8 +87,43 @@ func init() {
         }
       }
     },
+    "/health": {
+      "get": {
+        "description": "Reports server status",
+        "tags": [
+          "system"
+        ],
+        "summary": "Reports server status",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.HealthResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/role": {
       "get": {
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
         "description": "List all roles available to current user",
         "tags": [
           "role"
@@ -94,7 +134,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "type": "string"
+              "$ref": "#/definitions/models.RoleIDsResponse"
             }
           },
           "400": {
@@ -142,7 +182,7 @@ func init() {
     "models.EnvironmentRequest": {
       "type": "object",
       "properties": {
-        "roleID": {
+        "role_id": {
           "description": "The id of the role to apply.",
           "type": "array",
           "items": {
@@ -158,6 +198,35 @@ func init() {
           "$ref": "#/definitions/models.EnvironmentBundle"
         }
       }
+    },
+    "models.HealthResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "boolean"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "models.RoleIDsResponse": {
+      "type": "object",
+      "properties": {
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "APIKeyHeader": {
+      "type": "apiKey",
+      "name": "X-CLUDO-KEY",
+      "in": "header"
     }
   }
 }`))
@@ -174,8 +243,8 @@ func init() {
   ],
   "swagger": "2.0",
   "info": {
-    "description": "Cludo - Cloud Sudo",
-    "title": "Cludo API",
+    "description": "CludoD - Cloud Sudo Server",
+    "title": "CludoD",
     "contact": {
       "name": "SuperOrbital",
       "url": "http://superorbital.io/",
@@ -187,6 +256,11 @@ func init() {
   "paths": {
     "/environment": {
       "post": {
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
         "description": "Generate a temporary environment (set of environment variables)",
         "tags": [
           "environment"
@@ -226,8 +300,43 @@ func init() {
         }
       }
     },
+    "/health": {
+      "get": {
+        "description": "Reports server status",
+        "tags": [
+          "system"
+        ],
+        "summary": "Reports server status",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.HealthResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/role": {
       "get": {
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
         "description": "List all roles available to current user",
         "tags": [
           "role"
@@ -238,7 +347,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "type": "string"
+              "$ref": "#/definitions/models.RoleIDsResponse"
             }
           },
           "400": {
@@ -286,7 +395,7 @@ func init() {
     "models.EnvironmentRequest": {
       "type": "object",
       "properties": {
-        "roleID": {
+        "role_id": {
           "description": "The id of the role to apply.",
           "type": "array",
           "items": {
@@ -302,6 +411,35 @@ func init() {
           "$ref": "#/definitions/models.EnvironmentBundle"
         }
       }
+    },
+    "models.HealthResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "boolean"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "models.RoleIDsResponse": {
+      "type": "object",
+      "properties": {
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "APIKeyHeader": {
+      "type": "apiKey",
+      "name": "X-CLUDO-KEY",
+      "in": "header"
     }
   }
 }`))

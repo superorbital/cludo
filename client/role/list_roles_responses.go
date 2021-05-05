@@ -57,20 +57,22 @@ func NewListRolesOK() *ListRolesOK {
 OK
 */
 type ListRolesOK struct {
-	Payload string
+	Payload *models.ModelsRoleIDsResponse
 }
 
 func (o *ListRolesOK) Error() string {
 	return fmt.Sprintf("[GET /role][%d] listRolesOK  %+v", 200, o.Payload)
 }
-func (o *ListRolesOK) GetPayload() string {
+func (o *ListRolesOK) GetPayload() *models.ModelsRoleIDsResponse {
 	return o.Payload
 }
 
 func (o *ListRolesOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
+	o.Payload = new(models.ModelsRoleIDsResponse)
+
 	// response payload
-	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
 		return err
 	}
 

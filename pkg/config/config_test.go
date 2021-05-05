@@ -49,17 +49,17 @@ var testConfig1 = &config.Config{
 	Server: &config.ServerConfig{
 		Port: 443,
 		Users: []*config.UserConfig{
-			&config.UserConfig{
+			{
 				PublicKey: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489...",
 				Roles: config.UserRolesConfig{
 					AWS: map[string]*config.AWSRoleConfig{
-						"so_org": &config.AWSRoleConfig{
+						"so_org": {
 							AssumeRoleARN:   "aws:arn:iam:...",
 							SessionDuration: testConfig1Duration1,
 							AccessKeyID:     "456DEF...",
 							SecretAccessKey: "UVW789...",
 						},
-						"so_dev": &config.AWSRoleConfig{
+						"so_dev": {
 							AssumeRoleARN:   "aws:arn:iam:...",
 							SessionDuration: testConfig1Duration2,
 							AccessKeyID:     "123ABC...",
