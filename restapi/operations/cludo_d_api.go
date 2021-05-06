@@ -19,6 +19,7 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
+	"github.com/superorbital/cludo/models"
 	"github.com/superorbital/cludo/restapi/operations/environment"
 	"github.com/superorbital/cludo/restapi/operations/role"
 	"github.com/superorbital/cludo/restapi/operations/system"
@@ -46,18 +47,18 @@ func NewCludoDAPI(spec *loads.Document) *CludoDAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
-		EnvironmentGenerateEnvironmentHandler: environment.GenerateEnvironmentHandlerFunc(func(params environment.GenerateEnvironmentParams, principal interface{}) middleware.Responder {
+		EnvironmentGenerateEnvironmentHandler: environment.GenerateEnvironmentHandlerFunc(func(params environment.GenerateEnvironmentParams, principal *models.ModelsPrincipal) middleware.Responder {
 			return middleware.NotImplemented("operation environment.GenerateEnvironment has not yet been implemented")
 		}),
 		SystemHealthHandler: system.HealthHandlerFunc(func(params system.HealthParams) middleware.Responder {
 			return middleware.NotImplemented("operation system.Health has not yet been implemented")
 		}),
-		RoleListRolesHandler: role.ListRolesHandlerFunc(func(params role.ListRolesParams, principal interface{}) middleware.Responder {
+		RoleListRolesHandler: role.ListRolesHandlerFunc(func(params role.ListRolesParams, principal *models.ModelsPrincipal) middleware.Responder {
 			return middleware.NotImplemented("operation role.ListRoles has not yet been implemented")
 		}),
 
 		// Applies when the "X-CLUDO-KEY" header is set
-		APIKeyHeaderAuth: func(token string) (interface{}, error) {
+		APIKeyHeaderAuth: func(token string) (*models.ModelsPrincipal, error) {
 			return nil, errors.NotImplemented("api key auth (APIKeyHeader) X-CLUDO-KEY from header param [X-CLUDO-KEY] has not yet been implemented")
 		},
 		// default authorizer is authorized meaning no requests are blocked
@@ -100,7 +101,7 @@ type CludoDAPI struct {
 
 	// APIKeyHeaderAuth registers a function that takes a token and returns a principal
 	// it performs authentication based on an api key X-CLUDO-KEY provided in the header
-	APIKeyHeaderAuth func(string) (interface{}, error)
+	APIKeyHeaderAuth func(string) (*models.ModelsPrincipal, error)
 
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
@@ -221,7 +222,9 @@ func (o *CludoDAPI) AuthenticatorsFor(schemes map[string]spec.SecurityScheme) ma
 		switch name {
 		case "APIKeyHeader":
 			scheme := schemes[name]
-			result[name] = o.APIKeyAuthenticator(scheme.Name, scheme.In, o.APIKeyHeaderAuth)
+			result[name] = o.APIKeyAuthenticator(scheme.Name, scheme.In, func(token string) (interface{}, error) {
+				return o.APIKeyHeaderAuth(token)
+			})
 
 		}
 	}

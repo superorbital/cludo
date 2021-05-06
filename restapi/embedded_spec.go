@@ -169,6 +169,29 @@ func init() {
         }
       }
     },
+    "models.AWSPrincipalRole": {
+      "type": "object",
+      "properties": {
+        "access_key_id": {
+          "type": "string"
+        },
+        "arn": {
+          "type": "string"
+        },
+        "secret_access_key": {
+          "type": "string"
+        },
+        "session_duration": {
+          "type": "string"
+        }
+      }
+    },
+    "models.AWSPrincipalRoles": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/models.AWSPrincipalRole"
+      }
+    },
     "models.EnvironmentBundle": {
       "type": "object",
       "additionalProperties": {
@@ -207,6 +230,28 @@ func init() {
         },
         "version": {
           "type": "string"
+        }
+      }
+    },
+    "models.Principal": {
+      "type": "object",
+      "properties": {
+        "default_role": {
+          "type": "string"
+        },
+        "public_key": {
+          "type": "string"
+        },
+        "roles": {
+          "$ref": "#/definitions/models.PrincipalRoles"
+        }
+      }
+    },
+    "models.PrincipalRoles": {
+      "type": "object",
+      "properties": {
+        "aws": {
+          "$ref": "#/definitions/models.AWSPrincipalRoles"
         }
       }
     },
@@ -382,6 +427,29 @@ func init() {
         }
       }
     },
+    "models.AWSPrincipalRole": {
+      "type": "object",
+      "properties": {
+        "access_key_id": {
+          "type": "string"
+        },
+        "arn": {
+          "type": "string"
+        },
+        "secret_access_key": {
+          "type": "string"
+        },
+        "session_duration": {
+          "type": "string"
+        }
+      }
+    },
+    "models.AWSPrincipalRoles": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/models.AWSPrincipalRole"
+      }
+    },
     "models.EnvironmentBundle": {
       "type": "object",
       "additionalProperties": {
@@ -420,6 +488,28 @@ func init() {
         },
         "version": {
           "type": "string"
+        }
+      }
+    },
+    "models.Principal": {
+      "type": "object",
+      "properties": {
+        "default_role": {
+          "type": "string"
+        },
+        "public_key": {
+          "type": "string"
+        },
+        "roles": {
+          "$ref": "#/definitions/models.PrincipalRoles"
+        }
+      }
+    },
+    "models.PrincipalRoles": {
+      "type": "object",
+      "properties": {
+        "aws": {
+          "$ref": "#/definitions/models.AWSPrincipalRoles"
         }
       }
     },

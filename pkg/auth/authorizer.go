@@ -5,8 +5,8 @@ import (
 	"crypto/rsa"
 	"crypto/sha512"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
+	"strings"
 )
 
 type Authorizer struct {
@@ -19,16 +19,18 @@ func NewAuthorizer(users map[string]*rsa.PublicKey) *Authorizer {
 	}
 }
 
-func (authz *Authorizer) CheckAuthHeader(message interface{}, header string) (string, bool, error) {
-	b, err := json.Marshal(message)
-	if err != nil {
-		return "", false, fmt.Errorf("Failed to JSON-serialize message for signature verification: %v", err)
+func (authz *Authorizer) CheckAuthHeader(header string) (string, bool, error) {
+	// API tokens are of the form: <random-number>:<signature-of-random-number>
+	tokens := strings.SplitN(header, ":", 2)
+	if len(tokens) != 2 {
+		return "", false, fmt.Errorf("Found malformed auth header: %v", header)
 	}
+
 	// TODO: Make hashing/signing method pluggable.
-	hashed := sha512.Sum512(b)
+	hashed := sha512.Sum512([]byte(tokens[0]))
 	hashedSlice := hashed[:]
 
-	signature, err := base64.StdEncoding.DecodeString(header)
+	signature, err := base64.StdEncoding.DecodeString(tokens[1])
 	if err != nil {
 		return "", false, fmt.Errorf("Failed to base64-decode auth header for signature verification: %v", err)
 	}
