@@ -7,12 +7,11 @@ import (
 	"github.com/superorbital/cludo/pkg/config"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	//"github.com/superorbital/cludo/models"
 )
 
 // runOperationExec uses cmd flags to call endpoint api
-func runOperationExec(cmd *cobra.Command, args []string) error {
+func runOperationExec(cmd *cobra.Command, args []string, conf config.ClientConfig) string {
 	//appCli, err := makeClient(cmd, args)
 	//if err != nil {
 	//	return err
@@ -23,32 +22,21 @@ func runOperationExec(cmd *cobra.Command, args []string) error {
 	//	return err
 	//}
 
-	conf := &config.Config{}
-	err := viper.Unmarshal(conf)
-	if err != nil {
-		fmt.Printf("unable to decode into config struct, %v", err)
-	}
-
 	if debug {
-		fmt.Printf("%#v", conf.Client["default"])
+		fmt.Printf("\n%#v\n", conf)
 	}
 
 	if dryRun {
 
 		logDebugf("dry-run flag specified. Skip sending request.")
-		return nil
+		return ""
 	}
 	// make request and then print result
-	msgStr, err := "exec ran! (server: "+conf.Client["default"].ServerURL+"command: "+string(strings.Join(args, " ")), *new(error)
+	msgStr, err := "\nexec ran!\nserver_url: "+conf.ServerURL+"\nkey_path  : "+conf.KeyPath+"\ncommand   : "+string(strings.Join(args, " ")), *new(error)
 
 	if err != nil {
-		return err
+		return ""
 	}
-	if !debug {
 
-		fmt.Println(msgStr)
-	} else {
-		fmt.Println(msgStr)
-	}
-	return nil
+	return msgStr
 }

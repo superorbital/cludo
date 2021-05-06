@@ -30,7 +30,8 @@ var dryRun bool
 // name of the executable
 var exeName string = filepath.Base(os.Args[0])
 
-// clientConfig
+// Config
+var userConfig config.Config
 var clientProfile string
 var clientConfig config.ClientConfig
 
@@ -78,10 +79,6 @@ func MakeRootCmd() (*cobra.Command, error) {
 			return initializeConfig(cmd)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			// Working with OutOrStdout/OutOrStderr allows us to unit test our command easier
-			//out := cmd.OutOrStdout()
-
-			// Print the final resolved value from binding cobra flags and viper config
 			cmd.Help()
 		},
 	}
@@ -115,7 +112,11 @@ func MakeRootCmd() (*cobra.Command, error) {
 	// add cobra completion
 	rootCmd.AddCommand(makeGenCompletionCmd())
 
-	bindEnvVars(rootCmd)
+	err = bindEnvVars(rootCmd)
+	if err != nil {
+		return nil, err
+	}
+
 	return rootCmd, nil
 }
 
@@ -150,11 +151,18 @@ func initViperConfigs() {
 	if err := viper.ReadInConfig(); err != nil {
 		// It's okay if there isn't a config file
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			logDebugf("Error: loading config file: %v", err)
+			fmt.Printf("[WARN] Could not load config file: %v\n", err)
 			return
 		}
 		logDebugf("Using config file: %v", viper.ConfigFileUsed())
 	}
+
+	viper.SetConfigType("yaml")
+	err := viper.Unmarshal(&userConfig)
+	if err != nil {
+		fmt.Printf("[ERROR] Unable to decode config into struct, %v", err)
+	}
+
 }
 
 func makeOperationGroupExecCmd() (*cobra.Command, error) {
@@ -162,7 +170,19 @@ func makeOperationGroupExecCmd() (*cobra.Command, error) {
 		Use:   "exec",
 		Short: "Execute command with authorization",
 		Long:  `Execute a single command with authentication env vars set.`,
-		RunE:  runOperationExec,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			// You can bind cobra and viper in a few locations, but PersistencePreRunE on the root command works well
+			return initializeConfig(cmd)
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			// Working with OutOrStdout/OutOrStderr allows us to unit test our command easier
+			out := cmd.OutOrStdout()
+
+			msg := runOperationExec(cmd, args, clientConfig)
+
+			fmt.Fprintln(out, msg)
+
+		},
 	}
 
 	//operationWithProfileCmd, err := makeOperationExecWithProfileCmd()
