@@ -32,7 +32,7 @@ docker run --rm -it \
     -v $HOME:$HOME \
     -w $(pwd) \
     quay.io/goswagger/swagger \
-    generate server -f ./swagger.yaml --name-cludod --main-package=cludod #--template-dir="${TEMPLATE_DIR}"
+    generate server -f ./swagger.yaml --name-cludod --main-package=cludod --principal=models.ModelsPrincipal --template-dir="${TEMPLATE_DIR}"
 
 docker run --rm -it \
     --user $(id -u):$(id -g) \
@@ -40,14 +40,14 @@ docker run --rm -it \
     -v $HOME:$HOME \
     -w $(pwd) \
     quay.io/goswagger/swagger \
-    generate client -f ./swagger.yaml #--template-dir="${TEMPLATE_DIR}"
+    generate client -f ./swagger.yaml --template-dir="${TEMPLATE_DIR}"
 
-docker run --rm -it \
-    --user $(id -u):$(id -g) \
-    -e GOPATH=$HOME/go:/go \
-    -v $HOME:$HOME \
-    -w $(pwd) \
-    quay.io/goswagger/swagger \
-    generate cli -f ./swagger.yaml --cli-app-name=cludo-api --template-dir="${TEMPLATE_DIR}"
+# docker run --rm -it \
+#     --user $(id -u):$(id -g) \
+#     -e GOPATH=$HOME/go:/go \
+#     -v $HOME:$HOME \
+#     -w $(pwd) \
+#     quay.io/goswagger/swagger \
+#     generate cli -f ./swagger.yaml --cli-app-name=cludo-api --template-dir="${TEMPLATE_DIR}"
 
 go get -u -f ./...
