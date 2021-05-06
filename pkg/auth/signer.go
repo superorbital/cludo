@@ -6,7 +6,6 @@ import (
 	"crypto/rsa"
 	"crypto/sha512"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"io"
 )
@@ -28,13 +27,8 @@ func NewSigner(key *rsa.PrivateKey, rng io.Reader) *Signer {
 }
 
 func (signer *Signer) GenerateAuthHeader(message string) (string, error) {
-	b, err := json.Marshal(message)
-	if err != nil {
-		return "", fmt.Errorf("Failed to JSON-serialize message for signing: %v", err)
-	}
-
 	// TODO: Make hashing/signing method pluggable.
-	hashed := sha512.Sum512(b)
+	hashed := sha512.Sum512([]byte(message))
 	signature, err := rsa.SignPKCS1v15(signer.rng, signer.privateKey, crypto.SHA512, hashed[:])
 	if err != nil {
 		return "", fmt.Errorf("Failed to sign message: %v:", err)

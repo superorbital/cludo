@@ -19,7 +19,7 @@ type AWSRoleConfig struct {
 }
 
 func (arc *AWSRoleConfig) NewPlugin() (*aws.AWSPlugin, error) {
-	return aws.NewAWSPlugin(arc.AccessKeyID, arc.SecretAccessKey, arc.Region, arc.SessionDuration)
+	return aws.NewAWSPlugin(arc.AccessKeyID, arc.SecretAccessKey, arc.Region, arc.SessionDuration, arc.AssumeRoleARN)
 }
 
 type UserRolesConfig struct {

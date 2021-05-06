@@ -6,7 +6,6 @@ import (
 	"crypto/rsa"
 	"crypto/sha512"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -23,11 +22,7 @@ func GenerateRSAKeyPair(t *testing.T) (*rsa.PrivateKey, *rsa.PublicKey) {
 }
 
 func GenerateSHA512Signature(t *testing.T, key *rsa.PrivateKey, message string) string {
-	b, err := json.Marshal(message)
-	if err != nil {
-		t.Fatalf("Failed to serialize message: %v, %#v", err, message)
-	}
-	hashed := sha512.Sum512(b)
+	hashed := sha512.Sum512([]byte(message))
 	signature, err := rsa.SignPKCS1v15(rand.Reader, key, crypto.SHA512, hashed[:])
 	if err != nil {
 		t.Fatalf("Failed to generate signature: %v, %#v, %#v", err, key, hashed)
