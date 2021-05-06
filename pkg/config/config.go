@@ -3,7 +3,7 @@ package config
 import "github.com/spf13/viper"
 
 const (
-	ClientAPIVersion    = "v0.0.1"
+	CludoVersion        = "v0.0.1"
 	DefaultClientConfig = "default"
 
 	// The name of our config file, without the file extension because viper supports many different config file languages.
@@ -15,8 +15,8 @@ const (
 )
 
 type Config struct {
-	Client map[string]*ClientConfig `yaml:"client"`
-	Server *ServerConfig            `yaml:"server"`
+	Client map[string]*ClientConfig `mapstructure:"client"`
+	Server *ServerConfig            `mapstructure:"server"`
 }
 
 func NewConfigFromViper() (*Config, error) {

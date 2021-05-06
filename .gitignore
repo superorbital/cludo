@@ -22,6 +22,11 @@ swagger
 
 #cludo
 .cludo
-cmd/cli/cli
-cmd/clientCLI/clientCLI
-cmd/server/server
+cli
+cmd/cludo_api/cludo_api
+cmd/cludo/cludo
+cmd/cludod/cludod
+
+
+#misc
+tmp

@@ -86,7 +86,7 @@ func makeClient(cmd *cobra.Command, args []string) (*client.{{ pascalize .Name }
 
 // MakeRootCmd returns the root cmd
 func MakeRootCmd() (*cobra.Command, error) {
-	cobra.OnInitialize(initViperConfigs)
+	cobra.OnInitialize(initializeConfig)
 	
 	// Use executable name as the command name
 	rootCmd := &cobra.Command{

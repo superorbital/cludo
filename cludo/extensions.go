@@ -1,4 +1,4 @@
-package clientCLI
+package cludo
 
 import (
 	"fmt"
@@ -21,6 +21,7 @@ func initializeConfig(cmd *cobra.Command) error {
 }
 
 func bindEnvVars(cmd *cobra.Command) error {
+
 	// When we bind flags to environment variables expect that the
 	// environment variables are prefixed, e.g. a flag like --number
 	// binds to an environment variable CLUDO_NUMBER. This helps

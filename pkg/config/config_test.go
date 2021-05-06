@@ -1,12 +1,14 @@
 package config_test
 
 import (
+	"io/ioutil"
+	"os"
 	"testing"
 	"time"
 
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/superorbital/cludo/pkg/config"
-	"gopkg.in/yaml.v2"
 )
 
 const testConfig1Raw = `
@@ -87,8 +89,28 @@ func TestConfig(t *testing.T) {
 	}
 
 	for _, tc := range tests {
+		file, err := ioutil.TempFile(".", "cludo*.yaml")
+		if err != nil {
+			t.Fatalf("Failed to create temporary file: %v", err)
+		}
+		defer os.Remove(file.Name())
+
+		_, err = file.WriteString(tc.input)
+		if err != nil {
+			t.Fatalf("Failed to populate temporary cludo config: %v", err)
+		}
+
+		viper.SetConfigFile(file.Name())
+		if err := viper.ReadInConfig(); err != nil {
+			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+				t.Fatal("ERROR: Failed to load configuration file: File not found")
+			} else {
+				t.Fatalf("ERROR: Failed to load configuration file: %v", err)
+			}
+		}
+
 		got := &config.Config{}
-		yaml.Unmarshal([]byte(tc.input), got)
+		viper.Unmarshal(got)
 
 		assert.EqualValuesf(t, tc.want, got, "expected: %#v, got: %#v", tc.want, got)
 	}

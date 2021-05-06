@@ -1,4 +1,4 @@
-package clientCLI
+package cludo
 
 import (
 	"os"
