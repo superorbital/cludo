@@ -8,99 +8,20 @@ package models
 import (
 	"context"
 
-	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
 )
 
 // ModelsPrincipal models principal
 //
 // swagger:model models.Principal
-type ModelsPrincipal struct {
-
-	// default role
-	DefaultRole string `json:"default_role,omitempty"`
-
-	// public key
-	PublicKey string `json:"public_key,omitempty"`
-
-	// roles
-	Roles *ModelsPrincipalRoles `json:"roles,omitempty"`
-}
+type ModelsPrincipal string
 
 // Validate validates this models principal
-func (m *ModelsPrincipal) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := m.validateRoles(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
+func (m ModelsPrincipal) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *ModelsPrincipal) validateRoles(formats strfmt.Registry) error {
-	if swag.IsZero(m.Roles) { // not required
-		return nil
-	}
-
-	if m.Roles != nil {
-		if err := m.Roles.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("roles")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-// ContextValidate validate this models principal based on the context it is used
-func (m *ModelsPrincipal) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	var res []error
-
-	if err := m.contextValidateRoles(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (m *ModelsPrincipal) contextValidateRoles(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.Roles != nil {
-		if err := m.Roles.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("roles")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (m *ModelsPrincipal) MarshalBinary() ([]byte, error) {
-	if m == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(m)
-}
-
-// UnmarshalBinary interface implementation
-func (m *ModelsPrincipal) UnmarshalBinary(b []byte) error {
-	var res ModelsPrincipal
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*m = res
+// ContextValidate validates this models principal based on context it is used
+func (m ModelsPrincipal) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }

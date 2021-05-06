@@ -39,7 +39,7 @@ var testConfig1Duration1, _ = time.ParseDuration("10m")
 var testConfig1Duration2, _ = time.ParseDuration("8h")
 var testConfig1 = &config.Config{
 	Client: map[string]*config.ClientConfig{
-		config.DefaultClientConfig: &config.ClientConfig{
+		config.DefaultClientConfig: {
 			ServerURL: "https://www.example.com/",
 			KeyPath:   "~/.ssh/id_rsa",
 			ShellPath: "/usr/local/bin/bash",
@@ -51,7 +51,7 @@ var testConfig1 = &config.Config{
 		Users: []*config.UserConfig{
 			{
 				PublicKey: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489...",
-				Roles: config.UserRolesConfig{
+				Roles: &config.UserRolesConfig{
 					AWS: map[string]*config.AWSRoleConfig{
 						"so_org": {
 							AssumeRoleARN:   "aws:arn:iam:...",
