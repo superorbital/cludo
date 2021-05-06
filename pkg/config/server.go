@@ -11,11 +11,11 @@ import (
 )
 
 type AWSRoleConfig struct {
-	SessionDuration time.Duration `yaml:"session_duration"`
-	AccessKeyID     string        `yaml:"access_key_id"`
-	SecretAccessKey string        `yaml:"secret_access_key"`
-	AssumeRoleARN   string        `yaml:"arn"`
-	Region          string        `yaml:"region"`
+	SessionDuration time.Duration `mapstructure:"session_duration"`
+	AccessKeyID     string        `mapstructure:"access_key_id"`
+	SecretAccessKey string        `mapstructure:"secret_access_key"`
+	AssumeRoleARN   string        `mapstructure:"arn"`
+	Region          string        `mapstructure:"region"`
 }
 
 func (arc *AWSRoleConfig) NewPlugin() (*aws.AWSPlugin, error) {
@@ -23,13 +23,13 @@ func (arc *AWSRoleConfig) NewPlugin() (*aws.AWSPlugin, error) {
 }
 
 type UserRolesConfig struct {
-	AWS map[string]*AWSRoleConfig `yaml:"aws"`
+	AWS map[string]*AWSRoleConfig `mapstructure:"aws"`
 }
 
 type UserConfig struct {
-	PublicKey   string           `yaml:"public_key"`
-	Roles       *UserRolesConfig `yaml:"roles"`
-	DefaultRole string           `yaml:"default_role"`
+	PublicKey   string           `mapstructure:"public_key"`
+	Roles       *UserRolesConfig `mapstructure:"roles"`
+	DefaultRole string           `mapstructure:"default_role"`
 }
 
 func (uc *UserConfig) ID() string {
@@ -39,7 +39,7 @@ func (uc *UserConfig) ID() string {
 type ServerConfig struct {
 	Port int `yaml:"port"`
 
-	Users []*UserConfig `yaml:"users"`
+	Users []*UserConfig `mapstructure:"users"`
 }
 
 func (sc *ServerConfig) NewAuthorizer() (*auth.Authorizer, error) {

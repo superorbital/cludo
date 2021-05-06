@@ -10,10 +10,10 @@ import (
 )
 
 type ClientConfig struct {
-	ServerURL string   `yaml:"server_url"`
-	KeyPath   string   `yaml:"key_path"`
-	ShellPath string   `yaml:"shell_path"`
-	Roles     []string `yaml:"roles"`
+	ServerURL string   `mapstructure:"server_url"`
+	KeyPath   string   `mapstructure:"key_path"`
+	ShellPath string   `mapstructure:"shell_path"`
+	Roles     []string `mapstructure:"roles"`
 }
 
 func (cc *ClientConfig) NewDefaultSigner() (*auth.Signer, error) {

@@ -36,6 +36,12 @@ client:
     roles: ["default"]
 ```
 
+Environment Variable | YAML path | Description
+-------------------- | --------- | -----------
+`CLUDO_SERVER_URL` | `server_url` | URL of the `cludo-server` instance to connect to.
+`CLUDO_PRIVATE_KEY` | `private_key` | Path to a private key for authentication.
+`CLUDO_SHELL` | `shell` | Path to the shell to launch when requested. Defaults to user's login shell.
+
 ## Usage
 
 ```shell
@@ -48,8 +54,19 @@ Main commands:
     version - Prints the cludo client and server versions
 ```
 
-
 We recommend adding `.cludo/` to your `.gitignore` files to avoid accidentally committing secrets.
+
+### Examples
+
+
+#### Server
+
+- `cludod --scheme=http`
+
+#### Client
+
+  -`cludo exec aws ec2 describe-instances`
+    - You can add `--debug` to get some extra debugging output.
 
 ## Environments
 
@@ -70,13 +87,13 @@ Environment Variable | Description
 1. Install `cludo-server`:
 
    ```shell
-   go install github.com/superorbital/cludo/cmd/cludo-server/cludo-server
+   go install github.com/superorbital/cludo/cmd/cludod/cludod
    ```
 
-2. Configure `cludo-server` by providing a `cludo-server.yaml` file.
-3. Run `cludo-server -c /path/to/cludo-server.yaml`
+2. Configure `cludod` by providing a `cludo.yaml` file.
+3. Run `cludod -c /path/to/cludod.yaml`
 
-`cludo-server` supports the following configuration options:
+`cludod` supports the following configuration options:
 
 ```yaml
 # cludo.yaml
@@ -102,18 +119,19 @@ server:
 
 We also provide a docker image (`superorbital/cludo-server`) with `cludo-server` pre-installed. Just provide a `/etc/cludo-server/cludo-server.yaml` config file.
 
-
 ## Development
 
 ### Release
 
+```shell
 $ go get github.com/mitchellh/gox
 $ gox -osarch='darwin/amd64 darwin/arm64 linux/386 linux/amd64 linux/arm linux/arm64 windows/386 windows/amd64' -output './builds/wordchain_{{.OS}}_{{.Arch}}'
+```
 
-* Create a release in Github with the resulting binaries.
+- Create a release in Github with the resulting binaries.
 
 ## Acknowledgements
 
-* Cobra & Viper integration code heavily inspired by:
-  * [https://github.com/carolynvs/stingoftheviper](https://github.com/carolynvs/stingoftheviper)
-  * **License**: MIT
+- Cobra & Viper integration code heavily inspired by:
+  - [https://github.com/carolynvs/stingoftheviper](https://github.com/carolynvs/stingoftheviper)
+  - **License**: MIT

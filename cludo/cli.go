@@ -1,4 +1,4 @@
-package clientCLI
+package cludo
 
 import (
 	"fmt"
@@ -66,13 +66,13 @@ func makeClient(cmd *cobra.Command, args []string) (*client.CludoD, error) {
 
 // MakeRootCmd returns the root cmd
 func MakeRootCmd() (*cobra.Command, error) {
-	cobra.OnInitialize(initViperConfigs)
+	cobra.OnInitialize()
 
 	// Use executable name as the command name
 	rootCmd := &cobra.Command{
-		Version: config.ClientAPIVersion,
+		Version: config.CludoVersion,
 		Use:     exeName,
-		Short:   "loud Sudo Client CLI",
+		Short:   "Cloud Sudo Client CLI",
 		Long:    `This is the Cloud Sudo Client CLI, which end users will typically use to interact with the Cloud Sudo server.`,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			// You can bind cobra and viper in a few locations, but PersistencePreRunE on the root command works well
@@ -102,6 +102,7 @@ func MakeRootCmd() (*cobra.Command, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	rootCmd.AddCommand(operationGroupExecCmd)
 	operationGroupExecCmd.Flags().StringVarP(&clientProfile, "profile", "p", "default", "Connection profile name")
 	operationGroupExecCmd.Flags().StringVarP(&clientConfig.ServerURL, "server-url", "s", "http://localhost:80/", "Complete server URL")
@@ -111,11 +112,6 @@ func MakeRootCmd() (*cobra.Command, error) {
 
 	// add cobra completion
 	rootCmd.AddCommand(makeGenCompletionCmd())
-
-	err = bindEnvVars(rootCmd)
-	if err != nil {
-		return nil, err
-	}
 
 	return rootCmd, nil
 }
@@ -148,6 +144,7 @@ func initViperConfigs() {
 	// Attempt to read the config file, gracefully ignoring errors
 	// caused by a config file not being found. Return an error
 	// if we cannot parse the config file.
+	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {
 		// It's okay if there isn't a config file
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
@@ -157,12 +154,6 @@ func initViperConfigs() {
 		logDebugf("Using config file: %v", viper.ConfigFileUsed())
 	}
 
-	viper.SetConfigType("yaml")
-	err := viper.Unmarshal(&userConfig)
-	if err != nil {
-		fmt.Printf("[ERROR] Unable to decode config into struct, %v", err)
-	}
-
 }
 
 func makeOperationGroupExecCmd() (*cobra.Command, error) {
@@ -170,10 +161,6 @@ func makeOperationGroupExecCmd() (*cobra.Command, error) {
 		Use:   "exec",
 		Short: "Execute command with authorization",
 		Long:  `Execute a single command with authentication env vars set.`,
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			// You can bind cobra and viper in a few locations, but PersistencePreRunE on the root command works well
-			return initializeConfig(cmd)
-		},
 		Run: func(cmd *cobra.Command, args []string) {
 			// Working with OutOrStdout/OutOrStderr allows us to unit test our command easier
 			out := cmd.OutOrStdout()
