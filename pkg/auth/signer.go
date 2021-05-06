@@ -27,7 +27,7 @@ func NewSigner(key *rsa.PrivateKey, rng io.Reader) *Signer {
 	}
 }
 
-func (signer *Signer) GenerateAuthHeader(message interface{}) (string, error) {
+func (signer *Signer) GenerateAuthHeader(message string) (string, error) {
 	b, err := json.Marshal(message)
 	if err != nil {
 		return "", fmt.Errorf("Failed to JSON-serialize message for signing: %v", err)
@@ -40,5 +40,17 @@ func (signer *Signer) GenerateAuthHeader(message interface{}) (string, error) {
 		return "", fmt.Errorf("Failed to sign message: %v:", err)
 	}
 
-	return base64.StdEncoding.EncodeToString(signature), nil
+	encoded := base64.StdEncoding.EncodeToString(signature)
+	return fmt.Sprintf("%s:%s", message, encoded), nil
+}
+
+func (signer *Signer) GenerateRandomAuthHeader() (string, error) {
+	c := 10
+	b := make([]byte, c)
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", fmt.Errorf("Failed to generate random message: %v", err)
+	}
+	message := string(b)
+	return signer.GenerateAuthHeader(message)
 }

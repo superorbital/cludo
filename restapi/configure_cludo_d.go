@@ -4,6 +4,7 @@ package restapi
 
 import (
 	"crypto/tls"
+	"fmt"
 	"net/http"
 
 	"github.com/fsnotify/fsnotify"
@@ -81,9 +82,50 @@ func configureAPI(api *operations.CludoDAPI) http.Handler {
 
 	// Applies when the "X-CLUDO-KEY" header is set
 	if api.APIKeyHeaderAuth == nil {
-		api.APIKeyHeaderAuth = func(token string) (interface{}, error) {
-			// Call out to auth system and
-			return nil, errors.NotImplemented("api key auth (APIKeyHeader) X-CLUDO-KEY from header param [X-CLUDO-KEY] has not yet been implemented")
+		api.APIKeyHeaderAuth = func(token string) (*models.ModelsPrincipal, error) {
+			conf, err := config.NewConfigFromViper()
+			if err != nil {
+				return nil, errors.New(500, "Failed to read cludo configuration: %v", err)
+			}
+
+			if conf.Server == nil {
+				return nil, errors.New(500, "Server configuration is missing")
+			}
+
+			authz, err := conf.Server.NewAuthorizer()
+			if err != nil {
+				return nil, errors.New(500, "Failed to create authorizer: %v", err)
+			}
+
+			id, ok, err := authz.CheckAuthHeader(token)
+			if err != nil {
+				return nil, errors.New(500, "Failed to validate message signature: %v", err)
+			}
+			if ok {
+				for _, user := range conf.Server.Users {
+					if user.ID() == id {
+						roles := models.ModelsPrincipalRoles{
+							Aws: models.ModelsAWSPrincipalRoles{},
+						}
+
+						for roleID, role := range user.Roles.AWS {
+							roles.Aws[roleID] = models.ModelsAWSPrincipalRole{
+								SessionDuration: role.SessionDuration.String(),
+								AccessKeyID:     role.AccessKeyID,
+								SecretAccessKey: role.SecretAccessKey,
+								Arn:             role.AssumeRoleARN,
+							}
+						}
+
+						return &models.ModelsPrincipal{
+							PublicKey:   user.PublicKey,
+							DefaultRole: user.DefaultRole,
+							Roles:       &roles,
+						}, nil
+					}
+				}
+			}
+			return nil, errors.Unauthenticated("APIKeyHeaderAuth")
 		}
 	}
 
@@ -94,7 +136,7 @@ func configureAPI(api *operations.CludoDAPI) http.Handler {
 	// api.APIAuthorizer = security.Authorized()
 
 	if api.EnvironmentGenerateEnvironmentHandler == nil {
-		api.EnvironmentGenerateEnvironmentHandler = environment.GenerateEnvironmentHandlerFunc(func(params environment.GenerateEnvironmentParams, principal interface{}) middleware.Responder {
+		api.EnvironmentGenerateEnvironmentHandler = environment.GenerateEnvironmentHandlerFunc(func(params environment.GenerateEnvironmentParams, principal *models.ModelsPrincipal) middleware.Responder {
 			config := config.Config{}
 			err := viper.Unmarshal(&config)
 			if err != nil {
@@ -114,15 +156,34 @@ func configureAPI(api *operations.CludoDAPI) http.Handler {
 		})
 	}
 	if api.RoleListRolesHandler == nil {
-		api.RoleListRolesHandler = role.ListRolesHandlerFunc(func(params role.ListRolesParams, principal interface{}) middleware.Responder {
-			config := config.Config{}
-			err := viper.Unmarshal(&config)
+		api.RoleListRolesHandler = role.ListRolesHandlerFunc(func(params role.ListRolesParams, principal *models.ModelsPrincipal) middleware.Responder {
+			conf, err := config.NewConfigFromViper()
 			if err != nil {
-				api.Logger("ERROR: Failed to read config:", err)
-				return middleware.Error(500, &struct{}{})
+				errMsg := fmt.Sprintf("Failed to read cludo configuration: %v", err)
+				return role.NewListRolesDefault(500).WithPayload(&models.Error{
+					Code:    500,
+					Message: &errMsg,
+				})
 			}
 
-			return middleware.NotImplemented("operation role.ListRoles has not yet been implemented")
+			if conf.Server == nil {
+				errMsg := fmt.Sprintf("Server configuration is missing")
+				return role.NewListRolesDefault(500).WithPayload(&models.Error{
+					Code:    500,
+					Message: &errMsg,
+				})
+			}
+
+			roles := []string{}
+			if principal != nil && principal.Roles != nil && principal.Roles.Aws != nil {
+				for roleID, _ := range principal.Roles.Aws {
+					roles = append(roles, roleID)
+				}
+			}
+
+			return role.NewListRolesOK().WithPayload(&models.ModelsRoleIDsResponse{
+				Roles: roles,
+			})
 		})
 	}
 

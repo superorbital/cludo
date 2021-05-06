@@ -55,6 +55,35 @@ definitions:
         type: boolean
       version:
         type: string
+  models.AWSPrincipalRole:
+    type: object
+    properties:
+      session_duration:
+        type: string
+      access_key_id:
+        type: string
+      secret_access_key:
+        type: string
+      arn:
+        type: string
+  models.AWSPrincipalRoles:
+    type: object
+    additionalProperties:
+      $ref: "#/definitions/models.AWSPrincipalRole"
+  models.PrincipalRoles:
+    type: object
+    properties:
+      aws:
+        $ref: "#/definitions/models.AWSPrincipalRoles"
+  models.Principal:
+    type: object
+    properties:
+      public_key:
+        type: string
+      roles:
+        $ref: "#/definitions/models.PrincipalRoles"
+      default_role:
+        type: string
   error:
     type: object
     required:

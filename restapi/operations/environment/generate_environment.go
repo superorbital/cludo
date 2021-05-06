@@ -9,19 +9,21 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime/middleware"
+
+	"github.com/superorbital/cludo/models"
 )
 
 // GenerateEnvironmentHandlerFunc turns a function with the right signature into a generate environment handler
-type GenerateEnvironmentHandlerFunc func(GenerateEnvironmentParams, interface{}) middleware.Responder
+type GenerateEnvironmentHandlerFunc func(GenerateEnvironmentParams, *models.ModelsPrincipal) middleware.Responder
 
 // Handle executing the request and returning a response
-func (fn GenerateEnvironmentHandlerFunc) Handle(params GenerateEnvironmentParams, principal interface{}) middleware.Responder {
+func (fn GenerateEnvironmentHandlerFunc) Handle(params GenerateEnvironmentParams, principal *models.ModelsPrincipal) middleware.Responder {
 	return fn(params, principal)
 }
 
 // GenerateEnvironmentHandler interface for that can handle valid generate environment params
 type GenerateEnvironmentHandler interface {
-	Handle(GenerateEnvironmentParams, interface{}) middleware.Responder
+	Handle(GenerateEnvironmentParams, *models.ModelsPrincipal) middleware.Responder
 }
 
 // NewGenerateEnvironment creates a new http.Handler for the generate environment operation
@@ -55,9 +57,9 @@ func (o *GenerateEnvironment) ServeHTTP(rw http.ResponseWriter, r *http.Request)
 	if aCtx != nil {
 		*r = *aCtx
 	}
-	var principal interface{}
+	var principal *models.ModelsPrincipal
 	if uprinc != nil {
-		principal = uprinc.(interface{}) // this is really a interface{}, I promise
+		principal = uprinc.(*models.ModelsPrincipal) // this is really a models.ModelsPrincipal, I promise
 	}
 
 	if err := o.Context.BindValidRequest(r, route, &Params); err != nil { // bind params

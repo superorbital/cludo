@@ -7,6 +7,7 @@ import (
 	"crypto/sha512"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -21,7 +22,7 @@ func GenerateRSAKeyPair(t *testing.T) (*rsa.PrivateKey, *rsa.PublicKey) {
 	return key, &key.PublicKey
 }
 
-func GenerateSHA512Signature(t *testing.T, key *rsa.PrivateKey, message interface{}) string {
+func GenerateSHA512Signature(t *testing.T, key *rsa.PrivateKey, message string) string {
 	b, err := json.Marshal(message)
 	if err != nil {
 		t.Fatalf("Failed to serialize message: %v, %#v", err, message)
@@ -31,12 +32,13 @@ func GenerateSHA512Signature(t *testing.T, key *rsa.PrivateKey, message interfac
 	if err != nil {
 		t.Fatalf("Failed to generate signature: %v, %#v, %#v", err, key, hashed)
 	}
-	return base64.StdEncoding.EncodeToString(signature)
+	encoded := base64.StdEncoding.EncodeToString(signature)
+	return fmt.Sprintf("%s:%s", message, encoded)
 }
 
 func TestAuthorizer(t *testing.T) {
 	type test struct {
-		message    []byte
+		message    string
 		privateKey *rsa.PrivateKey
 		allowed    map[string]*rsa.PublicKey
 		want       string
@@ -50,7 +52,7 @@ func TestAuthorizer(t *testing.T) {
 
 	tests := []test{
 		{
-			message:    []byte("test-message-1"),
+			message:    "test-message-1",
 			privateKey: testKey1,
 			allowed: map[string]*rsa.PublicKey{
 				"test-id-1": testPub1,
@@ -59,7 +61,7 @@ func TestAuthorizer(t *testing.T) {
 			wantOK: true,
 		},
 		{
-			message:    []byte("test-message-1"),
+			message:    "test-message-1",
 			privateKey: testKey1,
 			allowed: map[string]*rsa.PublicKey{
 				"test-id-1": testPub1,
@@ -69,7 +71,7 @@ func TestAuthorizer(t *testing.T) {
 			wantOK: true,
 		},
 		{
-			message:    []byte("test-message-1"),
+			message:    "test-message-1",
 			privateKey: testKey3,
 			allowed: map[string]*rsa.PublicKey{
 				"test-id-1": testPub1,
@@ -79,7 +81,7 @@ func TestAuthorizer(t *testing.T) {
 			wantOK: false,
 		},
 		{
-			message:    []byte("test-message-1"),
+			message:    "test-message-1",
 			privateKey: testKey3,
 			allowed:    map[string]*rsa.PublicKey{},
 			want:       "",
@@ -89,7 +91,7 @@ func TestAuthorizer(t *testing.T) {
 
 	for _, tc := range tests {
 		authz := auth.NewAuthorizer(tc.allowed)
-		actual, actualOK, actualErr := authz.CheckAuthHeader(tc.message, GenerateSHA512Signature(t, tc.privateKey, tc.message))
+		actual, actualOK, actualErr := authz.CheckAuthHeader(GenerateSHA512Signature(t, tc.privateKey, tc.message))
 
 		assert.EqualValues(t, tc.want, actual)
 		assert.EqualValues(t, tc.wantOK, actualOK)
