@@ -27,8 +27,7 @@ import (
 //go:generate swagger generate server --target ../../cludo --name CludoD --spec ../swagger.yaml --principal interface{}
 
 var cludoDFlags = struct {
-	Example1 string `long:"example1" description:"Sample for showing how to configure cmd-line flags"`
-	Example2 string `long:"example2" description:"Further info at https://github.com/jessevdk/go-flags"`
+	Config string `long:"config" description:"Path to a configuration file to load."`
 }{}
 
 func configureFlags(api *operations.CludoDAPI) {

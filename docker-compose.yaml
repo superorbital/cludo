@@ -1,0 +1,18 @@
+version: "3.7"
+services:
+  cludod:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile.cludod
+    image: superorbital/cludod:latest
+    ports:
+      - 8080:8080
+    volumes:
+      - ./data/cludo.yaml:/etc/cludod/cludo.yaml
+    stdin_open: true
+    command:
+      - cludod
+      - --port
+      - "8080"
+      - --scheme
+      - http
