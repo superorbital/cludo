@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/superorbital/cludo/pkg/auth"
+	"github.com/superorbital/cludo/pkg/aws"
 )
 
 type AWSRoleConfig struct {
@@ -14,6 +15,11 @@ type AWSRoleConfig struct {
 	AccessKeyID     string        `yaml:"access_key_id"`
 	SecretAccessKey string        `yaml:"secret_access_key"`
 	AssumeRoleARN   string        `yaml:"arn"`
+	Region          string        `yaml:"region"`
+}
+
+func (arc *AWSRoleConfig) NewPlugin() (*aws.AWSPlugin, error) {
+	return aws.NewAWSPlugin(arc.AccessKeyID, arc.SecretAccessKey, arc.Region, arc.SessionDuration)
 }
 
 type UserRolesConfig struct {
@@ -21,9 +27,9 @@ type UserRolesConfig struct {
 }
 
 type UserConfig struct {
-	PublicKey   string          `yaml:"public_key"`
-	Roles       UserRolesConfig `yaml:"roles"`
-	DefaultRole string          `yaml:"default_role"`
+	PublicKey   string           `yaml:"public_key"`
+	Roles       *UserRolesConfig `yaml:"roles"`
+	DefaultRole string           `yaml:"default_role"`
 }
 
 func (uc *UserConfig) ID() string {
@@ -46,4 +52,13 @@ func (sc *ServerConfig) NewAuthorizer() (*auth.Authorizer, error) {
 		users[user.ID()] = pub
 	}
 	return auth.NewAuthorizer(users), nil
+}
+
+func (sc *ServerConfig) GetUser(id string) (*UserConfig, bool) {
+	for _, user := range sc.Users {
+		if user.ID() == id {
+			return user, true
+		}
+	}
+	return nil, false
 }

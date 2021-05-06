@@ -104,24 +104,8 @@ func configureAPI(api *operations.CludoDAPI) http.Handler {
 			if ok {
 				for _, user := range conf.Server.Users {
 					if user.ID() == id {
-						roles := models.ModelsPrincipalRoles{
-							Aws: models.ModelsAWSPrincipalRoles{},
-						}
-
-						for roleID, role := range user.Roles.AWS {
-							roles.Aws[roleID] = models.ModelsAWSPrincipalRole{
-								SessionDuration: role.SessionDuration.String(),
-								AccessKeyID:     role.AccessKeyID,
-								SecretAccessKey: role.SecretAccessKey,
-								Arn:             role.AssumeRoleARN,
-							}
-						}
-
-						return &models.ModelsPrincipal{
-							PublicKey:   user.PublicKey,
-							DefaultRole: user.DefaultRole,
-							Roles:       &roles,
-						}, nil
+						principalID := models.ModelsPrincipal(id)
+						return &principalID, nil
 					}
 				}
 			}
@@ -137,14 +121,64 @@ func configureAPI(api *operations.CludoDAPI) http.Handler {
 
 	if api.EnvironmentGenerateEnvironmentHandler == nil {
 		api.EnvironmentGenerateEnvironmentHandler = environment.GenerateEnvironmentHandlerFunc(func(params environment.GenerateEnvironmentParams, principal *models.ModelsPrincipal) middleware.Responder {
-			config := config.Config{}
-			err := viper.Unmarshal(&config)
+			conf, err := config.NewConfigFromViper()
 			if err != nil {
-				api.Logger("ERROR: Failed to read config:", err)
-				return middleware.Error(500, &struct{}{})
+				errMsg := fmt.Sprintf("Failed to read cludo configuration: %v", err)
+				return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
+					Code:    500,
+					Message: &errMsg,
+				})
 			}
 
-			return middleware.NotImplemented("operation environment.GenerateEnvironment has not yet been implemented")
+			if conf.Server == nil {
+				errMsg := fmt.Sprintf("Server configuration is missing")
+				return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
+					Code:    500,
+					Message: &errMsg,
+				})
+			}
+
+			var role *config.AWSRoleConfig
+			user, ok := conf.Server.GetUser(string(*principal))
+			if ok && user != nil {
+				if params.Body.RoleID != nil && len(params.Body.RoleID) > 0 {
+					if len(params.Body.RoleID) > 1 {
+						return environment.NewGenerateEnvironmentBadRequest().WithPayload(
+							fmt.Sprintf("Cludo only supports one roleID per user currently: %#v", params.Body),
+						)
+					}
+					role = user.Roles.AWS[params.Body.RoleID[0]]
+				} else {
+					role = user.Roles.AWS[user.DefaultRole]
+				}
+			}
+
+			if role == nil {
+				errMsg := fmt.Sprintf("Failed to find any roles for user: %v", *principal)
+				return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
+					Code:    500,
+					Message: &errMsg,
+				})
+			}
+
+			ap, err := role.NewPlugin()
+			if err != nil {
+				errMsg := fmt.Sprintf("Failed to initialize plugin: %v", err)
+				return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
+					Code:    500,
+					Message: &errMsg,
+				})
+			}
+			payload, err := ap.GenerateEnvironment()
+			if err != nil {
+				errMsg := fmt.Sprintf("Failed to generate environment: %v", err)
+				return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
+					Code:    500,
+					Message: &errMsg,
+				})
+			}
+
+			return environment.NewGenerateEnvironmentOK().WithPayload(payload)
 		})
 	}
 	if api.SystemHealthHandler == nil {
@@ -175,8 +209,9 @@ func configureAPI(api *operations.CludoDAPI) http.Handler {
 			}
 
 			roles := []string{}
-			if principal != nil && principal.Roles != nil && principal.Roles.Aws != nil {
-				for roleID, _ := range principal.Roles.Aws {
+			user, ok := conf.Server.GetUser(string(*principal))
+			if ok && user != nil && user.Roles != nil && user.Roles.AWS != nil {
+				for roleID := range user.Roles.AWS {
 					roles = append(roles, roleID)
 				}
 			}
