@@ -19,6 +19,7 @@ func NewAuthorizer(users map[string]*rsa.PublicKey) *Authorizer {
 	}
 }
 
+// TODO: This is still subject to replay attacks unless we somehow prevent old messages from being re-used.
 func (authz *Authorizer) CheckAuthHeader(header string) (string, bool, error) {
 	// API tokens are of the form: <random-number>:<signature-of-random-number>
 	tokens := strings.SplitN(header, ":", 2)
