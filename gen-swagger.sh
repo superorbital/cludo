@@ -28,6 +28,6 @@ cd "${DIR}"
 
 ~/bin/swagger generate server -f ./swagger.yaml --main-package=cludod --principal=models.ModelsPrincipal --template-dir="${TEMPLATE_DIR}"
 ~/bin/swagger generate client -f ./swagger.yaml --template-dir="${TEMPLATE_DIR}"
-~/bin/swagger generate cli -f ./swagger.yaml --cli-app-name=cludo-api --template-dir="${TEMPLATE_DIR}"
+# ~/bin/swagger generate cli -f ./swagger.yaml --cli-app-name=cludo-api --template-dir="${TEMPLATE_DIR}"
 
 go get -u -f ./...
