@@ -5,18 +5,25 @@ import (
 	"crypto/rsa"
 	"crypto/sha512"
 	"encoding/base64"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/superorbital/cludo/pkg/auth"
 )
 
-func VerifyHeader(t *testing.T, message []byte, header string, publicKey *rsa.PublicKey) {
-	hashed := sha512.Sum512(message)
+func VerifyHeader(t *testing.T, header string, publicKey *rsa.PublicKey) {
+	// API tokens are of the form: <random-number>:<signature-of-random-number>
+	tokens := strings.SplitN(header, ":", 2)
+	if len(tokens) != 2 {
+		t.Fatalf("Found malformed auth header: %v", header)
+	}
 
-	signature, err := base64.StdEncoding.DecodeString(header)
+	hashed := sha512.Sum512([]byte(tokens[0]))
+
+	signature, err := base64.StdEncoding.DecodeString(tokens[1])
 	if err != nil {
-		t.Fatalf("Failed to decode header: %v, %#v", err, header)
+		t.Fatalf("Failed to decode header: %v, %#v", err, tokens[1])
 	}
 
 	err = rsa.VerifyPKCS1v15(publicKey, crypto.SHA512, hashed[:], signature)
@@ -25,7 +32,7 @@ func VerifyHeader(t *testing.T, message []byte, header string, publicKey *rsa.Pu
 
 func TestSigner(t *testing.T) {
 	type test struct {
-		message    []byte
+		message    string
 		privateKey *rsa.PrivateKey
 		publicKey  *rsa.PublicKey
 		want       bool
@@ -37,12 +44,12 @@ func TestSigner(t *testing.T) {
 
 	tests := []test{
 		{
-			message:    []byte("test-message-1"),
+			message:    "test-message-1",
 			privateKey: testKey1,
 			publicKey:  testPub1,
 		},
 		{
-			message:    []byte("test-message-2"),
+			message:    "test-message-2",
 			privateKey: testKey2,
 			publicKey:  testPub1,
 
@@ -56,7 +63,7 @@ func TestSigner(t *testing.T) {
 
 		assert.EqualValues(t, tc.wantErr, actualErr)
 		if tc.want {
-			VerifyHeader(t, tc.message, actual, tc.publicKey)
+			VerifyHeader(t, actual, tc.publicKey)
 		}
 	}
 }

@@ -9,19 +9,21 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime/middleware"
+
+	"github.com/superorbital/cludo/models"
 )
 
 // ListRolesHandlerFunc turns a function with the right signature into a list roles handler
-type ListRolesHandlerFunc func(ListRolesParams, interface{}) middleware.Responder
+type ListRolesHandlerFunc func(ListRolesParams, *models.ModelsPrincipal) middleware.Responder
 
 // Handle executing the request and returning a response
-func (fn ListRolesHandlerFunc) Handle(params ListRolesParams, principal interface{}) middleware.Responder {
+func (fn ListRolesHandlerFunc) Handle(params ListRolesParams, principal *models.ModelsPrincipal) middleware.Responder {
 	return fn(params, principal)
 }
 
 // ListRolesHandler interface for that can handle valid list roles params
 type ListRolesHandler interface {
-	Handle(ListRolesParams, interface{}) middleware.Responder
+	Handle(ListRolesParams, *models.ModelsPrincipal) middleware.Responder
 }
 
 // NewListRoles creates a new http.Handler for the list roles operation
@@ -55,9 +57,9 @@ func (o *ListRoles) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	if aCtx != nil {
 		*r = *aCtx
 	}
-	var principal interface{}
+	var principal *models.ModelsPrincipal
 	if uprinc != nil {
-		principal = uprinc.(interface{}) // this is really a interface{}, I promise
+		principal = uprinc.(*models.ModelsPrincipal) // this is really a models.ModelsPrincipal, I promise
 	}
 
 	if err := o.Context.BindValidRequest(r, route, &Params); err != nil { // bind params
