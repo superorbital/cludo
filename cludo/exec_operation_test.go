@@ -44,15 +44,9 @@ func TestPrecedence(t *testing.T) {
 		cmd.Execute()
 
 		gotOutput := output.String()
-		/*wantOutput := `
-		exec ran!
-		server_url: https://www.example.com/
-		key_path  : ~/.ssh/id_rsa
-		command   : aws ec2 describe-instances
-		`*/
 		wantOutput := `
 exec ran!
-server_url: http://localhost:80/
+server_url: https://www.example.com/
 key_path  : ~/.ssh/id_rsa
 command   : aws ec2 describe-instances
 `
@@ -95,15 +89,9 @@ command   : aws ec2 describe-instances
 		cmd.Execute()
 
 		gotOutput := output.String()
-		/*wantOutput := `
-		exec ran!
-		server_url: https://www.example.com/
-		key_path  : ~/.ssh/id_ed25519
-		command   : aws ec2 describe-instances
-		`*/
 		wantOutput := `
 exec ran!
-server_url: http://localhost:80/
+server_url: https://www.example.com/
 key_path  : ~/.ssh/id_ed25519
 command   : aws ec2 describe-instances
 `
