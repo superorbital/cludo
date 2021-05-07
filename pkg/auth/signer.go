@@ -8,7 +8,12 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+
+	"github.com/go-openapi/runtime"
+	"github.com/go-openapi/strfmt"
 )
+
+const CludoAuthHeader = "X-CLUDO-KEY"
 
 type Signer struct {
 	rng        io.Reader
@@ -47,4 +52,15 @@ func (signer *Signer) GenerateRandomAuthHeader() (string, error) {
 	}
 	message := string(b)
 	return signer.GenerateAuthHeader(message)
+}
+
+// CludoAuth provides an API key auth info writer
+func (signer *Signer) CludoAuth() runtime.ClientAuthInfoWriter {
+	return runtime.ClientAuthInfoWriterFunc(func(r runtime.ClientRequest, _ strfmt.Registry) error {
+		value, err := signer.GenerateRandomAuthHeader()
+		if err != nil {
+			return fmt.Errorf("Failed to generate cludo auth header: %v", err)
+		}
+		return r.SetHeaderParam(CludoAuthHeader, value)
+	})
 }
