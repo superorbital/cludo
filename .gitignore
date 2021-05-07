@@ -28,5 +28,6 @@ cmd/cludo/cludo
 cmd/cludod/cludod
 
 
-#misc
+#misc temp and hidden items
 tmp
+secret-*

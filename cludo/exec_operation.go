@@ -16,9 +16,9 @@ import (
 )
 
 // runOperationExec uses cmd flags to call endpoint api
-func runOperationExec(cmd *cobra.Command, args []string, conf config.ClientConfig) string {
+func runOperationExec(cmd *cobra.Command, args []string, conf config.Config) string {
 
-	u, err := url.Parse(conf.ServerURL)
+	u, err := url.Parse(conf.Client["default"].ServerURL)
 	if err != nil {
 		fmt.Println("[ERROR] Unable to parse server url.")
 	}
@@ -43,7 +43,7 @@ func runOperationExec(cmd *cobra.Command, args []string, conf config.ClientConfi
 	//return client, nil
 
 	if debug {
-		fmt.Printf("\n%#v\n", conf)
+		fmt.Printf("\n%#v\n", conf.Client["default"])
 	}
 
 	if dryRun {
@@ -52,7 +52,7 @@ func runOperationExec(cmd *cobra.Command, args []string, conf config.ClientConfi
 		return ""
 	}
 	// make request and then print result
-	msgStr, err := "\nexec ran!\nserver_url: "+conf.ServerURL+"\nkey_path  : "+conf.KeyPath+"\ncommand   : "+string(strings.Join(args, " ")), *new(error)
+	msgStr, err := "\nexec ran!\nserver_url: "+conf.Client["default"].ServerURL+"\nkey_path  : "+conf.Client["default"].KeyPath+"\ncommand   : "+string(strings.Join(args, " ")), *new(error)
 
 	if err != nil {
 		return ""

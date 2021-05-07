@@ -7,13 +7,13 @@ import (
 	"path"
 	"path/filepath"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/superorbital/cludo/client"
 	"github.com/superorbital/cludo/pkg/config"
 
 	"github.com/go-openapi/runtime"
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -31,9 +31,8 @@ var dryRun bool
 var exeName string = filepath.Base(os.Args[0])
 
 // Config
-var userConfig config.Config
 var clientProfile string
-var clientConfig config.ClientConfig
+var userConfig config.Config
 
 // logDebugf writes debug log to stdout
 func logDebugf(format string, v ...interface{}) {
@@ -66,7 +65,7 @@ func makeClient(cmd *cobra.Command, args []string) (*client.CludoD, error) {
 
 // MakeRootCmd returns the root cmd
 func MakeRootCmd() (*cobra.Command, error) {
-	cobra.OnInitialize()
+	cobra.OnInitialize(initViperConfigs)
 
 	// Use executable name as the command name
 	rootCmd := &cobra.Command{
@@ -74,10 +73,10 @@ func MakeRootCmd() (*cobra.Command, error) {
 		Use:     exeName,
 		Short:   "Cloud Sudo Client CLI",
 		Long:    `This is the Cloud Sudo Client CLI, which end users will typically use to interact with the Cloud Sudo server.`,
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			// You can bind cobra and viper in a few locations, but PersistencePreRunE on the root command works well
-			return initializeConfig(cmd)
-		},
+		//PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		// You can bind cobra and viper in a few locations, but PersistencePreRunE on the root command works well
+		//return initializeConfig(cmd)
+		//},
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.Help()
 		},
@@ -105,13 +104,19 @@ func MakeRootCmd() (*cobra.Command, error) {
 
 	rootCmd.AddCommand(operationGroupExecCmd)
 	operationGroupExecCmd.Flags().StringVarP(&clientProfile, "profile", "p", "default", "Connection profile name")
-	operationGroupExecCmd.Flags().StringVarP(&clientConfig.ServerURL, "server-url", "s", "http://localhost:80/", "Complete server URL")
-	operationGroupExecCmd.Flags().StringVarP(&clientConfig.KeyPath, "key-path", "k", "~/.ssh/id_rsa", "Path to SSH public key")
-	operationGroupExecCmd.Flags().StringVarP(&clientConfig.ShellPath, "shell-path", "i", "/bin/sh", "Path to shell")
-	operationGroupExecCmd.Flags().StringArrayVarP(&clientConfig.Roles, "roles", "r", []string{"default"}, "One or more comma seperated roles")
+	operationGroupExecCmd.Flags().StringP("server-url", "s", "http://localhost:80/", "Complete server URL")
+	viper.BindPFlag("client.default.server_url", operationGroupExecCmd.Flags().Lookup("server-url"))
+	operationGroupExecCmd.Flags().StringP("key-path", "k", "~/.ssh/id_rsa", "Path to SSH public key")
+	viper.BindPFlag("client.default.key_path", operationGroupExecCmd.Flags().Lookup("key-path"))
+	operationGroupExecCmd.Flags().StringP("shell-path", "i", "/bin/sh", "Path to shell")
+	viper.BindPFlag("client.default.shell_path", operationGroupExecCmd.Flags().Lookup("shell-path"))
+	operationGroupExecCmd.Flags().StringArrayP("roles", "r", []string{"default"}, "One or more comma seperated roles")
+	viper.BindPFlag("client.default.roles", operationGroupExecCmd.Flags().Lookup("roles"))
 
 	// add cobra completion
 	rootCmd.AddCommand(makeGenCompletionCmd())
+
+	bindEnvVars(rootCmd)
 
 	return rootCmd, nil
 }
@@ -123,6 +128,9 @@ func initViperConfigs() {
 		// use user specified config file location
 		viper.SetConfigFile(configFile)
 	} else {
+		viper.SetConfigName("cludo") // name of config file (without extension)
+		viper.SetConfigType("yaml")  // REQUIRED if the config file does not have the extension in the name
+
 		// look for default config
 		// Find home directory.
 		home, err := homedir.Dir()
@@ -134,8 +142,7 @@ func initViperConfigs() {
 		// Search config in home directory with name ".cobra" (without extension).
 		viper.AddConfigPath("/etc/cludo")
 		viper.AddConfigPath(path.Join(home, ".cludo"))
-		// go-swagger's default location
-		viper.AddConfigPath(path.Join(home, ".config", exeName))
+		viper.AddConfigPath(path.Join(home, ".config", exeName)) // go-swagger's default location
 		viper.AddConfigPath(path.Join(cwd, ".cludo"))
 		viper.AddConfigPath(cwd)
 		viper.SetConfigName(config.DefaultConfigFilename)
@@ -144,7 +151,6 @@ func initViperConfigs() {
 	// Attempt to read the config file, gracefully ignoring errors
 	// caused by a config file not being found. Return an error
 	// if we cannot parse the config file.
-	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {
 		// It's okay if there isn't a config file
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
@@ -154,6 +160,9 @@ func initViperConfigs() {
 		logDebugf("Using config file: %v", viper.ConfigFileUsed())
 	}
 
+	viper.Unmarshal(&userConfig)
+	logDebugf("Client settings from config file: %v", userConfig.Client["default"])
+	fmt.Printf("%v", viper.AllKeys())
 }
 
 func makeOperationGroupExecCmd() (*cobra.Command, error) {
@@ -165,7 +174,7 @@ func makeOperationGroupExecCmd() (*cobra.Command, error) {
 			// Working with OutOrStdout/OutOrStderr allows us to unit test our command easier
 			out := cmd.OutOrStdout()
 
-			msg := runOperationExec(cmd, args, clientConfig)
+			msg := runOperationExec(cmd, args, userConfig)
 
 			fmt.Fprintln(out, msg)
 
