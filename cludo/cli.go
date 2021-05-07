@@ -65,6 +65,8 @@ func makeClient(cmd *cobra.Command, args []string) (*client.CludoD, error) {
 
 // MakeRootCmd returns the root cmd
 func MakeRootCmd() (*cobra.Command, error) {
+	// Note: The first time this is called debug will still be false, so no Debug logs.
+	// Might consider an ENV Var check to make this immediate.
 	cobra.OnInitialize(initViperConfigs)
 
 	// Use executable name as the command name
@@ -73,10 +75,10 @@ func MakeRootCmd() (*cobra.Command, error) {
 		Use:     exeName,
 		Short:   "Cloud Sudo Client CLI",
 		Long:    `This is the Cloud Sudo Client CLI, which end users will typically use to interact with the Cloud Sudo server.`,
-		//PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		// You can bind cobra and viper in a few locations, but PersistencePreRunE on the root command works well
-		//return initializeConfig(cmd)
-		//},
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			// You can bind cobra and viper in a few locations, but PersistencePreRunE on the root command works well
+			return initializeConfig(cmd)
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.Help()
 		},
@@ -116,7 +118,10 @@ func MakeRootCmd() (*cobra.Command, error) {
 	// add cobra completion
 	rootCmd.AddCommand(makeGenCompletionCmd())
 
-	bindEnvVars(rootCmd)
+	err = bindEnvVars(rootCmd)
+	if err != nil {
+		return nil, err
+	}
 
 	return rootCmd, nil
 }
@@ -161,8 +166,8 @@ func initViperConfigs() {
 	}
 
 	viper.Unmarshal(&userConfig)
-	logDebugf("Client settings from config file: %v", userConfig.Client["default"])
-	fmt.Printf("%v", viper.AllKeys())
+	logDebugf("Client settings from config file: %v", *userConfig.Client["default"])
+	logDebugf("Viper Keys: %v", viper.AllKeys())
 }
 
 func makeOperationGroupExecCmd() (*cobra.Command, error) {

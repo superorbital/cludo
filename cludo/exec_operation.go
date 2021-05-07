@@ -7,17 +7,20 @@ import (
 
 	"github.com/go-openapi/runtime"
 	httptransport "github.com/go-openapi/runtime/client"
-	"github.com/superorbital/cludo/pkg/config"
 
 	// "github.com/go-openapi/strfmt"
 	// "github.com/superorbital/cludo/client"
 	// "github.com/superorbital/cludo/client/environment"
 	"github.com/spf13/cobra"
+	"github.com/superorbital/cludo/pkg/config"
 )
 
 // runOperationExec uses cmd flags to call endpoint api
 func runOperationExec(cmd *cobra.Command, args []string, conf config.Config) string {
 
+	//conf := viper.GetStringMapString("client.default")
+	//logDebugf("Viper Keys: %v", viper.AllKeys())
+	//u, err := url.Parse(conf["server_url"])
 	u, err := url.Parse(conf.Client["default"].ServerURL)
 	if err != nil {
 		fmt.Println("[ERROR] Unable to parse server url.")
@@ -53,6 +56,7 @@ func runOperationExec(cmd *cobra.Command, args []string, conf config.Config) str
 	}
 	// make request and then print result
 	msgStr, err := "\nexec ran!\nserver_url: "+conf.Client["default"].ServerURL+"\nkey_path  : "+conf.Client["default"].KeyPath+"\ncommand   : "+string(strings.Join(args, " ")), *new(error)
+	//msgStr, err := "\nexec ran!\nserver_url: "+conf["server_url"]+"\nkey_path  : "+conf["key_path"]+"\ncommand   : "+string(strings.Join(args, " ")), *new(error)
 
 	if err != nil {
 		return ""
