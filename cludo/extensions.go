@@ -42,27 +42,34 @@ func bindEnvVars(cmd *cobra.Command) error {
 // Bind each cobra flag to its associated viper configuration (config file and environment variable)
 func bindFlags(cmd *cobra.Command) {
 	cmd.Flags().VisitAll(func(f *pflag.Flag) {
-		logDebugf("Flag Name: %v", f.Name)
+		//logDebugf("Flag Name: %v", f.Name)
 		// Environment variables can't have dashes in them, so bind them to their equivalent
 		// keys with underscores, e.g. --server-url to CLUDO_SERVER_URL
 		if strings.Contains(f.Name, "-") {
 			envVarSuffix := strings.ToUpper(strings.ReplaceAll(f.Name, "-", "_"))
-			logDebugf("ENV VAR: %s_%s\n", config.EnvPrefix, envVarSuffix)
+			//logDebugf("ENV VAR: %s_%s\n", config.EnvPrefix, envVarSuffix)
 			viper.BindEnv(f.Name, fmt.Sprintf("%s_%s", config.EnvPrefix, envVarSuffix))
 		}
 
+		// FIXME: This is a hacked together mess at the moment.
 		// Apply the viper config value to the flag when the flag is not set and viper has a value
 		if !f.Changed && viper.IsSet(f.Name) {
 			val := viper.Get(f.Name)
 			//path := "client.default." + strings.ReplaceAll(f.Name, "-", "_")
 			logDebugf("Flag Name (%s) & New Value (%s)\n", f.Name, val)
 			//fmt.Printf("%#v", cmd.Flags())
-			// This doesn't appear to be effective
-			// Maybe something with the way we are accessing the data?
-			// the flag path is 'key-path' versus 'config.default.key_path'
+			// How are we supposed to use this?
+			// This is the intended results
 			cmd.Flags().Set(f.Name, fmt.Sprintf("%v", val))
 
-			//viper.Set(path, fmt.Sprintf("%v", val))
+			switch f.Name {
+			case "server-url":
+				userConfig.Client["default"].ServerURL = fmt.Sprintf("%v", val)
+			case "key-path":
+				userConfig.Client["default"].KeyPath = fmt.Sprintf("%v", val)
+			case "shell-path":
+				userConfig.Client["default"].ShellPath = fmt.Sprintf("%v", val)
+			}
 		}
 	})
 }
