@@ -69,6 +69,8 @@ func bindFlags(cmd *cobra.Command) {
 				userConfig.Client["default"].KeyPath = fmt.Sprintf("%v", val)
 			case "shell-path":
 				userConfig.Client["default"].ShellPath = fmt.Sprintf("%v", val)
+			case "passphrase":
+				userConfig.Client["default"].Passphrase = fmt.Sprintf("%v", val)
 			}
 		}
 	})
