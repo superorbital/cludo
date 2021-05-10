@@ -16,6 +16,7 @@ client:
   default:
     server_url: "https://www.example.com/"
     key_path: "~/.ssh/id_rsa"
+    passphrase: ""
     shell_path: "/usr/local/bin/bash"
     roles: ["default"]
 server:
@@ -42,10 +43,11 @@ var testConfig1Duration2, _ = time.ParseDuration("8h")
 var testConfig1 = &config.Config{
 	Client: map[string]*config.ClientConfig{
 		config.DefaultClientConfig: {
-			ServerURL: "https://www.example.com/",
-			KeyPath:   "~/.ssh/id_rsa",
-			ShellPath: "/usr/local/bin/bash",
-			Roles:     []string{"default"},
+			ServerURL:  "https://www.example.com/",
+			KeyPath:    "~/.ssh/id_rsa",
+			Passphrase: "",
+			ShellPath:  "/usr/local/bin/bash",
+			Roles:      []string{"default"},
 		},
 	},
 	Server: &config.ServerConfig{
