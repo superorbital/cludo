@@ -24,7 +24,7 @@ done
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-cd "${DIR}"
+cd "${DIR}/.."
 
 docker run --rm -it \
     --user $(id -u):$(id -g) \
@@ -50,4 +50,4 @@ docker run --rm -it \
 #     quay.io/goswagger/swagger \
 #     generate cli -f ./swagger.yaml --cli-app-name=cludo-api --template-dir="${TEMPLATE_DIR}"
 
-go get -u -f ./...
+go get -u ./...

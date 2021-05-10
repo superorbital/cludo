@@ -23,13 +23,13 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	api := operations.NewCludoDAPI(swaggerSpec)
+	api := operations.NewCludodAPI(swaggerSpec)
 	server := restapi.NewServer(api)
 	defer server.Shutdown()
 
 	parser := flags.NewParser(server, flags.Default)
-	parser.ShortDescription = "CludoD"
-	parser.LongDescription = "CludoD - Cloud Sudo Server"
+	parser.ShortDescription = "cludod"
+	parser.LongDescription = "cludod - Cloud Sudo Server"
 	server.ConfigureFlags()
 	for _, optsGroup := range api.CommandLineOptionsGroups {
 		_, err := parser.AddGroup(optsGroup.ShortDescription, optsGroup.LongDescription, optsGroup.Options)
