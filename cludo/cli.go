@@ -46,7 +46,7 @@ func logDebugf(format string, v ...interface{}) {
 var maxDepth int = 5
 
 // makeClient constructs a client object
-func makeClient(cmd *cobra.Command, args []string) (*client.CludoD, error) {
+func makeClient(cmd *cobra.Command, args []string) (*client.Cludod, error) {
 	hostname := viper.GetString("hostname")
 	scheme := viper.GetString("scheme")
 

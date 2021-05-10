@@ -30,8 +30,8 @@ func init() {
   ],
   "swagger": "2.0",
   "info": {
-    "description": "CludoD - Cloud Sudo Server",
-    "title": "CludoD",
+    "description": "cludod - Cloud Sudo Server",
+    "title": "cludod",
     "contact": {
       "name": "SuperOrbital",
       "url": "http://superorbital.io/",
@@ -246,8 +246,8 @@ func init() {
   ],
   "swagger": "2.0",
   "info": {
-    "description": "CludoD - Cloud Sudo Server",
-    "title": "CludoD",
+    "description": "cludod - Cloud Sudo Server",
+    "title": "cludod",
     "contact": {
       "name": "SuperOrbital",
       "url": "http://superorbital.io/",

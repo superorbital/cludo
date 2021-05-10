@@ -15,7 +15,7 @@ import (
 	"github.com/superorbital/cludo/client/system"
 )
 
-// Default cludo d HTTP client.
+// Default cludod HTTP client.
 var Default = NewHTTPClient(nil)
 
 const (
@@ -30,14 +30,14 @@ const (
 // DefaultSchemes are the default schemes found in Meta (info) section of spec file
 var DefaultSchemes = []string{"http", "https"}
 
-// NewHTTPClient creates a new cludo d HTTP client.
-func NewHTTPClient(formats strfmt.Registry) *CludoD {
+// NewHTTPClient creates a new cludod HTTP client.
+func NewHTTPClient(formats strfmt.Registry) *Cludod {
 	return NewHTTPClientWithConfig(formats, nil)
 }
 
-// NewHTTPClientWithConfig creates a new cludo d HTTP client,
+// NewHTTPClientWithConfig creates a new cludod HTTP client,
 // using a customizable transport config.
-func NewHTTPClientWithConfig(formats strfmt.Registry, cfg *TransportConfig) *CludoD {
+func NewHTTPClientWithConfig(formats strfmt.Registry, cfg *TransportConfig) *Cludod {
 	// ensure nullable parameters have default
 	if cfg == nil {
 		cfg = DefaultTransportConfig()
@@ -48,14 +48,14 @@ func NewHTTPClientWithConfig(formats strfmt.Registry, cfg *TransportConfig) *Clu
 	return New(transport, formats)
 }
 
-// New creates a new cludo d client
-func New(transport runtime.ClientTransport, formats strfmt.Registry) *CludoD {
+// New creates a new cludod client
+func New(transport runtime.ClientTransport, formats strfmt.Registry) *Cludod {
 	// ensure nullable parameters have default
 	if formats == nil {
 		formats = strfmt.Default
 	}
 
-	cli := new(CludoD)
+	cli := new(Cludod)
 	cli.Transport = transport
 	cli.Environment = environment.New(transport, formats)
 	cli.Role = role.New(transport, formats)
@@ -102,8 +102,8 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 	return cfg
 }
 
-// CludoD is a client for cludo d
-type CludoD struct {
+// Cludod is a client for cludod
+type Cludod struct {
 	Environment environment.ClientService
 
 	Role role.ClientService
@@ -114,7 +114,7 @@ type CludoD struct {
 }
 
 // SetTransport changes the transport on the client and all its subresources
-func (c *CludoD) SetTransport(transport runtime.ClientTransport) {
+func (c *Cludod) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
 	c.Environment.SetTransport(transport)
 	c.Role.SetTransport(transport)
