@@ -1,8 +1,9 @@
 client:
   default:
-    server_url: "https://www.example.com/"
-    #key_path: "~/.ssh/id_ed25519" # Leave unset for tests
-    shell_path: "/usr/local/bin/bash"
+    server_url: "http://127.0.0.1:8080/"
+    key_path: "./id_rsa_TEST_KEY_PP"
+    passphrase: "cludo"
+    #shell_path: "/usr/local/bin/bash" # Leave unset for tests
     roles: ["default"]
 server:
   port: 443

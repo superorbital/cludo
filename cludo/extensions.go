@@ -23,14 +23,14 @@ func initializeConfig(cmd *cobra.Command) error {
 func bindEnvVars(cmd *cobra.Command) error {
 
 	// When we bind flags to environment variables expect that the
-	// environment variables are prefixed, e.g. a flag like --number
-	// binds to an environment variable CLUDO_NUMBER. This helps
+	// environment variables are prefixed, e.g. a flag like --profile
+	// binds to an environment variable CLUDO_PROFILE. This helps
 	// avoid conflicts.
 	viper.SetEnvPrefix(config.EnvPrefix)
 
 	// Bind to environment variables
 	// Works great for simple config names, but needs help for names
-	// like --favorite-color which we fix in the bindFlags function
+	// like --server-url which we fix in the bindFlags function
 	viper.AutomaticEnv()
 
 	// Bind the current command's flags to viper
@@ -59,9 +59,10 @@ func bindFlags(cmd *cobra.Command) {
 			logDebugf("Flag Name (%s) & New Value (%s)\n", f.Name, val)
 			//fmt.Printf("%#v", cmd.Flags())
 			// How are we supposed to use this?
-			// This is the intended results
+			// This is the intended action, but it is not working as expected.
 			cmd.Flags().Set(f.Name, fmt.Sprintf("%v", val))
 
+			// This is the current workaround.
 			switch f.Name {
 			case "server-url":
 				userConfig.Client["default"].ServerURL = fmt.Sprintf("%v", val)
