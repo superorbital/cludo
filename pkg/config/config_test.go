@@ -47,7 +47,7 @@ var testConfig1 = &config.Config{
 			KeyPath:    "~/.ssh/id_rsa",
 			Passphrase: "",
 			ShellPath:  "/usr/local/bin/bash",
-			Roles:      []string{"default"},
+			Roles:      []string{config.DefaultClientConfig},
 		},
 	},
 	Server: &config.ServerConfig{
@@ -79,41 +79,45 @@ var testConfig1 = &config.Config{
 
 func TestConfig(t *testing.T) {
 	type test struct {
+		name  string
 		input string
 		want  *config.Config
 	}
 
 	tests := []test{
 		{
+			name:  "Test config 1",
 			input: testConfig1Raw,
 			want:  testConfig1,
 		},
 	}
 
 	for _, tc := range tests {
-		file, err := ioutil.TempFile(".", "cludo*.yaml")
-		if err != nil {
-			t.Fatalf("Failed to create temporary file: %v", err)
-		}
-		defer os.Remove(file.Name())
-
-		_, err = file.WriteString(tc.input)
-		if err != nil {
-			t.Fatalf("Failed to populate temporary cludo config: %v", err)
-		}
-
-		viper.SetConfigFile(file.Name())
-		if err := viper.ReadInConfig(); err != nil {
-			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-				t.Fatal("ERROR: Failed to load configuration file: File not found")
-			} else {
-				t.Fatalf("ERROR: Failed to load configuration file: %v", err)
+		t.Run(tc.name, func(t *testing.T) {
+			file, err := ioutil.TempFile(".", "cludo*.yaml")
+			if err != nil {
+				t.Fatalf("Failed to create temporary file: %v", err)
 			}
-		}
+			defer os.Remove(file.Name())
 
-		got := &config.Config{}
-		viper.Unmarshal(got)
+			_, err = file.WriteString(tc.input)
+			if err != nil {
+				t.Fatalf("Failed to populate temporary cludo config: %v", err)
+			}
 
-		assert.EqualValuesf(t, tc.want, got, "expected: %#v, got: %#v", tc.want, got)
+			viper.SetConfigFile(file.Name())
+			if err := viper.ReadInConfig(); err != nil {
+				if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+					t.Fatal("ERROR: Failed to load configuration file: File not found")
+				} else {
+					t.Fatalf("ERROR: Failed to load configuration file: %v", err)
+				}
+			}
+
+			got := &config.Config{}
+			viper.Unmarshal(got)
+
+			assert.EqualValuesf(t, tc.want, got, "expected: %#v, got: %#v", tc.want, got)
+		})
 	}
 }

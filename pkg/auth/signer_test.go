@@ -32,6 +32,7 @@ func VerifyHeader(t *testing.T, header string, publicKey *rsa.PublicKey) {
 
 func TestSigner(t *testing.T) {
 	type test struct {
+		name       string
 		message    string
 		privateKey *rsa.PrivateKey
 		publicKey  *rsa.PublicKey
@@ -44,11 +45,13 @@ func TestSigner(t *testing.T) {
 
 	tests := []test{
 		{
+			name:       "Test matching keys",
 			message:    "test-message-1",
 			privateKey: testKey1,
 			publicKey:  testPub1,
 		},
 		{
+			name:       "Test non-matching keys",
 			message:    "test-message-2",
 			privateKey: testKey2,
 			publicKey:  testPub1,
@@ -58,12 +61,14 @@ func TestSigner(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		signer := auth.NewDefaultSigner(tc.privateKey)
-		actual, actualErr := signer.GenerateAuthHeader(tc.message)
+		t.Run(tc.name, func(t *testing.T) {
+			signer := auth.NewDefaultSigner(tc.privateKey)
+			actual, actualErr := signer.GenerateAuthHeader(tc.message)
 
-		assert.EqualValues(t, tc.wantErr, actualErr)
-		if tc.want {
-			VerifyHeader(t, actual, tc.publicKey)
-		}
+			assert.EqualValues(t, tc.wantErr, actualErr)
+			if tc.want {
+				VerifyHeader(t, actual, tc.publicKey)
+			}
+		})
 	}
 }

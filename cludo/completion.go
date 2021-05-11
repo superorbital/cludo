@@ -6,9 +6,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func makeGenCompletionCmd() *cobra.Command {
-
-	var completionCmd = &cobra.Command{
+// MakeCompletionCmd generates a shell script that sets up cludo shell auto-complete.
+func MakeCompletionCmd() *cobra.Command {
+	completionCmd := &cobra.Command{
 		Use:   "completion [bash|zsh|fish|powershell]",
 		Short: "Generate completion script",
 		Long: `To load completions:

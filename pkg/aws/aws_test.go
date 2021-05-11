@@ -22,6 +22,7 @@ func (m mockSTSAPI) GetSessionToken(input *sts.GetSessionTokenInput) (*sts.GetSe
 
 func TestGenerateEnvironment(t *testing.T) {
 	type test struct {
+		name            string
 		region          string
 		sessionDuration time.Duration
 		credentials     *sts.Credentials
@@ -36,6 +37,7 @@ func TestGenerateEnvironment(t *testing.T) {
 
 	tests := []test{
 		{
+			name:            "Test basic",
 			region:          "test-region",
 			sessionDuration: time.Duration(10000),
 			credentials: &sts.Credentials{
@@ -57,10 +59,12 @@ func TestGenerateEnvironment(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		plugin := aws.New(tc.region, &mockSTSAPI{expected: tc.credentials}, tc.sessionDuration)
-		actual, actualErr := plugin.GenerateEnvironment()
+		t.Run(tc.name, func(t *testing.T) {
+			plugin := aws.New(tc.region, &mockSTSAPI{expected: tc.credentials}, tc.sessionDuration)
+			actual, actualErr := plugin.GenerateEnvironment()
 
-		assert.EqualValues(t, tc.want, actual)
-		assert.EqualValues(t, tc.wantErr, actualErr)
+			assert.EqualValues(t, tc.want, actual)
+			assert.EqualValues(t, tc.wantErr, actualErr)
+		})
 	}
 }
