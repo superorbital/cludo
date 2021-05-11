@@ -98,6 +98,7 @@ func TestEncodeAuthorizedKey(t *testing.T) {
 
 func TestDecodePrivateKey(t *testing.T) {
 	type test struct {
+		name    string
 		encoded []byte
 		want    *rsa.PrivateKey
 		wantErr error
@@ -108,20 +109,24 @@ func TestDecodePrivateKey(t *testing.T) {
 
 	tests := []test{
 		{
+			name:    "Test key 1",
 			encoded: encoded1,
 			want:    key1,
 		},
 		{
+			name:    "Test key 2",
 			encoded: encoded2,
 			want:    key2,
 		},
 	}
 
 	for _, tc := range tests {
-		actual, actualErr := auth.DecodePrivateKey(tc.encoded, nil)
+		t.Run(tc.name, func(t *testing.T) {
+			actual, actualErr := auth.DecodePrivateKey(tc.encoded, nil)
 
-		assert.EqualValues(t, tc.want, actual)
-		assert.EqualValues(t, tc.wantErr, actualErr)
+			assert.EqualValues(t, tc.want, actual)
+			assert.EqualValues(t, tc.wantErr, actualErr)
+		})
 	}
 }
 

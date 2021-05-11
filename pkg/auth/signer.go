@@ -50,7 +50,8 @@ func (signer *Signer) GenerateRandomAuthHeader() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("Failed to generate random message: %v", err)
 	}
-	message := string(b)
+	// Use base64 encoding to prevent the use of non-displayable characters.
+	message := base64.StdEncoding.EncodeToString(b)
 	return signer.GenerateAuthHeader(message)
 }
 

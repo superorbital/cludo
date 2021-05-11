@@ -33,6 +33,7 @@ func GenerateSHA512Signature(t *testing.T, key *rsa.PrivateKey, message string) 
 
 func TestAuthorizer(t *testing.T) {
 	type test struct {
+		name       string
 		message    string
 		privateKey *rsa.PrivateKey
 		allowed    map[string]*rsa.PublicKey
@@ -47,6 +48,7 @@ func TestAuthorizer(t *testing.T) {
 
 	tests := []test{
 		{
+			name:       "Test sole matching key",
 			message:    "test-message-1",
 			privateKey: testKey1,
 			allowed: map[string]*rsa.PublicKey{
@@ -56,6 +58,7 @@ func TestAuthorizer(t *testing.T) {
 			wantOK: true,
 		},
 		{
+			name:       "Test matching key",
 			message:    "test-message-1",
 			privateKey: testKey1,
 			allowed: map[string]*rsa.PublicKey{
@@ -66,6 +69,7 @@ func TestAuthorizer(t *testing.T) {
 			wantOK: true,
 		},
 		{
+			name:       "Test non-matching key",
 			message:    "test-message-1",
 			privateKey: testKey3,
 			allowed: map[string]*rsa.PublicKey{
@@ -76,6 +80,7 @@ func TestAuthorizer(t *testing.T) {
 			wantOK: false,
 		},
 		{
+			name:       "Test empty authorizer",
 			message:    "test-message-1",
 			privateKey: testKey3,
 			allowed:    map[string]*rsa.PublicKey{},
@@ -85,11 +90,13 @@ func TestAuthorizer(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		authz := auth.NewAuthorizer(tc.allowed)
-		actual, actualOK, actualErr := authz.CheckAuthHeader(GenerateSHA512Signature(t, tc.privateKey, tc.message))
+		t.Run(tc.name, func(t *testing.T) {
+			authz := auth.NewAuthorizer(tc.allowed)
+			actual, actualOK, actualErr := authz.CheckAuthHeader(GenerateSHA512Signature(t, tc.privateKey, tc.message))
 
-		assert.EqualValues(t, tc.want, actual)
-		assert.EqualValues(t, tc.wantOK, actualOK)
-		assert.EqualValues(t, tc.wantErr, actualErr)
+			assert.EqualValues(t, tc.want, actual)
+			assert.EqualValues(t, tc.wantOK, actualOK)
+			assert.EqualValues(t, tc.wantErr, actualErr)
+		})
 	}
 }
