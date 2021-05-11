@@ -44,7 +44,7 @@ func MakeRootCmd() (*cobra.Command, error) {
 	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", "Path to cludo.yaml config file. Overrides normal search paths.")
 	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "Enables debug logging")
 	rootCmd.PersistentFlags().BoolVar(&dryRun, "dry-run", false, "Prints requests to make to server instead of actually sending them")
-	rootCmd.PersistentFlags().StringVar(&profile, "p", "default", "Connection profile name")
+	rootCmd.PersistentFlags().StringVarP(&profile, "profile", "p", "default", "Connection profile name")
 
 	// Add all subcommands
 	envCmd, err := MakeEnvCmd(debug, dryRun, profile)
