@@ -12,4 +12,5 @@ jobs:
       - run: go get github.com/ahmetb/govvv
       - run: go get github.com/mitchellh/gox
       - run: env
+      - run: go env GOPATH
       - run: make
