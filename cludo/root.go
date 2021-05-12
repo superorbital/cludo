@@ -11,7 +11,7 @@ import (
 )
 
 // MakeRootCmd sets up the root cmd and all subcommands.
-func MakeRootCmd() (*cobra.Command, error) {
+func MakeRootCmd(exit func(int)) (*cobra.Command, error) {
 	var configFile string
 	var debug bool
 	var dryRun bool
@@ -39,6 +39,8 @@ func MakeRootCmd() (*cobra.Command, error) {
 	viper.BindPFlag("client.default.key_path", rootCmd.Flags().Lookup("key-path"))
 	rootCmd.Flags().StringP("passphrase", "a", "", "Passphrase for private key (consider using config or setting CLUDO_PASSPHRASE)")
 	viper.BindPFlag("client.default.passphrase", rootCmd.Flags().Lookup("passphrase"))
+	rootCmd.Flags().StringArrayP("roles", "r", []string{"default"}, "One or more comma seperated roles")
+	viper.BindPFlag("client.default.roles", rootCmd.Flags().Lookup("roles"))
 
 	// Register regular flags.
 	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", "Path to cludo.yaml config file. Overrides normal search paths.")
@@ -52,6 +54,20 @@ func MakeRootCmd() (*cobra.Command, error) {
 		return nil, fmt.Errorf("Failed setting up env: %v", err)
 	}
 	rootCmd.AddCommand(envCmd)
+
+	// cludo exec
+	execCmd, err := MakeExecCmd(debug, dryRun, profile, exit)
+	if err != nil {
+		return nil, fmt.Errorf("Failed setting up exec: %v", err)
+	}
+	rootCmd.AddCommand(execCmd)
+
+	// cludo shell
+	shellCmd, err := MakeShellCmd(debug, dryRun, profile, exit)
+	if err != nil {
+		return nil, fmt.Errorf("Failed setting up shell: %v", err)
+	}
+	rootCmd.AddCommand(shellCmd)
 
 	// cludo version
 	versionCmd, err := MakeVersionCmd(debug, dryRun, profile)
