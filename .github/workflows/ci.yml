@@ -11,6 +11,5 @@ jobs:
       - run: go mod download
       - run: go get github.com/ahmetb/govvv
       - run: go get github.com/mitchellh/gox
-      - run: env
-      - run: go env GOPATH
+      - run: echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
       - run: make
