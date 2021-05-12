@@ -46,20 +46,30 @@ func MakeRootCmd() (*cobra.Command, error) {
 	rootCmd.PersistentFlags().BoolVar(&dryRun, "dry-run", false, "Prints requests to make to server instead of actually sending them")
 	rootCmd.PersistentFlags().StringVarP(&profile, "profile", "p", "default", "Connection profile name")
 
-	// Add all subcommands
+	// cludo env
 	envCmd, err := MakeEnvCmd(debug, dryRun, profile)
 	if err != nil {
 		return nil, fmt.Errorf("Failed setting up env: %v", err)
 	}
 	rootCmd.AddCommand(envCmd)
 
+	// cludo version
 	versionCmd, err := MakeVersionCmd(debug, dryRun, profile)
 	if err != nil {
 		return nil, fmt.Errorf("Failed setting up version: %v", err)
 	}
 	rootCmd.AddCommand(versionCmd)
 
-	rootCmd.AddCommand(MakeCompletionCmd())
+	// cludo lint
+	lintCmd, err := MakeLintCmd(debug, dryRun, profile)
+	if err != nil {
+		return nil, fmt.Errorf("Failed setting up lint")
+	}
+	rootCmd.AddCommand(lintCmd)
+
+	// cludo completion [...]
+	completionCmd := MakeCompletionCmd()
+	rootCmd.AddCommand(completionCmd)
 
 	return rootCmd, nil
 }
