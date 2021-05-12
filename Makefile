@@ -2,7 +2,7 @@ GOPATH := $(shell go env GOPATH)
 GOFILES := $(wildcard *.go)
 
 GITCOMMIT := $(shell git rev-parse --short HEAD)
-VERSION := $(shell cat version)
+VERSION := $(shell cat VERSION)
 
 # Use linker flags to provide version/build settings
 LDFLAGS=-ldflags "$(shell govvv -flags -pkg github.com/superorbital/cludo/pkg/build)"
