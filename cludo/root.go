@@ -35,12 +35,12 @@ func MakeRootCmd(exit func(int)) (*cobra.Command, error) {
 	// Register flags bound to viper.
 	rootCmd.PersistentFlags().String("server-url", "", "Base URL of the cludod service to interact with")
 	viper.BindPFlag("client.default.server_url", rootCmd.PersistentFlags().Lookup("server-url"))
-	rootCmd.Flags().StringP("key-path", "k", "~/.ssh/id_rsa", "Path to SSH private key")
-	viper.BindPFlag("client.default.key_path", rootCmd.Flags().Lookup("key-path"))
-	rootCmd.Flags().StringP("passphrase", "a", "", "Passphrase for private key (consider using config or setting CLUDO_PASSPHRASE)")
-	viper.BindPFlag("client.default.passphrase", rootCmd.Flags().Lookup("passphrase"))
-	rootCmd.Flags().StringArrayP("roles", "r", []string{"default"}, "One or more comma seperated roles")
-	viper.BindPFlag("client.default.roles", rootCmd.Flags().Lookup("roles"))
+	rootCmd.PersistentFlags().StringP("key-path", "k", "~/.ssh/id_rsa", "Path to SSH private key")
+	viper.BindPFlag("client.default.key_path", rootCmd.PersistentFlags().Lookup("key-path"))
+	rootCmd.PersistentFlags().StringP("passphrase", "a", "", "Passphrase for private key (consider using config or setting CLUDO_PASSPHRASE)")
+	viper.BindPFlag("client.default.passphrase", rootCmd.PersistentFlags().Lookup("passphrase"))
+	rootCmd.PersistentFlags().StringArrayP("roles", "r", []string{"default"}, "One or more comma seperated roles")
+	viper.BindPFlag("client.default.roles", rootCmd.PersistentFlags().Lookup("roles"))
 
 	// Register regular flags.
 	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", "Path to cludo.yaml config file. Overrides normal search paths.")
