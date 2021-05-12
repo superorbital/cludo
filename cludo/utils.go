@@ -49,7 +49,9 @@ func ExecWithEnv(args []string, env models.ModelsEnvironmentBundle, inherit bool
 		cmd.Env = []string{}
 	}
 	for k, v := range env {
-		cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", k, v))
+		if v != "" {
+			cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", k, v))
+		}
 	}
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
