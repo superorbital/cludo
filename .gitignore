@@ -34,3 +34,5 @@ bin/
 tmp
 secret-*
 manual-test-*/
+cludo.yaml
+cludod.yaml

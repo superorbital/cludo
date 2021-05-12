@@ -19,7 +19,7 @@ func MakeRootCmd() (*cobra.Command, error) {
 
 	// Use executable name as the command name
 	rootCmd := &cobra.Command{
-		Version: build.Version,
+		Version: build.VersionFull(),
 		Use:     config.CludoExecutable,
 		Short:   "Cloud Sudo Client CLI",
 		Long:    `This is the Cloud Sudo Client CLI, which end users will typically use to interact with the Cloud Sudo server.`,

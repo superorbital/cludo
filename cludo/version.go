@@ -26,7 +26,7 @@ func MakeVersionCmd(debug bool, dryRun bool, profile string) (*cobra.Command, er
 			serverVersion, err := GetVersion(userConfig.Client[profile], debug, dryRun)
 			cobra.CheckErr(err)
 
-			_, err = fmt.Fprintf(out, "Client: %s\nServer: %s\n", build.Version, serverVersion)
+			_, err = fmt.Fprintf(out, "Client: %s\nServer: %s\n", build.VersionFull(), serverVersion)
 			cobra.CheckErr(err)
 		},
 	}

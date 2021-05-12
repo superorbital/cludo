@@ -2,7 +2,7 @@ GOPATH := $(shell go env GOPATH)
 GOFILES := $(wildcard *.go)
 
 # Use linker flags to provide version/build settings
-LDFLAGS=-ldflags "$(shell govvv -flags)"
+LDFLAGS=-ldflags "$(shell govvv -flags -pkg github.com/superorbital/cludo/pkg/build)"
 
 # Make is verbose in Linux. Make it silent.
 # MAKEFLAGS += --silent

@@ -164,7 +164,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 	api.SystemHealthHandler = system.HealthHandlerFunc(func(params system.HealthParams) middleware.Responder {
 		return system.NewHealthOK().WithPayload(&models.ModelsHealthResponse{
 			Status:  true,
-			Version: build.Version,
+			Version: build.VersionFull(),
 		})
 	})
 	api.RoleListRolesHandler = role.ListRolesHandlerFunc(func(params role.ListRolesParams, principal *models.ModelsPrincipal) middleware.Responder {

@@ -1,6 +1,8 @@
 // The build package is intended to be used with govvv -pkg github.com/superorbital/cludo/pkg/build
 package build
 
+import "fmt"
+
 // GitCommit is a short commit hash of the application's git source tree
 var GitCommit string
 
@@ -18,3 +20,7 @@ var BuildDate string
 
 // Version is the version of the application
 var Version string
+
+func VersionFull() string {
+	return fmt.Sprintf("%s.git-%s", Version, GitCommit)
+}
