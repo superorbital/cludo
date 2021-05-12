@@ -11,7 +11,7 @@ import (
 // Editing this file might prove futile when you re-run the swagger generate command
 
 func main() {
-	rootCmd, err := cludo.MakeRootCmd()
+	rootCmd, err := cludo.MakeRootCmd(os.Exit)
 	if err != nil {
 		fmt.Println("Cmd construction error: ", err)
 		os.Exit(1)

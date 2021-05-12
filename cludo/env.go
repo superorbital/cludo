@@ -2,19 +2,16 @@ package cludo
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"github.com/superorbital/cludo/client/environment"
 	"github.com/superorbital/cludo/models"
 	"github.com/superorbital/cludo/pkg/config"
 )
 
 // MakeEnvCmd sets up the env subcommand.
 func MakeEnvCmd(debug bool, dryRun bool, profile string) (*cobra.Command, error) {
-	execCmd := &cobra.Command{
+	envCmd := &cobra.Command{
 		Use:   "env",
 		Short: "Get environment variables for cludo",
 		Long:  `Get environment variables for the provided cludo profile (or 'default'). You can add these to your shell with: . $(cludo env)`,
@@ -32,42 +29,8 @@ func MakeEnvCmd(debug bool, dryRun bool, profile string) (*cobra.Command, error)
 			cobra.CheckErr(err)
 		},
 	}
-	execCmd.Flags().StringP("shell-path", "i", "/bin/sh", "Path to shell")
-	viper.BindPFlag("client.default.shell_path", execCmd.Flags().Lookup("shell-path"))
-	execCmd.Flags().StringArrayP("roles", "r", []string{"default"}, "One or more comma seperated roles")
-	viper.BindPFlag("client.default.roles", execCmd.Flags().Lookup("roles"))
 
-	return execCmd, nil
-}
-
-// GenerateEnvironment generates an environment bundle on a remote cludod service.
-func GenerateEnvironment(cc *config.ClientConfig, debug bool, dryRun bool) (models.ModelsEnvironmentBundle, error) {
-	cludodClient, err := cc.NewClient(debug)
-	if err != nil {
-		return nil, err
-	}
-	signer, err := cc.NewDefaultSigner()
-	if err != nil {
-		return nil, err
-	}
-
-	params := environment.NewGenerateEnvironmentParams().WithDefaults().WithBody(&models.ModelsEnvironmentRequest{})
-
-	if dryRun {
-		log.Printf("Dry run enabled: Would send %#v", params)
-		return nil, nil
-	}
-
-	response, err := cludodClient.Environment.GenerateEnvironment(params, signer.CludoAuth())
-	if err != nil {
-		return nil, fmt.Errorf("[1] Failed to generate environment: %v, %#v", err, response)
-	}
-
-	if response != nil && response.Payload != nil {
-		return response.Payload.Bundle, nil
-	}
-
-	return nil, nil
+	return envCmd, nil
 }
 
 // FormatBundle turns a bundle into a shell script that can be sourced to export environment variables.

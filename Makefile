@@ -26,6 +26,8 @@ docker-build:
 	docker build -f Dockerfile.cludod -t superorbital/cludod:$(VERSION).git-$(GITCOMMIT) .
 
 docker-tag:
+	docker tag superorbital/cludo:$(VERSION).git-$(GITCOMMIT) superorbital/cludo:$(VERSION)
+	docker tag superorbital/cludod:$(VERSION).git-$(GITCOMMIT) superorbital/cludod:$(VERSION)
 	docker tag superorbital/cludo:$(VERSION).git-$(GITCOMMIT) superorbital/cludo:latest
 	docker tag superorbital/cludod:$(VERSION).git-$(GITCOMMIT) superorbital/cludod:latest
 
