@@ -12,4 +12,5 @@ RUN apk --no-cache add ca-certificates
 RUN mkdir /etc/cludod
 WORKDIR /app/
 COPY --from=builder /usr/bin/cludod /usr/bin/cludod
-CMD ["cludod"]
+COPY ./entrypoint-cludod.sh /entrypoint.sh
+ENTRYPOINT [ "/entrypoint.sh" ]

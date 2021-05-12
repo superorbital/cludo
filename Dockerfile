@@ -12,4 +12,5 @@ RUN apk --no-cache add ca-certificates
 RUN mkdir /etc/cludo
 WORKDIR /app/
 COPY --from=builder /usr/bin/cludo /usr/bin/cludo
-ENTRYPOINT ["cludo"]
+COPY ./entrypoint-cludo.sh /entrypoint.sh
+ENTRYPOINT [ "/entrypoint.sh" ]
