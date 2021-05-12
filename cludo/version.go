@@ -50,7 +50,7 @@ func GetVersion(cc *config.ClientConfig, debug bool, dryRun bool) (string, error
 
 	response, err := cludodClient.System.Health(params)
 	if err != nil {
-		return "", fmt.Errorf("Failed to generate environment: %v, %#v", err, response)
+		return "", fmt.Errorf("Failed to check system health: %v, %#v", err, response)
 	}
 
 	if response != nil && response.Payload != nil {

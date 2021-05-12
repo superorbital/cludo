@@ -7,12 +7,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
+	"github.com/gorilla/handlers"
 	"github.com/spf13/viper"
 
 	"github.com/superorbital/cludo/models"
@@ -58,42 +60,40 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 	api.JSONProducer = runtime.JSONProducer()
 
 	// Applies when the "X-CLUDO-KEY" header is set
-	if api.APIKeyHeaderAuth == nil {
-		api.APIKeyHeaderAuth = func(token string) (*models.ModelsPrincipal, error) {
-			conf, err := config.NewConfigFromViper()
-			if err != nil {
-				api.Logger("ERROR: Failed to read cludo configuration: %v", err)
-				return nil, errors.New(500, "Failed to read cludo configuration: %v", err)
-			}
+	api.APIKeyHeaderAuth = func(token string) (*models.ModelsPrincipal, error) {
+		conf, err := config.NewConfigFromViper()
+		if err != nil {
+			api.Logger("ERROR: Failed to read cludo configuration: %v", err)
+			return nil, errors.New(500, "Failed to read cludo configuration: %v", err)
+		}
 
-			api.Logger("DEBUG: Read in viper config: %#v", conf)
+		api.Logger("DEBUG: Read in viper config: %#v", conf)
 
-			if conf.Server == nil {
-				api.Logger("ERROR: Server configuration is missing")
-				return nil, errors.New(500, "Server configuration is missing")
-			}
+		if conf.Server == nil {
+			api.Logger("ERROR: Server configuration is missing")
+			return nil, errors.New(500, "Server configuration is missing")
+		}
 
-			authz, err := conf.Server.NewAuthorizer()
-			if err != nil {
-				api.Logger("ERROR: Failed to create authorizer: %v", err)
-				return nil, errors.New(500, "Failed to create authorizer: %v", err)
-			}
+		authz, err := conf.Server.NewAuthorizer()
+		if err != nil {
+			api.Logger("ERROR: Failed to create authorizer: %v", err)
+			return nil, errors.New(500, "Failed to create authorizer: %v", err)
+		}
 
-			id, ok, err := authz.CheckAuthHeader(token)
-			if err != nil {
-				api.Logger("ERROR: Failed to validate message signature: %v", err)
-				return nil, errors.New(500, "Failed to validate message signature: %v", err)
-			}
-			if ok {
-				for _, user := range conf.Server.Users {
-					if user.ID() == id {
-						principalID := models.ModelsPrincipal(id)
-						return &principalID, nil
-					}
+		id, ok, err := authz.CheckAuthHeader(token)
+		if err != nil {
+			api.Logger("ERROR: Failed to validate message signature: %v", err)
+			return nil, errors.New(500, "Failed to validate message signature: %v", err)
+		}
+		if ok {
+			for _, user := range conf.Server.Users {
+				if user.ID() == id {
+					principalID := models.ModelsPrincipal(id)
+					return &principalID, nil
 				}
 			}
-			return nil, errors.Unauthenticated("APIKeyHeaderAuth")
 		}
+		return nil, errors.Unauthenticated("APIKeyHeaderAuth")
 	}
 
 	api.EnvironmentGenerateEnvironmentHandler = environment.GenerateEnvironmentHandlerFunc(func(params environment.GenerateEnvironmentParams, principal *models.ModelsPrincipal) middleware.Responder {
@@ -228,5 +228,5 @@ func setupMiddlewares(handler http.Handler) http.Handler {
 // The middleware configuration happens before anything, this middleware also applies to serving the swagger.json document.
 // So this is a good place to plug in a panic handling middleware, logging and metrics.
 func setupGlobalMiddleware(handler http.Handler) http.Handler {
-	return handler
+	return handlers.LoggingHandler(os.Stdout, handler)
 }

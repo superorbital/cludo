@@ -60,7 +60,7 @@ func GenerateEnvironment(cc *config.ClientConfig, debug bool, dryRun bool) (mode
 
 	response, err := cludodClient.Environment.GenerateEnvironment(params, signer.CludoAuth())
 	if err != nil {
-		return nil, fmt.Errorf("Failed to generate environment: %v, %#v", err, response)
+		return nil, fmt.Errorf("[1] Failed to generate environment: %v, %#v", err, response)
 	}
 
 	if response != nil && response.Payload != nil {
