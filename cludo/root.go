@@ -49,9 +49,15 @@ func MakeRootCmd() (*cobra.Command, error) {
 	// Add all subcommands
 	envCmd, err := MakeEnvCmd(debug, dryRun, profile)
 	if err != nil {
-		return nil, fmt.Errorf("Failed setting up exec")
+		return nil, fmt.Errorf("Failed setting up env: %v", err)
 	}
 	rootCmd.AddCommand(envCmd)
+
+	versionCmd, err := MakeVersionCmd(debug, dryRun, profile)
+	if err != nil {
+		return nil, fmt.Errorf("Failed setting up version: %v", err)
+	}
+	rootCmd.AddCommand(versionCmd)
 
 	rootCmd.AddCommand(MakeCompletionCmd())
 
