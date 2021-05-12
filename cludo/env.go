@@ -12,7 +12,7 @@ import (
 	"github.com/superorbital/cludo/pkg/config"
 )
 
-// MakeEnvCmd sets up the exec subcommand.
+// MakeEnvCmd sets up the env subcommand.
 func MakeEnvCmd(debug bool, dryRun bool, profile string) (*cobra.Command, error) {
 	execCmd := &cobra.Command{
 		Use:   "env",
