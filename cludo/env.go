@@ -37,8 +37,10 @@ func MakeEnvCmd(debug bool, dryRun bool, profile string) (*cobra.Command, error)
 func FormatBundle(bundle models.ModelsEnvironmentBundle) string {
 	var b strings.Builder
 	for k, v := range bundle {
-		escaped := strings.ReplaceAll(strings.ReplaceAll(v, "\\", "\\\\"), "\"", "\\\"")
-		fmt.Fprintf(&b, "export %s=\"%s\"\n", k, escaped)
+		if v != "" {
+			escaped := strings.ReplaceAll(strings.ReplaceAll(v, "\\", "\\\\"), "\"", "\\\"")
+			fmt.Fprintf(&b, "export %s=\"%s\"\n", k, escaped)
+		}
 	}
 	return b.String()
 }

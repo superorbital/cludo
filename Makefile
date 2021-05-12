@@ -33,8 +33,10 @@ docker-tag:
 
 docker-push:
 	docker push superorbital/cludo:$(VERSION).git-$(GITCOMMIT)
+	docker push superorbital/cludo:$(VERSION)
 	docker push superorbital/cludo:latest
 	docker push superorbital/cludod:$(VERSION).git-$(GITCOMMIT)
+	docker push superorbital/cludod:$(VERSION)
 	docker push superorbital/cludod:latest
 
 test:

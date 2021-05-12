@@ -36,8 +36,8 @@ func MakeShellCmd(debug bool, dryRun bool, profile string, exit func(int)) (*cob
 		},
 	}
 	execCmd.Flags().BoolVar(&cleanEnv, "clean-env", false, "Set to run shell without inheriting from current environment")
-	execCmd.Flags().StringP("shell-path", "i", "/bin/sh", "Path to shell")
-	viper.BindPFlag("client.default.shell_path", execCmd.Flags().Lookup("shell-path"))
+	execCmd.PersistentFlags().StringP("shell-path", "i", "/bin/sh", "Path to shell")
+	viper.BindPFlag("client.default.shell_path", execCmd.PersistentFlags().Lookup("shell-path"))
 
 	return execCmd, nil
 }
