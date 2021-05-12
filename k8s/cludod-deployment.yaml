@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cludod-deployment
+  labels:
+    app: cludod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cludod
+  template:
+    metadata:
+      labels:
+        app: cludod
+    spec:
+      containers:
+      - name: cludod
+        image: superorbital/cludod:0.0.1-SNAPSHOT
+        command:
+        - cludod
+        - --scheme=http
+        - --host=0.0.0.0
+        - --port=80
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: config
+          mountPath: "/etc/cludod"
+          readOnly: true
+      volumes:
+      - name: config
+        secret:
+          secretName: cludod-config
