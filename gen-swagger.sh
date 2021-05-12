@@ -24,7 +24,7 @@ done
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-cd "${DIR}/.."
+cd "${DIR}"
 
 docker run --rm -it \
     --user $(id -u):$(id -g) \
@@ -32,7 +32,7 @@ docker run --rm -it \
     -v $HOME:$HOME \
     -w $(pwd) \
     quay.io/goswagger/swagger \
-    generate server -f ./swagger.yaml --name-cludod --main-package=cludod --principal=models.ModelsPrincipal --template-dir="${TEMPLATE_DIR}"
+    generate server -f ./swagger.yaml --name=cludod --main-package=cludod --principal=models.ModelsPrincipal
 
 docker run --rm -it \
     --user $(id -u):$(id -g) \
@@ -40,7 +40,7 @@ docker run --rm -it \
     -v $HOME:$HOME \
     -w $(pwd) \
     quay.io/goswagger/swagger \
-    generate client -f ./swagger.yaml --template-dir="${TEMPLATE_DIR}"
+    generate client -f ./swagger.yaml
 
 # docker run --rm -it \
 #     --user $(id -u):$(id -g) \
@@ -48,6 +48,7 @@ docker run --rm -it \
 #     -v $HOME:$HOME \
 #     -w $(pwd) \
 #     quay.io/goswagger/swagger \
-#     generate cli -f ./swagger.yaml --cli-app-name=cludo-api --template-dir="${TEMPLATE_DIR}"
+#     generate cli -f ./swagger.yaml --cli-app-name=cludo-api"
 
 go get -u ./...
+go mod tidy

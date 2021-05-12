@@ -27,6 +27,8 @@ cmd/cludo_api/cludo_api
 cmd/cludo/cludo
 cmd/cludod/cludod
 
+#build binaries
+bin/
 
 #misc temp and hidden items
 tmp
