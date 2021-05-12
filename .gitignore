@@ -31,3 +31,4 @@ cmd/cludod/cludod
 #misc temp and hidden items
 tmp
 secret-*
+manual-test-*/

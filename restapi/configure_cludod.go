@@ -62,22 +62,26 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 		api.APIKeyHeaderAuth = func(token string) (*models.ModelsPrincipal, error) {
 			conf, err := config.NewConfigFromViper()
 			if err != nil {
+				api.Logger("ERROR: Failed to read cludo configuration: %v", err)
 				return nil, errors.New(500, "Failed to read cludo configuration: %v", err)
 			}
 
 			api.Logger("DEBUG: Read in viper config: %#v", conf)
 
 			if conf.Server == nil {
+				api.Logger("ERROR: Server configuration is missing")
 				return nil, errors.New(500, "Server configuration is missing")
 			}
 
 			authz, err := conf.Server.NewAuthorizer()
 			if err != nil {
+				api.Logger("ERROR: Failed to create authorizer: %v", err)
 				return nil, errors.New(500, "Failed to create authorizer: %v", err)
 			}
 
 			id, ok, err := authz.CheckAuthHeader(token)
 			if err != nil {
+				api.Logger("ERROR: Failed to validate message signature: %v", err)
 				return nil, errors.New(500, "Failed to validate message signature: %v", err)
 			}
 			if ok {
@@ -96,6 +100,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 		conf, err := config.NewConfigFromViper()
 		if err != nil {
 			errMsg := fmt.Sprintf("Failed to read cludo configuration: %v", err)
+			api.Logger("ERROR: %s", err)
 			return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
 				Code:    500,
 				Message: &errMsg,
@@ -104,6 +109,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 
 		if conf.Server == nil {
 			errMsg := fmt.Sprintf("Server configuration is missing")
+			api.Logger("ERROR: %s", err)
 			return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
 				Code:    500,
 				Message: &errMsg,
@@ -127,6 +133,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 
 		if role == nil {
 			errMsg := fmt.Sprintf("Failed to find any roles for user: %v", *principal)
+			api.Logger("ERROR: %s", err)
 			return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
 				Code:    500,
 				Message: &errMsg,
@@ -136,6 +143,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 		ap, err := role.NewPlugin()
 		if err != nil {
 			errMsg := fmt.Sprintf("Failed to initialize plugin: %v", err)
+			api.Logger("ERROR: %s", err)
 			return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
 				Code:    500,
 				Message: &errMsg,
@@ -144,6 +152,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 		payload, err := ap.GenerateEnvironment()
 		if err != nil {
 			errMsg := fmt.Sprintf("Failed to generate environment: %v", err)
+			api.Logger("ERROR: %s", err)
 			return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
 				Code:    500,
 				Message: &errMsg,
@@ -162,6 +171,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 		conf, err := config.NewConfigFromViper()
 		if err != nil {
 			errMsg := fmt.Sprintf("Failed to read cludo configuration: %v", err)
+			api.Logger("ERROR: %s", err)
 			return role.NewListRolesDefault(500).WithPayload(&models.Error{
 				Code:    500,
 				Message: &errMsg,
@@ -170,6 +180,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 
 		if conf.Server == nil {
 			errMsg := fmt.Sprintf("Server configuration is missing")
+			api.Logger("ERROR: %s", err)
 			return role.NewListRolesDefault(500).WithPayload(&models.Error{
 				Code:    500,
 				Message: &errMsg,
