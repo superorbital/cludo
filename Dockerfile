@@ -8,7 +8,7 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 go build -ldflags "$(govvv -flags -pkg github.com/superorbital/cludo/pkg/build)" -o /usr/bin/cludo ./cmd/cludo
 
-FROM alpine:latest
+FROM ${ARCH}alpine:latest
 RUN apk --no-cache add ca-certificates
 RUN mkdir /etc/cludo
 WORKDIR /app/
