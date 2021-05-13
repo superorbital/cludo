@@ -1,4 +1,4 @@
-#.git/ # We need to ensure we don't iognore this for govvv
+#.git/ # We need to ensure we don't ignore this for govvv
 
 .cludo
 .github/
