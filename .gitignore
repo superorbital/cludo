@@ -32,7 +32,8 @@ bin/
 
 #misc temp and hidden items
 tmp
-secret-*
+*secret*
+!k8s/*secret.yaml
 manual-test-*/
 cludo.yaml
 cludod.yaml

@@ -3,6 +3,7 @@ module github.com/superorbital/cludo
 go 1.16
 
 require (
+	github.com/ahmetb/govvv v0.3.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
 	github.com/aws/aws-sdk-go v1.38.38
 	github.com/fsnotify/fsnotify v1.4.9
