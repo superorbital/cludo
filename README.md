@@ -12,11 +12,11 @@ Distributing AWS credentials is painful and dangerous.  Leaked credentials resul
 
 ## Installation
 
-TODO: Installation
+To install or update `cludo`/`cludod`:
 
 ```shell
-go install github.com/superorbital/cludo/cmd/cludo/cludo
-go install github.com/superorbital/cludo/cmd/cludo-server/cludo-server
+go get -u github.com/superorbital/cludo/cmd/cludo/cludo
+go get -u github.com/superorbital/cludo/cmd/cludod/cludod
 ```
 
 ## Setup
@@ -38,9 +38,10 @@ client:
 
 Environment Variable | YAML path | Description
 -------------------- | --------- | -----------
-`CLUDO_SERVER_URL` | `server_url` | URL of the `cludo-server` instance to connect to.
-`CLUDO_PRIVATE_KEY` | `private_key` | Path to a private key for authentication.
-`CLUDO_SHELL` | `shell` | Path to the shell to launch when requested. Defaults to user's login shell.
+`CLUDO_CLIENT_DEFAULT_SERVER_URL` | `client.default.server_url` | URL of the `cludo-server` instance to connect to.
+`CLUDO_CLIENT_DEFAULT_KEY_PATH` | `client.default.key_path` | Path to a private key for authentication.
+`CLUDO_CLIENT_DEFAULT_SHELL_PATH` | `client.default.shell_path` | Path to the shell to launch when requested. Defaults to user's login shell.
+`CLUDO_CLIENT_DEFAULT_ROLES` | `client.default.roles` | List of roles to apply to cludo environment when generated. Currently only supports one role at a time. Role ids should correspond to role ids assigned to user in cludod.
 
 ## Usage
 
@@ -61,12 +62,19 @@ We recommend adding `.cludo/` to your `.gitignore` files to avoid accidentally c
 
 #### Server
 
-- `cludod --scheme=http`
+- `cludod --scheme=http --host=0.0.0.0 --port=8080`
 
 #### Client
 
-  -`cludo exec aws ec2 describe-instances`
-    - You can add `--debug` to get some extra debugging output.
+List AWS EC2 instances using a cludo environment:
+
+```sh
+cludo exec aws ec2 describe-instances
+```
+
+You can add `--debug` to get some extra debugging output.
+
+We also provide a docker image (`superorbital/cludo`). Just provide a `/etc/cludo/cludo.yaml` config file!
 
 ## Environments
 
@@ -78,35 +86,37 @@ When enabled, the AWS environment provides the following environment variables:
 
 Environment Variable | Description
 -------------------- | -----------
-`AWS_ACCESS_KEY_ID` |
-`AWS_SECRET_ACCESS_KEY` |
-`AWS_REGION` |
+`AWS_ACCESS_KEY_ID` | `cludo` environment AWS access key.
+`AWS_SECRET_ACCESS_KEY` | `cludo` environment AWS secret access key.
+`AWS_SESSION_TOKEN` | AWS session token generated for `cludo` environment.
+`AWS_SESSION_EXPIRATION` | Time when generated AWS session token will expire.
 
-## Running a server
+Each time a `cludo` command that uses an environment is run, a new AWS session token is generated.
 
-1. Install `cludo-server`:
+## Running cludod
+
+1. Install `cludod`:
 
    ```shell
    go install github.com/superorbital/cludo/cmd/cludod/cludod
    ```
 
-2. Configure `cludod` by providing a `cludo.yaml` file.
-3. Run `cludod -c /path/to/cludod.yaml`
+2. Configure `cludod` by providing a `cludod.yaml` file.
+3. Run `cludod --scheme=http --port=8080 --host=0.0.0.0 -c /path/to/cludod.yaml` or just `cludod --scheme=http --port=8080 --host=0.0.0.0` if your `cludod.yaml` file is placed in: `/etc/cludod/cludod.yaml`, `~/.cludod/cludod.yaml`, `./.cludod/cludod.yaml`, or `./cludod.yaml`
 
 `cludod` supports the following configuration options:
 
 ```yaml
-# cludo.yaml
+# cludod.yaml
 
 server:
-  port: 443
   users:
     - public_key: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489..."
       roles:
         aws:
           so_org:
             arn: "aws:arn:iam:..."
-            session_duration: "10m"
+            session_duration: "20m"
             access_key_id: "456DEF..."
             secret_access_key: "UVW789..."
           so_dev:
@@ -114,17 +124,29 @@ server:
             session_duration: "8h"
             access_key_id: "123ABC..."
             secret_access_key: "ZXY098..."
-      default_role: "aws_so_org"
+      default_role: "so_org"
 ```
 
-We also provide a docker image (`superorbital/cludo-server`) with `cludo-server` pre-installed. Just provide a `/etc/cludo-server/cludo-server.yaml` config file.
+We also provide a docker image (`superorbital/cludod`) with `cludod` pre-installed. Just provide a `/etc/cludod/cludod.yaml` config file.
 
 ## Development
 
+To build/test `cludo`/`cludod`:
+
+```shell
+make
+```
+
+Binaries cross compiled for various OS's and architectures are available in the `bin/` directory.
+
 ### Release
 
-- Merge to `main` and then Github actions will take care of most of it.
-- If desired, create a release in Github with the resulting binaries.
+- Merge code into `main`
+- If desired, create a release in Github with the resulting binaries. (TODO: automate this)
+
+```shell
+make all docker-push
+```
 
 ## Acknowledgements
 
