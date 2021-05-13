@@ -14,9 +14,6 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-#gox
-builds
-
 #swagger
 swagger
 
@@ -28,12 +25,12 @@ cmd/cludo/cludo
 cmd/cludod/cludod
 
 #build binaries
-bin/
+bin/builds
 
 #misc temp and hidden items
 tmp
-*secret*
-!k8s/*secret.yaml
+secret*
+!k8s/cludod-secrets.yaml
 manual-test-*/
 cludo.yaml
 cludod.yaml
