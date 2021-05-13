@@ -20,14 +20,15 @@ func MakeShellCmd(debug bool, dryRun bool, profile string, exit func(int)) (*cob
 		Run: func(cmd *cobra.Command, args []string) {
 			userConfig, err := config.NewConfigFromViper()
 			cobra.CheckErr(err)
+			clientConfig := userConfig.Client[profile]
 
-			bundle, err := GenerateEnvironment(userConfig.Client[profile], debug, dryRun)
+			bundle, err := GenerateEnvironment(clientConfig, debug, dryRun)
 			cobra.CheckErr(err)
 
-			shell, err := GetShellPath(userConfig.Client[profile])
+			shell, err := GetShellPath(clientConfig)
 			cobra.CheckErr(err)
 
-			code, err := ExecWithEnv(append([]string{shell}, args...), bundle, !cleanEnv)
+			code, err := ExecWithEnv(append([]string{shell}, args...), bundle, !cleanEnv, profile, clientConfig.ServerURL)
 			cobra.CheckErr(err)
 
 			if code != 0 {

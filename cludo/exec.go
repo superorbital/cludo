@@ -16,11 +16,12 @@ func MakeExecCmd(debug bool, dryRun bool, profile string, exit func(int)) (*cobr
 		Run: func(cmd *cobra.Command, args []string) {
 			userConfig, err := config.NewConfigFromViper()
 			cobra.CheckErr(err)
+			clientConfig := userConfig.Client[profile]
 
-			bundle, err := GenerateEnvironment(userConfig.Client[profile], debug, dryRun)
+			bundle, err := GenerateEnvironment(clientConfig, debug, dryRun)
 			cobra.CheckErr(err)
 
-			code, err := ExecWithEnv(args, bundle, !cleanEnv)
+			code, err := ExecWithEnv(args, bundle, !cleanEnv, profile, clientConfig.ServerURL)
 			cobra.CheckErr(err)
 
 			if code != 0 {

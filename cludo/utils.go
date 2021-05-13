@@ -3,6 +3,7 @@ package cludo
 import (
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"os/exec"
 
@@ -10,6 +11,8 @@ import (
 	"github.com/superorbital/cludo/models"
 	"github.com/superorbital/cludo/pkg/config"
 )
+
+const CludoProfileEnvVar = "CLUDO_PROFILE"
 
 // GenerateEnvironment generates an environment bundle on a remote cludod service.
 func GenerateEnvironment(cc *config.ClientConfig, debug bool, dryRun bool) (models.ModelsEnvironmentBundle, error) {
@@ -41,7 +44,24 @@ func GenerateEnvironment(cc *config.ClientConfig, debug bool, dryRun bool) (mode
 	return nil, nil
 }
 
-func ExecWithEnv(args []string, env models.ModelsEnvironmentBundle, inherit bool) (int, error) {
+func ProfileURL(profile, serverURL string) (string, error) {
+	if serverURL == "" {
+		return profile, nil
+	}
+	u, err := url.Parse(serverURL)
+	if err != nil {
+		return "", fmt.Errorf("Failed to parse server_url '%s': %v", serverURL, err)
+	}
+	u.Fragment = profile
+	return u.String(), nil
+}
+
+func ExecWithEnv(args []string, env models.ModelsEnvironmentBundle, inherit bool, profile string, serverURL string) (int, error) {
+	profileURL, err := ProfileURL(profile, serverURL)
+	if err != nil {
+		return -1, fmt.Errorf("Failed to generate profile url: %v", err)
+	}
+
 	cmd := exec.Command(args[0], args[1:]...)
 	if inherit {
 		cmd.Env = os.Environ()
@@ -53,10 +73,13 @@ func ExecWithEnv(args []string, env models.ModelsEnvironmentBundle, inherit bool
 			cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", k, v))
 		}
 	}
+	if profileURL != "" {
+		cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", CludoProfileEnvVar, profileURL))
+	}
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
 		exitErr, ok := err.(*exec.ExitError)
 		if ok {
