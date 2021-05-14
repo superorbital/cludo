@@ -137,7 +137,7 @@ To build/test `cludo`/`cludod`:
 make
 ```
 
-Binaries cross compiled for various OS's and architectures are available in the `bin/` directory.
+Binaries cross compiled for various OS's and architectures are available in the `builds/` directory.
 
 ### Release
 
