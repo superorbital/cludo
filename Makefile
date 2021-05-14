@@ -20,7 +20,7 @@ swagger:
 build:
 	go get github.com/ahmetb/govvv
 	go mod tidy
-	gox $(LDFLAGS) -output "bin/builds/{{.OS}}_{{.Arch}}_{{.Dir}}" -osarch="darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64" ./...
+	gox $(LDFLAGS) -output "builds/{{.OS}}_{{.Arch}}_{{.Dir}}" -osarch="darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64" ./...
 
 docker: docker-build docker-tag
 
