@@ -30,7 +30,6 @@ bin/builds
 #misc temp and hidden items
 tmp
 secret*
-!k8s/cludod-secrets.yaml
 manual-test-*/
 cludo.yaml
 cludod.yaml
