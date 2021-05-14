@@ -51,7 +51,7 @@ func TestGenerateEnvironment(t *testing.T) {
 					aws.AWSAccessKeyIDEnvVar:     accessKeyId,
 					aws.AWSSecretAccessKeyEnvVar: secretAccessKey,
 					aws.AWSRegionEnvVar:          "test-region",
-					aws.AWSSessionExpiryEnvVar:   expiration.String(),
+					aws.AWSSessionExpiryEnvVar:   expiration.Format(time.RFC3339),
 					aws.AWSSessionTokenEnvVar:    sessionToken,
 				},
 			},

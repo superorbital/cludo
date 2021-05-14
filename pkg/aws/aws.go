@@ -90,7 +90,7 @@ func (ap *AWSPlugin) GenerateEnvironment() (*models.ModelsEnvironmentResponse, e
 			AWSAccessKeyIDEnvVar:     *output.Credentials.AccessKeyId,
 			AWSSecretAccessKeyEnvVar: *output.Credentials.SecretAccessKey,
 			AWSSessionTokenEnvVar:    *output.Credentials.SessionToken,
-			AWSSessionExpiryEnvVar:   output.Credentials.Expiration.String(),
+			AWSSessionExpiryEnvVar:   output.Credentials.Expiration.Format(time.RFC3339),
 			AWSRegionEnvVar:          ap.awsRegion,
 		},
 	}, nil
