@@ -137,18 +137,14 @@ To build/test `cludo`/`cludod`:
 make
 ```
 
-Binaries cross compiled for various OS's and architectures are available in the `bin/` directory.
+Binaries cross compiled for various OS's and architectures are available in the `builds/` directory.
 
 ### Release
 
-```shell
-make all docker-push
-```
+- Checkout the `main` branch
+- `make all docker-push`
+- Create a Github release
+- Attach the binaries for all platforms to the release
+- List the fully qualified image tags in the release description.
 
-TODO: Create a release in Github with the resulting binaries.
-
-## Acknowledgements
-
-- Cobra & Viper integration code heavily inspired by:
-  - [https://github.com/carolynvs/stingoftheviper](https://github.com/carolynvs/stingoftheviper)
-  - **License**: MIT
+**TODO**: Automate the creation of a release in Github with the resulting binaries.
