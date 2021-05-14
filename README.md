@@ -148,9 +148,3 @@ Binaries cross compiled for various OS's and architectures are available in the 
 - List the fully qualified image tags in the release description.
 
 **TODO**: Automate the creation of a release in Github with the resulting binaries.
-
-## Acknowledgements
-
-- Cobra & Viper integration code heavily inspired by:
-  - [https://github.com/carolynvs/stingoftheviper](https://github.com/carolynvs/stingoftheviper)
-  - **License**: MIT
