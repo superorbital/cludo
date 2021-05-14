@@ -141,12 +141,13 @@ Binaries cross compiled for various OS's and architectures are available in the 
 
 ### Release
 
-- Merge code into `main`
-- If desired, create a release in Github with the resulting binaries. (TODO: automate this)
+- Checkout the `main` branch
+- `make all docker-push`
+- Create a Github release
+- Attach the binaries for all platforms to the release
+- List the fully qualified image tags in the release description.
 
-```shell
-make all docker-push
-```
+**TODO**: Automate the creation of a release in Github with the resulting binaries.
 
 ## Acknowledgements
 

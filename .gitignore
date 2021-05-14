@@ -19,17 +19,17 @@ swagger
 
 #cludo
 .cludo
-cli
-cmd/cludo_api/cludo_api
 cmd/cludo/cludo
 cmd/cludod/cludod
 
 #build binaries
-bin/builds
+bin/cludo
+bin/cludod
+builds
 
 #misc temp and hidden items
 tmp
 secret*
-manual-test-*/
-cludo.yaml
-cludod.yaml
+cludo.y*ml
+cludod.y*ml
+
