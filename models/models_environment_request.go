@@ -17,8 +17,8 @@ import (
 // swagger:model models.EnvironmentRequest
 type ModelsEnvironmentRequest struct {
 
-	// The id of the role to apply.
-	RoleID []string `json:"role_id"`
+	// The requested target for the request
+	Target string `json:"target,omitempty"`
 }
 
 // Validate validates this models environment request

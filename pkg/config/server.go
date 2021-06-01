@@ -23,13 +23,12 @@ func (arc *AWSRoleConfig) NewPlugin() (*aws.AWSPlugin, error) {
 }
 
 type UserRolesConfig struct {
-	AWS map[string]*AWSRoleConfig `mapstructure:"aws"`
+	AWS *AWSRoleConfig `mapstructure:"aws"`
 }
 
 type UserConfig struct {
-	PublicKey   string           `mapstructure:"public_key"`
-	Roles       *UserRolesConfig `mapstructure:"roles"`
-	DefaultRole string           `mapstructure:"default_role"`
+	PublicKey string   `mapstructure:"public_key"`
+	Targets   []string `mapstructure:"targets"`
 }
 
 func (uc *UserConfig) ID() string {
@@ -37,7 +36,8 @@ func (uc *UserConfig) ID() string {
 }
 
 type ServerConfig struct {
-	Port int `yaml:"port"`
+	Port    int                         `yaml:"port"`
+	Targets map[string]*UserRolesConfig `mapstructure:"targets"`
 
 	Users []*UserConfig `mapstructure:"users"`
 }

@@ -119,16 +119,21 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 		var role *config.AWSRoleConfig
 		user, ok := conf.Server.GetUser(string(*principal))
 		if ok && user != nil {
-			if params.Body.RoleID != nil && len(params.Body.RoleID) > 0 {
-				if len(params.Body.RoleID) > 1 {
-					return environment.NewGenerateEnvironmentBadRequest().WithPayload(
-						fmt.Sprintf("Cludo only supports one roleID per user currently: %#v", params.Body),
-					)
+			validTarget := false
+			for _, validUserTarget := range user.Targets {
+				if params.Body.Target == validUserTarget {
+					validTarget = true
 				}
-				role = user.Roles.AWS[params.Body.RoleID[0]]
-			} else {
-				role = user.Roles.AWS[user.DefaultRole]
 			}
+			if !validTarget {
+				errMsg := fmt.Sprintf("User does not have access to requested target")
+				api.Logger("Error: %s", errMsg)
+				return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
+					Code:    403,
+					Message: &errMsg,
+				})
+			}
+			role = conf.Server.Targets[params.Body.Target].AWS
 		}
 
 		if role == nil {
@@ -179,7 +184,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 		}
 
 		if conf.Server == nil {
-			errMsg := fmt.Sprintf("Server configuration is missing")
+			errMsg := "Server configuration is missing"
 			api.Logger("ERROR: %s", err)
 			return role.NewListRolesDefault(500).WithPayload(&models.Error{
 				Code:    500,
@@ -189,9 +194,9 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 
 		roles := []string{}
 		user, ok := conf.Server.GetUser(string(*principal))
-		if ok && user != nil && user.Roles != nil && user.Roles.AWS != nil {
-			for roleID := range user.Roles.AWS {
-				roles = append(roles, roleID)
+		if ok && user != nil {
+			for _, userTarget := range user.Targets {
+				roles = append(roles, conf.Server.Targets[userTarget].AWS.AssumeRoleARN)
 			}
 		}
 
