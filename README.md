@@ -162,11 +162,25 @@ These values can also be set on the command line via options on the command.
 To build/test `cludo`/`cludod`:
 
 ```shell
-make
+# Only build the binaries (for all platforms)
+$ make build
+```
+
+OR
+
+```shell
+# Build the binaries and containers (for all platforms)
+$ make
 ```
 
 Binaries cross compiled for various OS's and architectures are available in the `builds/` directory.
 
+* If you have a valid `cludod.yaml` file in `~/.cludod` then a local copy of the server can be built and spun up with:
+
+```shell
+docker compose up --build -d
+```
+c
 ### Release
 
 - Checkout the `main` branch

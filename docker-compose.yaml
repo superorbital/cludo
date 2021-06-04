@@ -8,11 +8,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ./data/cludo.yaml:/etc/cludod/cludo.yaml
+      - ${HOME}/.cludod/cludod.yaml:/etc/cludod/cludod.yaml
     stdin_open: true
-    command:
-      - cludod
-      - --port
-      - "8080"
-      - --scheme
-      - http
+    environment:
+      - PORT=8080
