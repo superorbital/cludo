@@ -180,7 +180,7 @@ Binaries cross compiled for various OS's and architectures are available in the 
 ```shell
 docker compose up --build -d
 ```
-c
+
 ### Release
 
 - Checkout the `main` branch

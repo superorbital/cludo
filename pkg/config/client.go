@@ -16,18 +16,10 @@ import (
 )
 
 type ClientConfig struct {
-<<<<<<< HEAD
-	KeyPath    string `mapstructure:"key_path"`
-	Passphrase string `mapstructure:"passphrase"`
-	ShellPath  string `mapstructure:"shell_path"`
-=======
-	Interactive bool     `mapstructure:"interactive"`
-	ServerURL   string   `mapstructure:"server_url"`
-	KeyPath     string   `mapstructure:"key_path"`
-	Passphrase  string   `mapstructure:"passphrase"`
-	ShellPath   string   `mapstructure:"shell_path"`
-	Roles       []string `mapstructure:"roles"`
->>>>>>> b6b2438 (non-interactive mode)
+	Interactive bool   `mapstructure:"interactive"`
+	KeyPath     string `mapstructure:"key_path"`
+	Passphrase  string `mapstructure:"passphrase"`
+	ShellPath   string `mapstructure:"shell_path"`
 }
 
 func (cc *ClientConfig) NewDefaultSigner() (*auth.Signer, error) {
