@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
+	"strings"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/go-openapi/errors"
@@ -118,22 +120,32 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 
 		var role *config.AWSRoleConfig
 		user, ok := conf.Server.GetUser(string(*principal))
+		requestedTargetURI, err := url.Parse(params.Body.Target)
+		if err != nil {
+			errMsg := fmt.Sprintf("Expected target in URL format, received: %s", params.Body.Target)
+			api.Logger("ERROR: %s", err)
+			return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
+				Code:    500,
+				Message: &errMsg,
+			})
+		}
+		target := strings.TrimLeft(requestedTargetURI.Path, "/")
 		if ok && user != nil {
 			validTarget := false
 			for _, validUserTarget := range user.Targets {
-				if params.Body.Target == validUserTarget {
+				if target == validUserTarget {
 					validTarget = true
 				}
 			}
 			if !validTarget {
-				errMsg := fmt.Sprintf("User does not have access to requested target")
+				errMsg := fmt.Sprintf("User does not have access to requested target: %s", target)
 				api.Logger("Error: %s", errMsg)
 				return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
 					Code:    403,
 					Message: &errMsg,
 				})
 			}
-			role = conf.Server.Targets[params.Body.Target].AWS
+			role = conf.Server.Targets[target].AWS
 		}
 
 		if role == nil {

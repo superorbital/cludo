@@ -15,7 +15,7 @@ import (
 const CludoProfileEnvVar = "CLUDO_PROFILE"
 
 // GenerateEnvironment generates an environment bundle on a remote cludod service.
-func GenerateEnvironment(cc *config.ClientConfig, debug bool, dryRun bool) (models.ModelsEnvironmentBundle, error) {
+func GenerateEnvironment(cc *config.ClientConfig, target string, debug bool, dryRun bool) (models.ModelsEnvironmentBundle, error) {
 	cludodClient, err := cc.NewClient(debug)
 	if err != nil {
 		return nil, err
@@ -25,7 +25,9 @@ func GenerateEnvironment(cc *config.ClientConfig, debug bool, dryRun bool) (mode
 		return nil, err
 	}
 
-	params := environment.NewGenerateEnvironmentParams().WithDefaults().WithBody(&models.ModelsEnvironmentRequest{})
+	params := environment.NewGenerateEnvironmentParams().WithDefaults().WithBody(&models.ModelsEnvironmentRequest{
+		Target: target,
+	})
 
 	if dryRun {
 		log.Printf("Dry run enabled: Would send %#v", params)

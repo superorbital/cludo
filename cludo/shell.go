@@ -22,7 +22,7 @@ func MakeShellCmd(debug bool, dryRun bool, profile string, exit func(int)) (*cob
 			cobra.CheckErr(err)
 			clientConfig := userConfig.Client[profile]
 
-			bundle, err := GenerateEnvironment(clientConfig, debug, dryRun)
+			bundle, err := GenerateEnvironment(clientConfig, userConfig.Target, debug, dryRun)
 			cobra.CheckErr(err)
 
 			shell, err := GetShellPath(clientConfig)

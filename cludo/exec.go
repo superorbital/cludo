@@ -18,7 +18,7 @@ func MakeExecCmd(debug bool, dryRun bool, profile string, exit func(int)) (*cobr
 			cobra.CheckErr(err)
 			clientConfig := userConfig.Client[profile]
 
-			bundle, err := GenerateEnvironment(clientConfig, debug, dryRun)
+			bundle, err := GenerateEnvironment(clientConfig, userConfig.Target, debug, dryRun)
 			cobra.CheckErr(err)
 
 			code, err := ExecWithEnv(args, bundle, !cleanEnv, profile, clientConfig.ServerURL)
