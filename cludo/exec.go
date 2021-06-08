@@ -12,7 +12,7 @@ func MakeExecCmd(debug bool, dryRun bool, exit func(int)) (*cobra.Command, error
 	execCmd := &cobra.Command{
 		Use:   "exec",
 		Short: "Executes a command with an environment setup with cludo credentials",
-		Long:  `Executes a command with an environment setup with cludo credentials for the configured cludo client.`,
+		Long:  `Executes a command with an environment setup with cludo credentials for the configured cludo target.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			userConfig, err := config.NewConfigFromViper()
 			cobra.CheckErr(err)
