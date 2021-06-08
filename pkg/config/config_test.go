@@ -12,13 +12,11 @@ import (
 )
 
 const testConfig1Raw = `
+target: https://cludo.superorbital.io/my-role
 client:
-  default:
-    server_url: "https://www.example.com/"
-    key_path: "~/.ssh/id_rsa"
-    passphrase: ""
-    shell_path: "/usr/local/bin/bash"
-    roles: ["default"]
+  key_path: "~/.ssh/id_rsa"
+  passphrase: ""
+  shell_path: "/usr/local/bin/bash"
 server:
   port: 443
   targets:
@@ -42,14 +40,11 @@ server:
 var testConfig1Duration1, _ = time.ParseDuration("10m")
 var testConfig1Duration2, _ = time.ParseDuration("8h")
 var testConfig1 = &config.Config{
-	Client: map[string]*config.ClientConfig{
-		config.DefaultClientConfig: {
-			ServerURL:  "https://www.example.com/",
-			KeyPath:    "~/.ssh/id_rsa",
-			Passphrase: "",
-			ShellPath:  "/usr/local/bin/bash",
-			Roles:      []string{config.DefaultClientConfig},
-		},
+	Target: "https://cludo.superorbital.io/my-role",
+	Client: &config.ClientConfig{
+		KeyPath:    "~/.ssh/id_rsa",
+		Passphrase: "",
+		ShellPath:  "/usr/local/bin/bash",
 	},
 	Server: &config.ServerConfig{
 		Port: 443,

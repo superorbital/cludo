@@ -16,11 +16,9 @@ import (
 )
 
 type ClientConfig struct {
-	ServerURL  string   `mapstructure:"server_url"`
-	KeyPath    string   `mapstructure:"key_path"`
-	Passphrase string   `mapstructure:"passphrase"`
-	ShellPath  string   `mapstructure:"shell_path"`
-	Roles      []string `mapstructure:"roles"`
+	KeyPath    string `mapstructure:"key_path"`
+	Passphrase string `mapstructure:"passphrase"`
+	ShellPath  string `mapstructure:"shell_path"`
 }
 
 func (cc *ClientConfig) NewDefaultSigner() (*auth.Signer, error) {
@@ -55,15 +53,15 @@ func (cc *ClientConfig) NewDefaultSigner() (*auth.Signer, error) {
 	return auth.NewDefaultSigner(key), nil
 }
 
-func (cc *ClientConfig) NewClient(debug bool) (*client.Cludod, error) {
-	serverURL, err := url.Parse(cc.ServerURL)
+func NewClient(target string, debug bool) (*client.Cludod, error) {
+	serverURL, err := url.Parse(target)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to parse client server_url '%s': %v", cc.ServerURL, err)
+		return nil, fmt.Errorf("Failed to parse client target URL '%s': %v", target, err)
 	}
 
 	r := httptransport.New(
 		serverURL.Host,
-		path.Join(serverURL.Path, client.DefaultBasePath),
+		path.Join(client.DefaultBasePath),
 		[]string{serverURL.Scheme},
 	)
 	r.SetDebug(debug)

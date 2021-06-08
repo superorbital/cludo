@@ -108,26 +108,55 @@ Each time a `cludo` command that uses an environment is run, a new AWS session t
 
 ```yaml
 # cludod.yaml
-
 server:
-  users:
-    - public_key: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489..."
-      roles:
-        aws:
-          so_org:
+    targets:
+        prod:
+          aws:
             arn: "aws:arn:iam:..."
             session_duration: "20m"
             access_key_id: "456DEF..."
             secret_access_key: "UVW789..."
-          so_dev:
+          ssh:
+            ...
+        dev:
+          aws:
             arn: "aws:arn:iam:..."
             session_duration: "8h"
             access_key_id: "123ABC..."
             secret_access_key: "ZXY098..."
-      default_role: "so_org"
+        sean:
+        robert:
+        qa:
+        prod_frontend:
+        prod_backend:
+        prod_db:
+  users:
+    - public_key: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489..."
+      targets: ["prod", "dev"]
 ```
 
 We also provide a docker image (`superorbital/cludod`) with `cludod` pre-installed. Just provide a `/etc/cludod/cludod.yaml` config file.
+
+## Running `cludo` client
+
+In order to access a running cludod server, create a `cludo.yaml` file in the root of your application repository. This allows the repository to specify targets users should use when developing a particular application. An example `cludo.yaml` file contains a single key:
+
+```yaml
+target: https://my-cludod-server.myorg.com/profile
+```
+
+The final fragment of the url path is used as the profile name set in the cludod server config. The above example would send a request to the URL `https://my-cludod-server.myorg.com` using the target profile `profile`.
+
+Users may want to configure the SSH keys they use for authentication. This can be done globally for a single user in the files `~/.cludo/config.yaml` or `~/.config/cludod/config.yaml` This file contains user specific metadata about how to authenticate them to the cludod server:
+
+```yaml
+client:
+  key_path: "~/.ssh/my_ssh_key"
+  passphrase: "ssh_key_passphrase"
+  shell_path: "/usr/local/bin/bash"
+```
+
+These values can also be set on the command line via options on the command.
 
 ## Development
 

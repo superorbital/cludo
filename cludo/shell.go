@@ -10,17 +10,17 @@ import (
 )
 
 // MakeShellCmd sets up the shell subcommand.
-func MakeShellCmd(debug bool, dryRun bool, profile string, exit func(int)) (*cobra.Command, error) {
+func MakeShellCmd(debug bool, dryRun bool, exit func(int)) (*cobra.Command, error) {
 	var cleanEnv bool
 
 	execCmd := &cobra.Command{
 		Use:   "shell",
 		Short: "Executes a command with an environment setup with cludo credentials",
-		Long:  `Executes a command with an environment setup with cludo credentials for the provided cludo profile (or 'default').`,
+		Long:  `Executes a command with an environment setup with cludo credentials for the target cludo server endpoint`,
 		Run: func(cmd *cobra.Command, args []string) {
 			userConfig, err := config.NewConfigFromViper()
 			cobra.CheckErr(err)
-			clientConfig := userConfig.Client[profile]
+			clientConfig := userConfig.Client
 
 			bundle, err := GenerateEnvironment(clientConfig, userConfig.Target, debug, dryRun)
 			cobra.CheckErr(err)
@@ -28,7 +28,7 @@ func MakeShellCmd(debug bool, dryRun bool, profile string, exit func(int)) (*cob
 			shell, err := GetShellPath(clientConfig)
 			cobra.CheckErr(err)
 
-			code, err := ExecWithEnv(append([]string{shell}, args...), bundle, !cleanEnv, profile, clientConfig.ServerURL)
+			code, err := ExecWithEnv(append([]string{shell}, args...), bundle, !cleanEnv, userConfig.Target)
 			cobra.CheckErr(err)
 
 			if code != 0 {
@@ -38,7 +38,7 @@ func MakeShellCmd(debug bool, dryRun bool, profile string, exit func(int)) (*cob
 	}
 	execCmd.Flags().BoolVar(&cleanEnv, "clean-env", false, "Set to run shell without inheriting from current environment")
 	execCmd.PersistentFlags().StringP("shell-path", "i", "/bin/sh", "Path to shell")
-	viper.BindPFlag("client.default.shell_path", execCmd.PersistentFlags().Lookup("shell-path"))
+	viper.BindPFlag("client.shell_path", execCmd.PersistentFlags().Lookup("shell-path"))
 
 	return execCmd, nil
 }

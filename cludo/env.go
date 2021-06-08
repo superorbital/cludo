@@ -10,18 +10,18 @@ import (
 )
 
 // MakeEnvCmd sets up the env subcommand.
-func MakeEnvCmd(debug bool, dryRun bool, profile string) (*cobra.Command, error) {
+func MakeEnvCmd(debug bool, dryRun bool) (*cobra.Command, error) {
 	envCmd := &cobra.Command{
 		Use:   "env",
 		Short: "Get environment variables for cludo",
-		Long:  `Get environment variables for the provided cludo profile (or 'default'). You can add these to your shell with: . $(cludo env)`,
+		Long:  `Get environment variables for the configured cludo target. You can add these to your shell with: . $(cludo env)`,
 		Run: func(cmd *cobra.Command, args []string) {
 			// Working with OutOrStdout/OutOrStderr allows us to unit test our command easier
 			out := cmd.OutOrStdout()
 
 			userConfig, err := config.NewConfigFromViper()
 			cobra.CheckErr(err)
-			bundle, err := GenerateEnvironment(userConfig.Client[profile], userConfig.Target, debug, dryRun)
+			bundle, err := GenerateEnvironment(userConfig.Client, userConfig.Target, debug, dryRun)
 			cobra.CheckErr(err)
 
 			_, err = fmt.Fprintln(out, FormatBundle(bundle))

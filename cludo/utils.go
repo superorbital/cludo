@@ -16,7 +16,7 @@ const CludoProfileEnvVar = "CLUDO_PROFILE"
 
 // GenerateEnvironment generates an environment bundle on a remote cludod service.
 func GenerateEnvironment(cc *config.ClientConfig, target string, debug bool, dryRun bool) (models.ModelsEnvironmentBundle, error) {
-	cludodClient, err := cc.NewClient(debug)
+	cludodClient, err := config.NewClient(target, debug)
 	if err != nil {
 		return nil, err
 	}
@@ -46,20 +46,19 @@ func GenerateEnvironment(cc *config.ClientConfig, target string, debug bool, dry
 	return nil, nil
 }
 
-func ProfileURL(profile, serverURL string) (string, error) {
-	if serverURL == "" {
-		return profile, nil
+func ProfileURL(targetURL string) (string, error) {
+	if targetURL == "" {
+		return "", fmt.Errorf("invalid target URL, empty")
 	}
-	u, err := url.Parse(serverURL)
+	u, err := url.Parse(targetURL)
 	if err != nil {
-		return "", fmt.Errorf("Failed to parse server_url '%s': %v", serverURL, err)
+		return "", fmt.Errorf("Failed to parse server_url '%s': %v", targetURL, err)
 	}
-	u.Fragment = profile
 	return u.String(), nil
 }
 
-func ExecWithEnv(args []string, env models.ModelsEnvironmentBundle, inherit bool, profile string, serverURL string) (int, error) {
-	profileURL, err := ProfileURL(profile, serverURL)
+func ExecWithEnv(args []string, env models.ModelsEnvironmentBundle, inherit bool, target string) (int, error) {
+	profileURL, err := ProfileURL(target)
 	if err != nil {
 		return -1, fmt.Errorf("Failed to generate profile url: %v", err)
 	}
