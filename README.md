@@ -175,11 +175,14 @@ $ make
 
 Binaries cross compiled for various OS's and architectures are available in the `builds/` directory.
 
-* If you have a valid `cludod.yaml` file in `~/.cludod` then a local copy of the server can be built and spun up with:
+- If you have a valid `cludod.yaml` file in `~/.cludod` then a local copy of the server can be built and spun up with:
 
 ```shell
 docker compose up --build -d
 ```
+
+- You can run the CLI in a container using something like this:
+  - `docker run -ti -v ${PWD}/data/cludo.yaml:/root/.cludo/cludo.yaml -v ${PWD}/data/id_rsa_TEST_KEY_PP:/app/id_rsa_TEST_KEY_PP ${IMAGE_ID} "cludo shell"`
 
 ### Release
 

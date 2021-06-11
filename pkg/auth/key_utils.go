@@ -6,6 +6,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/superorbital/cludo/pkg/utils"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
 )
@@ -62,9 +63,13 @@ func DecodePrivateKey(encoded []byte, password []byte, interactive bool) (*rsa.P
 	// so let's prompt for it instead.
 	if err != nil && interactive == true {
 		var passphrase []byte
-		passphrase, err = GetPassphrase()
-		if err == nil {
-			parsedKey, err = ssh.ParseRawPrivateKeyWithPassphrase(encoded, passphrase)
+		if utils.DetectTerminal() == true {
+			passphrase, err = GetPassphrase()
+			if err == nil {
+				parsedKey, err = ssh.ParseRawPrivateKeyWithPassphrase(encoded, passphrase)
+			}
+		} else {
+			fmt.Println("[WARN] No terminal detected. Skipping passphrase prompt.")
 		}
 	}
 
