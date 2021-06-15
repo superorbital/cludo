@@ -17,22 +17,26 @@ const AWSSecretAccessKeyEnvVar = "AWS_SECRET_ACCESS_KEY"
 const AWSSessionTokenEnvVar = "AWS_SESSION_TOKEN"
 const AWSSessionExpiryEnvVar = "AWS_SESSION_EXPIRATION"
 
+// This has to be a var so we can take a pointer for it
+var CLUDOD_SESSION = "CLUDOD_SESSION"
+
 type STSGetSessionTokenAPI interface {
 	GetSessionToken(input *sts.GetSessionTokenInput) (*sts.GetSessionTokenOutput, error)
+	AssumeRole(input *sts.AssumeRoleInput) (*sts.AssumeRoleOutput, error)
 }
 
 type AWSPlugin struct {
-	awsRegion string
-	stsClient STSGetSessionTokenAPI
-
+	awsRegion       string
+	stsClient       STSGetSessionTokenAPI
+	roleArn         string
 	sessionDuration int64
 }
 
-func New(region string, stsClient STSGetSessionTokenAPI, sessionDuration time.Duration) *AWSPlugin {
+func New(region string, stsClient STSGetSessionTokenAPI, sessionDuration time.Duration, roleArn string) *AWSPlugin {
 	return &AWSPlugin{
-		awsRegion: region,
-		stsClient: stsClient,
-
+		awsRegion:       region,
+		stsClient:       stsClient,
+		roleArn:         roleArn,
 		sessionDuration: int64(sessionDuration.Seconds()),
 	}
 }
@@ -53,29 +57,7 @@ func NewAWSPlugin(accessKeyID string, secretAccessKey string, region string, ses
 	}
 	stsClient := sts.New(sess)
 
-	// If an AWS Role ARN is specified, assume-role into it first.
-	if roleARN != "" {
-		output, err := stsClient.AssumeRole(&sts.AssumeRoleInput{
-			RoleArn: &roleARN,
-		})
-		if err != nil {
-			return nil, fmt.Errorf("Failed to assume-role %v: %v", err, roleARN)
-		}
-
-		sess, err = session.NewSession(&aws.Config{
-			Credentials: credentials.NewStaticCredentials(
-				*output.Credentials.AccessKeyId,
-				*output.Credentials.SecretAccessKey,
-				*output.Credentials.SessionToken),
-			Region: aws.String(region),
-		})
-		if err != nil {
-			return nil, fmt.Errorf("Failed to create AWS session: %v", err)
-		}
-		stsClient = sts.New(sess)
-	}
-
-	return New(region, stsClient, sessionDuration), nil
+	return New(region, stsClient, sessionDuration, roleARN), nil
 }
 
 func (ap *AWSPlugin) GenerateEnvironment() (*models.ModelsEnvironmentResponse, error) {
@@ -85,11 +67,22 @@ func (ap *AWSPlugin) GenerateEnvironment() (*models.ModelsEnvironmentResponse, e
 	if err != nil {
 		return nil, err
 	}
+	credentials := output.Credentials
+	if ap.roleArn != "" {
+		assumeRoleOutput, err := ap.stsClient.AssumeRole(&sts.AssumeRoleInput{
+			RoleArn:         &ap.roleArn,
+			RoleSessionName: &CLUDOD_SESSION,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("Failed to assume-role %v: %v", err, ap.roleArn)
+		}
+		credentials = assumeRoleOutput.Credentials
+	}
 	return &models.ModelsEnvironmentResponse{
 		Bundle: models.ModelsEnvironmentBundle{
-			AWSAccessKeyIDEnvVar:     *output.Credentials.AccessKeyId,
-			AWSSecretAccessKeyEnvVar: *output.Credentials.SecretAccessKey,
-			AWSSessionTokenEnvVar:    *output.Credentials.SessionToken,
+			AWSAccessKeyIDEnvVar:     *credentials.AccessKeyId,
+			AWSSecretAccessKeyEnvVar: *credentials.SecretAccessKey,
+			AWSSessionTokenEnvVar:    *credentials.SessionToken,
 			AWSSessionExpiryEnvVar:   output.Credentials.Expiration.Format(time.RFC3339),
 			AWSRegionEnvVar:          ap.awsRegion,
 		},
