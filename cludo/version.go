@@ -11,7 +11,7 @@ import (
 )
 
 // MakeVersionCmd sets up the exec subcommand.
-func MakeVersionCmd(debug bool, dryRun bool, profile string) (*cobra.Command, error) {
+func MakeVersionCmd(debug bool, dryRun bool) (*cobra.Command, error) {
 	versionCmd := &cobra.Command{
 		Use:   "version",
 		Short: "Get cludo client and cludod server version",
@@ -23,7 +23,7 @@ func MakeVersionCmd(debug bool, dryRun bool, profile string) (*cobra.Command, er
 			userConfig, err := config.NewConfigFromViper()
 			cobra.CheckErr(err)
 
-			serverVersion, err := GetVersion(userConfig.Client[profile], debug, dryRun)
+			serverVersion, err := GetVersion(userConfig.Target, debug, dryRun)
 			cobra.CheckErr(err)
 
 			_, err = fmt.Fprintf(out, "Client: %s\nServer: %s\n", build.VersionFull(), serverVersion)
@@ -35,8 +35,8 @@ func MakeVersionCmd(debug bool, dryRun bool, profile string) (*cobra.Command, er
 }
 
 // GetVersion generates an environment bundle on a remote cludod service.
-func GetVersion(cc *config.ClientConfig, debug bool, dryRun bool) (string, error) {
-	cludodClient, err := cc.NewClient(debug)
+func GetVersion(target string, debug bool, dryRun bool) (string, error) {
+	cludodClient, err := config.NewClient(target, debug)
 	if err != nil {
 		return "", err
 	}

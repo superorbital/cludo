@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
+	"strings"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/go-openapi/errors"
@@ -118,17 +120,32 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 
 		var role *config.AWSRoleConfig
 		user, ok := conf.Server.GetUser(string(*principal))
+		requestedTargetURI, err := url.Parse(params.Body.Target)
+		if err != nil {
+			errMsg := fmt.Sprintf("Expected target in URL format, received: %s", params.Body.Target)
+			api.Logger("ERROR: %s", err)
+			return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
+				Code:    500,
+				Message: &errMsg,
+			})
+		}
+		target := strings.TrimLeft(requestedTargetURI.Path, "/")
 		if ok && user != nil {
-			if params.Body.RoleID != nil && len(params.Body.RoleID) > 0 {
-				if len(params.Body.RoleID) > 1 {
-					return environment.NewGenerateEnvironmentBadRequest().WithPayload(
-						fmt.Sprintf("Cludo only supports one roleID per user currently: %#v", params.Body),
-					)
+			validTarget := false
+			for _, validUserTarget := range user.Targets {
+				if target == validUserTarget {
+					validTarget = true
 				}
-				role = user.Roles.AWS[params.Body.RoleID[0]]
-			} else {
-				role = user.Roles.AWS[user.DefaultRole]
 			}
+			if !validTarget {
+				errMsg := fmt.Sprintf("User does not have access to requested target: %s", target)
+				api.Logger("Error: %s", errMsg)
+				return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
+					Code:    403,
+					Message: &errMsg,
+				})
+			}
+			role = conf.Server.Targets[target].AWS
 		}
 
 		if role == nil {
@@ -179,7 +196,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 		}
 
 		if conf.Server == nil {
-			errMsg := fmt.Sprintf("Server configuration is missing")
+			errMsg := "Server configuration is missing"
 			api.Logger("ERROR: %s", err)
 			return role.NewListRolesDefault(500).WithPayload(&models.Error{
 				Code:    500,
@@ -189,9 +206,9 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 
 		roles := []string{}
 		user, ok := conf.Server.GetUser(string(*principal))
-		if ok && user != nil && user.Roles != nil && user.Roles.AWS != nil {
-			for roleID := range user.Roles.AWS {
-				roles = append(roles, roleID)
+		if ok && user != nil {
+			for _, userTarget := range user.Targets {
+				roles = append(roles, conf.Server.Targets[userTarget].AWS.AssumeRoleARN)
 			}
 		}
 

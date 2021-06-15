@@ -182,12 +182,9 @@ func init() {
     "models.EnvironmentRequest": {
       "type": "object",
       "properties": {
-        "role_id": {
-          "description": "The id of the role to apply.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+        "target": {
+          "description": "The requested target for the request",
+          "type": "string"
         }
       }
     },
@@ -398,12 +395,9 @@ func init() {
     "models.EnvironmentRequest": {
       "type": "object",
       "properties": {
-        "role_id": {
-          "description": "The id of the role to apply.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+        "target": {
+          "description": "The requested target for the request",
+          "type": "string"
         }
       }
     },

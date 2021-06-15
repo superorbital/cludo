@@ -68,6 +68,16 @@ func ConfigureViper(executable string, configFile string) error {
 			return ErrConfigLoadFailed(err)
 		}
 	}
+	// local repo cludo.yaml file
+	viper.SetConfigName("cludo")
+	viper.AddConfigPath(".")
+	if err := viper.MergeInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			return ErrConfigNotFound
+		} else {
+			return ErrConfigLoadFailed(err)
+		}
+	}
 	return nil
 }
 

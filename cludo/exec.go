@@ -6,22 +6,22 @@ import (
 )
 
 // MakeExecCmd sets up the exec subcommand.
-func MakeExecCmd(debug bool, dryRun bool, profile string, exit func(int)) (*cobra.Command, error) {
+func MakeExecCmd(debug bool, dryRun bool, exit func(int)) (*cobra.Command, error) {
 	var cleanEnv bool
 
 	execCmd := &cobra.Command{
 		Use:   "exec",
 		Short: "Executes a command with an environment setup with cludo credentials",
-		Long:  `Executes a command with an environment setup with cludo credentials for the provided cludo profile (or 'default').`,
+		Long:  `Executes a command with an environment setup with cludo credentials for the configured cludo target.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			userConfig, err := config.NewConfigFromViper()
 			cobra.CheckErr(err)
-			clientConfig := userConfig.Client[profile]
+			clientConfig := userConfig.Client
 
-			bundle, err := GenerateEnvironment(clientConfig, debug, dryRun)
+			bundle, err := GenerateEnvironment(clientConfig, userConfig.Target, debug, dryRun)
 			cobra.CheckErr(err)
 
-			code, err := ExecWithEnv(args, bundle, !cleanEnv, profile, clientConfig.ServerURL)
+			code, err := ExecWithEnv(args, bundle, !cleanEnv, userConfig.Target)
 			cobra.CheckErr(err)
 
 			if code != 0 {

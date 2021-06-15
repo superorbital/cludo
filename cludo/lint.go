@@ -10,7 +10,7 @@ import (
 )
 
 // MakeLintCmd sets up the lint subcommand.
-func MakeLintCmd(debug bool, dryRun bool, profile string) (*cobra.Command, error) {
+func MakeLintCmd(debug bool, dryRun bool) (*cobra.Command, error) {
 	lintCmd := &cobra.Command{
 		Use:   "lint",
 		Short: "Check cludo's configuration's validity",

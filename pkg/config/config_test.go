@@ -12,66 +12,64 @@ import (
 )
 
 const testConfig1Raw = `
+target: https://cludo.superorbital.io/my-role
 client:
-  default:
-    server_url: "https://www.example.com/"
-    key_path: "~/.ssh/id_rsa"
-    passphrase: ""
-    shell_path: "/usr/local/bin/bash"
-    roles: ["default"]
+  key_path: "~/.ssh/id_rsa"
+  passphrase: ""
+  shell_path: "/usr/local/bin/bash"
 server:
   port: 443
+  targets:
+    prod:
+      aws:
+        arn: "aws:arn:iam:..."
+        session_duration: "10m"
+        access_key_id: "456DEF..."
+        secret_access_key: "UVW789..."
+    dev:
+      aws:
+        arn: "aws:arn:iam:..."
+        session_duration: "8h"
+        access_key_id: "123ABC..."
+        secret_access_key: "ZXY098..."
   users:
-    - public_key: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489..."
-      roles:
-        aws:
-          so_org:
-            arn: "aws:arn:iam:..."
-            session_duration: "10m"
-            access_key_id: "456DEF..."
-            secret_access_key: "UVW789..."
-          so_dev:
-            arn: "aws:arn:iam:..."
-            session_duration: "8h"
-            access_key_id: "123ABC..."
-            secret_access_key: "ZXY098..."
-      default_role: "aws_so_org"
+  - public_key: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489..."
+    targets: ["prod", "dev"]
 `
 
 var testConfig1Duration1, _ = time.ParseDuration("10m")
 var testConfig1Duration2, _ = time.ParseDuration("8h")
 var testConfig1 = &config.Config{
-	Client: map[string]*config.ClientConfig{
-		config.DefaultClientConfig: {
-			ServerURL:  "https://www.example.com/",
-			KeyPath:    "~/.ssh/id_rsa",
-			Passphrase: "",
-			ShellPath:  "/usr/local/bin/bash",
-			Roles:      []string{config.DefaultClientConfig},
-		},
+	Target: "https://cludo.superorbital.io/my-role",
+	Client: &config.ClientConfig{
+		KeyPath:    "~/.ssh/id_rsa",
+		Passphrase: "",
+		ShellPath:  "/usr/local/bin/bash",
 	},
 	Server: &config.ServerConfig{
 		Port: 443,
 		Users: []*config.UserConfig{
 			{
 				PublicKey: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489...",
-				Roles: &config.UserRolesConfig{
-					AWS: map[string]*config.AWSRoleConfig{
-						"so_org": {
-							AssumeRoleARN:   "aws:arn:iam:...",
-							SessionDuration: testConfig1Duration1,
-							AccessKeyID:     "456DEF...",
-							SecretAccessKey: "UVW789...",
-						},
-						"so_dev": {
-							AssumeRoleARN:   "aws:arn:iam:...",
-							SessionDuration: testConfig1Duration2,
-							AccessKeyID:     "123ABC...",
-							SecretAccessKey: "ZXY098...",
-						},
-					},
+				Targets:   []string{"prod", "dev"},
+			},
+		},
+		Targets: map[string]*config.UserRolesConfig{
+			"prod": {
+				AWS: &config.AWSRoleConfig{
+					AssumeRoleARN:   "aws:arn:iam:...",
+					SessionDuration: testConfig1Duration1,
+					AccessKeyID:     "456DEF...",
+					SecretAccessKey: "UVW789...",
 				},
-				DefaultRole: "aws_so_org",
+			},
+			"dev": {
+				AWS: &config.AWSRoleConfig{
+					AssumeRoleARN:   "aws:arn:iam:...",
+					SessionDuration: testConfig1Duration2,
+					AccessKeyID:     "123ABC...",
+					SecretAccessKey: "ZXY098...",
+				},
 			},
 		},
 	},
