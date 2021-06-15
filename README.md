@@ -152,7 +152,6 @@ Users may want to configure the SSH keys they use for authentication. This can b
 ```yaml
 client:
   key_path: "~/.ssh/my_ssh_key"
-  passphrase: "ssh_key_passphrase"
   shell_path: "/usr/local/bin/bash"
 ```
 
