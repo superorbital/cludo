@@ -16,9 +16,18 @@ import (
 )
 
 type ClientConfig struct {
+<<<<<<< HEAD
 	KeyPath    string `mapstructure:"key_path"`
 	Passphrase string `mapstructure:"passphrase"`
 	ShellPath  string `mapstructure:"shell_path"`
+=======
+	Interactive bool     `mapstructure:"interactive"`
+	ServerURL   string   `mapstructure:"server_url"`
+	KeyPath     string   `mapstructure:"key_path"`
+	Passphrase  string   `mapstructure:"passphrase"`
+	ShellPath   string   `mapstructure:"shell_path"`
+	Roles       []string `mapstructure:"roles"`
+>>>>>>> b6b2438 (non-interactive mode)
 }
 
 func (cc *ClientConfig) NewDefaultSigner() (*auth.Signer, error) {
@@ -45,7 +54,7 @@ func (cc *ClientConfig) NewDefaultSigner() (*auth.Signer, error) {
 	if cc.Passphrase != "" {
 		passphrase = []byte(cc.Passphrase)
 	}
-	key, err := auth.DecodePrivateKey(encodedKey, passphrase)
+	key, err := auth.DecodePrivateKey(encodedKey, passphrase, cc.Interactive)
 	if err != nil {
 		return nil, fmt.Errorf("Failed decoding private key %v: %v", keyPath, err)
 	}

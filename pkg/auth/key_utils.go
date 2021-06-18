@@ -43,24 +43,24 @@ func GetPassphrase() ([]byte, error) {
 		return []byte(""), err
 	}
 
-	fmt.Printf("\n\n")
+	fmt.Printf("\n")
 	password := string(bytePassword)
 	return []byte(strings.TrimSpace(password)), nil
 }
 
-func DecodePrivateKey(encoded []byte, password []byte) (*rsa.PrivateKey, error) {
+func DecodePrivateKey(encoded []byte, password []byte, interactive bool) (*rsa.PrivateKey, error) {
 	var parsedKey interface{}
 	var err error
 
 	// See if we can decode without a passphrase
 	parsedKey, err = ssh.ParseRawPrivateKey(encoded)
-	if err != nil && len(password) == 0 {
+	if err != nil && len(password) > 0 {
 		// if not, let's try the passphrase the user provided
 		parsedKey, err = ssh.ParseRawPrivateKeyWithPassphrase(encoded, password)
 	}
 	// If we still have an error the passphrase is likely unset or wrong,
 	// so let's prompt for it instead.
-	if err != nil {
+	if err != nil && interactive == true {
 		var passphrase []byte
 		passphrase, err = GetPassphrase()
 		if err == nil {

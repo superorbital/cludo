@@ -122,7 +122,7 @@ func TestDecodePrivateKey(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			actual, actualErr := auth.DecodePrivateKey(tc.encoded, nil)
+			actual, actualErr := auth.DecodePrivateKey(tc.encoded, nil, false)
 
 			assert.EqualValues(t, tc.want, actual)
 			assert.EqualValues(t, tc.wantErr, actualErr)
