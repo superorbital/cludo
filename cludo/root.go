@@ -34,6 +34,8 @@ func MakeRootCmd(exit func(int)) (*cobra.Command, error) {
 	// Register flags bound to viper.
 	rootCmd.PersistentFlags().String("target", "", "URL of server appended with the role name")
 	viper.BindPFlag("target", rootCmd.PersistentFlags().Lookup("target"))
+	rootCmd.PersistentFlags().Bool("interactive", true, "Should the CLI prompt the user for input")
+	viper.BindPFlag("client.default.interactive", rootCmd.PersistentFlags().Lookup("interactive"))
 	rootCmd.PersistentFlags().StringP("key-path", "k", "~/.ssh/id_rsa", "Path to SSH private key")
 	viper.BindPFlag("client.key_path", rootCmd.PersistentFlags().Lookup("key-path"))
 	rootCmd.PersistentFlags().StringP("passphrase", "a", "", "Passphrase for private key (consider using config or setting CLUDO_PASSPHRASE)")

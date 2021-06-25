@@ -2,9 +2,12 @@ package auth_test
 
 import (
 	"bytes"
+	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -23,13 +26,23 @@ func GenerateSSHAuthorizedKey(t *testing.T) (*rsa.PublicKey, []byte) {
 	return pubKey, ssh.MarshalAuthorizedKey(pub)
 }
 
-func GenerateSSHPrivateKey(t *testing.T) (*rsa.PrivateKey, []byte) {
+func GenerateSSHPrivateKey(t *testing.T, passphrase string) (*rsa.PrivateKey, []byte) {
 	key, _ := GenerateRSAKeyPair(t)
 
 	privateKeyPEM := &pem.Block{
 		Type:  "RSA PRIVATE KEY",
 		Bytes: x509.MarshalPKCS1PrivateKey(key),
 	}
+
+	var err error
+	// Encrypt the PEM
+	if passphrase != "" {
+		privateKeyPEM, err = x509.EncryptPEMBlock(rand.Reader, privateKeyPEM.Type, privateKeyPEM.Bytes, []byte(passphrase), x509.PEMCipherAES256)
+		if err != nil {
+			return nil, nil
+		}
+	}
+
 	var private bytes.Buffer
 	if err := pem.Encode(&private, privateKeyPEM); err != nil {
 		t.Fatalf("Failed to convert private key to pem format: %v, %#v", err, key)
@@ -104,8 +117,9 @@ func TestDecodePrivateKey(t *testing.T) {
 		wantErr error
 	}
 
-	key1, encoded1 := GenerateSSHPrivateKey(t)
-	key2, encoded2 := GenerateSSHPrivateKey(t)
+	passphrase := ""
+	key1, encoded1 := GenerateSSHPrivateKey(t, passphrase)
+	key2, encoded2 := GenerateSSHPrivateKey(t, passphrase)
 
 	tests := []test{
 		{
@@ -122,7 +136,7 @@ func TestDecodePrivateKey(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			actual, actualErr := auth.DecodePrivateKey(tc.encoded, nil)
+			actual, actualErr := auth.DecodePrivateKey(tc.encoded, nil, false)
 
 			assert.EqualValues(t, tc.want, actual)
 			assert.EqualValues(t, tc.wantErr, actualErr)
@@ -130,4 +144,43 @@ func TestDecodePrivateKey(t *testing.T) {
 	}
 }
 
-// TODO: Add test for private keys with passphrases
+func TestDecodePrivateKeyWithPassPhrase(t *testing.T) {
+	type test struct {
+		name       string
+		encoded    []byte
+		passphrase string
+		want       *rsa.PrivateKey
+		wantErr    error
+	}
+
+	passphrase1 := "cludo123"
+	passphrase2 := "cludo456"
+	key1, encoded1 := GenerateSSHPrivateKey(t, passphrase1)
+	_, encoded2 := GenerateSSHPrivateKey(t, passphrase2)
+
+	tests := []test{
+		{
+			name:       "Test passphrase key 1",
+			encoded:    encoded1,
+			passphrase: "cludo123",
+			want:       key1,
+		},
+		{
+			name:       "Test passphrase key 2",
+			encoded:    encoded2,
+			passphrase: "badpassphrase",
+			want:       nil,
+			wantErr:    errors.New("Failed to parse private key: x509: decryption password incorrect"),
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			fmt.Println(tc.passphrase)
+			actual, actualErr := auth.DecodePrivateKey(tc.encoded, []byte(tc.passphrase), false)
+
+			assert.EqualValues(t, tc.want, actual)
+			assert.EqualValues(t, tc.wantErr, actualErr)
+		})
+	}
+}

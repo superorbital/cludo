@@ -18,6 +18,7 @@ require (
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
+	github.com/mattn/go-isatty v0.0.13
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pelletier/go-toml v1.9.1 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
@@ -30,5 +31,6 @@ require (
 	golang.org/x/crypto v0.0.0-20210506145944-38f3c27a63bf
 	golang.org/x/net v0.0.0-20210510120150-4163338589ed
 	golang.org/x/sys v0.0.0-20210511113859-b0526f3d8744 // indirect
+	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1
 	gopkg.in/ini.v1 v1.62.0 // indirect
 )
