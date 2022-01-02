@@ -8,6 +8,8 @@ Distributing AWS credentials is painful and dangerous.  Leaked credentials resul
 
 `cludo` currently only supports AWS, but we plan to expand to many other backends in the future.
 
+This README documents the client.  See also [SERVER.md](SERVER.md) and [DEVELOPMENT.md](DEVELOPMENT.md).
+
 ## Installation
 
 ``` bash
