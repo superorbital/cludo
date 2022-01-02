@@ -1,51 +1,54 @@
 # Cludo - Cloud Sudo
 
-Distributing AWS credentials is painful and dangerous.  Leaked credentials result in hours to days of operations headaches and developing an automated rotation system is expensive. Enter - `cludo`
+Distributing AWS credentials is painful and dangerous.  Leaked credentials result in hours to days of operations headaches and developing an automated rotation system is expensive. Enter `cludo`!
 
 > Never distribute or rotate AWS credentials again, with `cludo`
 
-`cludo` is run locally on the developer machine.  It gets temporary credentials from the centralized cludo-server, and provides them locally to arbitrary subprocesses.
+`cludo` is run locally on the developer machine.  It gets temporary AWS credentials from the centralized `cludod` server, and provides them locally via environment variables to arbitrary commands.
 
-`cludo` currently supports the following _environments_:
-
-- AWS
+`cludo` currently only supports AWS, but we plan to expand to many other backends in the future.
 
 ## Installation
 
-To install or update `cludo`/`cludod`:
-
-```shell
+``` bash
 go get -u github.com/superorbital/cludo/cmd/cludo/cludo
-go get -u github.com/superorbital/cludo/cmd/cludod/cludod
 ```
 
-## Setup
+## Getting Started
 
-`cludo` requires a `cludo.yaml` file in your current working directory (`./.cludo/cludo.yaml`) or your home directory (`~/.cludo/cludo.yaml`) or configuration provided through environment variables prefixed with `CLUDO_`
+The `cludo` client will read _both_ your user's `~/.cludo/cludo.yaml` file and the `cludo.yaml` file in your current working directory.  This allows you to configure per-repo and per-user aspects separately.
 
-The following configuration options are supported:
+For example, it's common to have the following in your `~/.cludo/cludo.yaml` file to configure your user's SSH keys for authenticating with `cludod`:
 
-```yaml
-# cludo.yaml
-
-client:
-  default:
-    server_url: "https://www.example.com/"
-    key_path: "~/.ssh/id_rsa"
-    shell_path: "/usr/local/bin/bash"
-    roles: ["default"]
+``` yaml
+ssh_key_paths: 
+- ~/.ssh/superorbial_cludo
+- ~/.ssh/bigco_cludo
 ```
 
-Environment Variable | YAML path | Description
--------------------- | --------- | -----------
-`CLUDO_CLIENT_DEFAULT_SERVER_URL` | `client.default.server_url` | URL of the `cludo-server` instance to connect to.
-`CLUDO_CLIENT_DEFAULT_KEY_PATH` | `client.default.key_path` | Path to a private key for authentication.
-`CLUDO_CLIENT_DEFAULT_SHELL_PATH` | `client.default.shell_path` | Path to the shell to launch when requested. Defaults to user's login shell.
-`CLUDO_CLIENT_DEFAULT_ROLES` | `client.default.roles` | List of roles to apply to cludo environment when generated. Currently only supports one role at a time. Role ids should correspond to role ids assigned to user in cludod.
+Then your team would include this `cludo.yaml` file in a directory in the project's git
+repository to configure the target `cludod` server and environment:
+
+``` yaml
+target: https://cludo.bigco.com/staging
+```
+
+Alternatively, you can provide the values as environment variables: 
+
+``` console
+$ export CLUDO_TARGET=https://cludo.bigco.com/staging
+```
+
+Currently, only the following two values are configurable for the client:
+
+Key             |  Description                                        | Environment Variable 
+---------       |  -----------                                        | -------------------- 
+`target`        |  URL of the `cludo-server` instance to connect to.  | `CLUDO_TARGET`
+`ssh_key_paths` |  Paths to the private keys used for authentication. | `CLUDO_SSH_KEY_PATHS`
 
 ## Usage
 
-```shell
+```
 cludo <command> [options]
 
 Main commands:
@@ -55,34 +58,21 @@ Main commands:
     version - Prints the cludo client and server versions
 ```
 
-We recommend adding `.cludo/` to your `.gitignore` files to avoid accidentally committing secrets.
+For example, to list AWS EC2 instances using the currently configured target:
 
-### Examples
-
-
-#### Server
-
-- `cludod --scheme=http --host=0.0.0.0 --port=8080`
-
-#### Client
-
-List AWS EC2 instances using a cludo environment:
-
-```sh
-cludo exec aws ec2 describe-instances
+``` console
+$ cludo exec aws ec2 describe-instances
 ```
 
 You can add `--debug` to get some extra debugging output.
 
+#### Docker
+
 We also provide a docker image (`superorbital/cludo`). Just provide a `/etc/cludo/cludo.yaml` config file!
 
-## Environments
+## AWS
 
-`cludo` environments configure different environment variables. `cludo` currently only supports the AWS environment.
-
-### Environments - AWS
-
-When enabled, the AWS environment provides the following environment variables:
+The AWS backend provides the following environment variables:
 
 Environment Variable | Description
 -------------------- | -----------
@@ -93,103 +83,3 @@ Environment Variable | Description
 
 Each time a `cludo` command that uses an environment is run, a new AWS session token is generated.
 
-## Running cludod
-
-1. Install `cludod`:
-
-   ```shell
-   go install github.com/superorbital/cludo/cmd/cludod/cludod
-   ```
-
-2. Configure `cludod` by providing a `cludod.yaml` file.
-3. Run `cludod --scheme=http --port=8080 --host=0.0.0.0 -c /path/to/cludod.yaml` or just `cludod --scheme=http --port=8080 --host=0.0.0.0` if your `cludod.yaml` file is placed in: `/etc/cludod/cludod.yaml`, `~/.cludod/cludod.yaml`, `./.cludod/cludod.yaml`, or `./cludod.yaml`
-
-`cludod` supports the following configuration options:
-
-```yaml
-# cludod.yaml
-server:
-    targets:
-        prod:
-          aws:
-            arn: "aws:arn:iam:..."
-            session_duration: "20m"
-            access_key_id: "456DEF..."
-            secret_access_key: "UVW789..."
-          ssh:
-            ...
-        dev:
-          aws:
-            arn: "aws:arn:iam:..."
-            session_duration: "8h"
-            access_key_id: "123ABC..."
-            secret_access_key: "ZXY098..."
-        sean:
-        robert:
-        qa:
-        prod_frontend:
-        prod_backend:
-        prod_db:
-  users:
-    - public_key: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489..."
-      targets: ["prod", "dev"]
-```
-
-We also provide a docker image (`superorbital/cludod`) with `cludod` pre-installed. Just provide a `/etc/cludod/cludod.yaml` config file.
-
-## Running `cludo` client
-
-In order to access a running cludod server, create a `cludo.yaml` file in the root of your application repository. This allows the repository to specify targets users should use when developing a particular application. An example `cludo.yaml` file contains a single key:
-
-```yaml
-target: https://my-cludod-server.myorg.com/staging
-```
-
-The final fragment of the url path is used as the profile name set in the cludod server config. The above example would send a request to the URL `https://my-cludod-server.myorg.com` using the target profile `profile`.
-
-Users may want to configure the SSH keys they use for authentication. This can be done globally for a single user in the files `~/.cludo/config.yaml` or `~/.config/cludod/config.yaml` This file contains user specific metadata about how to authenticate them to the cludod server:
-
-```yaml
-client:
-  key_path: "~/.ssh/my_ssh_key"
-  shell_path: "/usr/local/bin/bash"
-```
-
-These values can also be set on the command line via options on the command.
-
-## Development
-
-To build/test `cludo`/`cludod`:
-
-```shell
-# Only build the binaries (for all platforms)
-$ make build
-```
-
-OR
-
-```shell
-# Build the binaries and containers (for all platforms)
-$ make
-```
-
-Binaries cross compiled for various OS's and architectures are available in the `builds/` directory.
-
-- If you have a valid `cludod.yaml` file in `~/.cludod` then a local copy of the server can be built and spun up with:
-
-```shell
-docker compose up --build -d
-```
-
-- You can run the CLI in a container using something like this:
-  - `docker run -ti -v ${PWD}/data/cludo.yaml:/root/.cludo/cludo.yaml -v ${PWD}/data/id_rsa_TEST_KEY_PP:/app/id_rsa_TEST_KEY_PP ${IMAGE_ID} "cludo shell"`
-
-### Release
-
-- Checkout the `main` branch
-- `make all docker-push`
-- Create a Github release
-- Attach the binaries for all platforms to the release
-- List the fully qualified image tags in the release description.
-
-**TODO**: Automate the creation of a release in Github with the resulting binaries.
