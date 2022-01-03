@@ -16,7 +16,7 @@ This README documents the client.  See also [SERVER.md](SERVER.md) and [DEVELOPM
 go get -u github.com/superorbital/cludo/cmd/cludo/cludo
 ```
 
-## Getting Started
+## Configuration
 
 The `cludo` client will read _both_ your user's `~/.cludo/cludo.yaml` file and the `cludo.yaml` file in your current working directory.  This allows you to configure per-repo and per-user aspects separately.
 
@@ -47,6 +47,10 @@ Key             |  Description                                        | Environm
 ---------       |  -----------                                        | -------------------- 
 `target`        |  URL of the `cludo-server` instance to connect to.  | `CLUDO_TARGET`
 `ssh_key_paths` |  Paths to the private keys used for authentication. | `CLUDO_SSH_KEY_PATHS`
+
+## Authentication with the `cludod` server
+
+Cludo uses SSH keys for authentication.  The client will try all of the keys listed in the `ssh_key_paths` setting when authenticating with the server until one succeeds (or they all fail).
 
 ## Usage
 
