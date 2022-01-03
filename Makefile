@@ -1,7 +1,9 @@
 GOPATH := $(shell go env GOPATH)
 GOFILES := $(wildcard *.go)
 
-GITCOMMIT := $(shell git rev-parse --short HEAD)
+ARCH := $(shell go env GOARCH)
+GITCOMMIT := $(shell git rev-parse --short=16 HEAD)
+GITBRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 VERSION := $(shell cat VERSION)
 
 # Use linker flags to provide version/build settings
@@ -11,30 +13,34 @@ LDFLAGS=-ldflags "$(shell govvv -flags -pkg github.com/superorbital/cludo/pkg/bu
 # MAKEFLAGS += --silent
 
 all: test build docker
-.PHONY: all swagger build test clean docker docker-build docker-tag docker-push
+.PHONY: all swagger build test clean docker docker-build docker-push
 
 swagger:
 	./bin/gen-swagger.sh
 
 # Naming the file with the os/arch makes it super simple to upload to a Github release, as is.
 build:
-	go get github.com/ahmetb/govvv
+	go install github.com/mitchellh/gox@latest
+	go install github.com/ahmetb/govvv@latest
 	go mod tidy
 	gox $(LDFLAGS) -output "builds/{{.OS}}_{{.Arch}}_{{.Dir}}" -osarch="darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64" ./...
 
-docker: docker-build docker-tag
+docker: docker-local-arch-build
 
 # Can't currently sideload manifest-based builds, so we
 # have to split this into multiple builds.
-docker-build:
-	docker buildx build --platform linux/amd64 -t superorbital/cludo:$(VERSION).git-$(GITCOMMIT) -t superorbital/cludo:$(VERSION) -t superorbital/cludo:latest -f ./Dockerfile --load .
-	docker buildx build --platform linux/arm64 -t superorbital/cludo:$(VERSION).git-$(GITCOMMIT) -t superorbital/cludo:$(VERSION) -t superorbital/cludo:arm64-latest -f ./Dockerfile --load .
-	docker buildx build --platform linux/amd64 -t superorbital/cludod:$(VERSION).git-$(GITCOMMIT) -t superorbital/cludod:$(VERSION) -t superorbital/cludod:latest -f ./Dockerfile.cludod --load .
-	docker buildx build --platform linux/arm64 -t superorbital/cludod:$(VERSION).git-$(GITCOMMIT) -t superorbital/cludod:$(VERSION) -t superorbital/cludod:arm64-latest -f ./Dockerfile.cludod --load .
+docker-local-arch-build:
+	docker buildx build --platform linux/$(ARCH) -t superorbital/cludo:$(VERSION).git-$(GITCOMMIT)-local -t superorbital/cludo:$(VERSION)-local -t superorbital/cludo:local -f ./Dockerfile --load .
+	docker buildx build --platform linux/$(ARCH) -t superorbital/cludod:$(VERSION).git-$(GITCOMMIT)-local -t superorbital/cludod:$(VERSION)-local -t superorbital/cludod:local -f ./Dockerfile.cludod --load .
 
-docker-push:
+docker-build-push:
+ifeq ($(shell git rev-parse --abbrev-ref HEAD),main)
 	docker buildx build --platform linux/amd64,linux/arm64 -t superorbital/cludo:$(VERSION).git-$(GITCOMMIT) -t superorbital/cludo:$(VERSION) -t superorbital/cludo:latest -f ./Dockerfile --push .
 	docker buildx build --platform linux/amd64,linux/arm64 -t superorbital/cludod:$(VERSION).git-$(GITCOMMIT) -t superorbital/cludod:$(VERSION) -t superorbital/cludod:latest -f ./Dockerfile.cludod --push .
+else
+		docker buildx build --platform linux/amd64,linux/arm64 -t superorbital/cludo:development.git-$(GITCOMMIT)  -t superorbital/cludo:development -f ./Dockerfile --push .
+		docker buildx build --platform linux/amd64,linux/arm64 -t superorbital/cludod:development.git-$(GITCOMMIT) -t superorbital/cludod:development -t superorbital/cludod:latest -f ./Dockerfile.cludod --push .
+endif
 
 test:
 	go test ./...

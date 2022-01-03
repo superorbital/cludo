@@ -1,7 +1,7 @@
 ARG ARCH=
-FROM ${ARCH}golang:1.16 AS builder
+FROM ${ARCH}golang:1.17 AS builder
 WORKDIR /go/src/github.com/superorbital/cludo/
-RUN go get github.com/ahmetb/govvv
+RUN go install github.com/ahmetb/govvv@latest
 COPY go.mod go.mod
 COPY go.sum go.sum
 RUN go mod download

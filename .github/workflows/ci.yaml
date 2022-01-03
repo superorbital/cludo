@@ -1,7 +1,7 @@
-name: Cludo CI
-on: [push]
+name: cludo CI
+on: [push, pull_request]
 jobs:
-  test-cludo:
+  cludo-pipeline:
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
@@ -10,12 +10,33 @@ jobs:
         with:
           image: tonistiigi/binfmt:latest
           platforms: all
-      - uses: actions/checkout@master
-      - uses: actions/setup-go@v2.1.5
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Setup Go
+        uses: actions/setup-go@v2
         with:
-          go-version: '1.16.3' # The Go version to download (if necessary) and use.
-      - run: go mod download
-      - run: go get github.com/ahmetb/govvv
-      - run: go get github.com/mitchellh/gox
-      - run: echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
-      - run: make
+          go-version: '1.17.5' # The Go version to download and use.
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+      - name: List available build platforms
+        run: echo ${{ steps.buildx.outputs.platforms }}
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Install Dependencies
+        run: |
+          go mod download
+          go install github.com/ahmetb/govvv@latest
+          go install github.com/mitchellh/gox@latest
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+      - name: Run Tests
+        run: make test
+      - name: Build Binaries
+        run: make build
+      - name: Build and Push Container Images
+        run: make docker-build-push
+        env:
+          BUILDKIT_PROGRESS: plain
