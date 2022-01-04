@@ -4,7 +4,7 @@ Distributing AWS credentials is painful and dangerous.  Leaked credentials resul
 
 > Never distribute or rotate AWS credentials again, with `cludo`
 
-`cludo` is run locally on the developer machine.  It gets temporary AWS credentials from the centralized `cludod` server, and provides them locally via environment variables to arbitrary commands.
+The `cludo` command is run locally on the developer machine.  It gets temporary AWS credentials from the centralized `cludod` server, and provides them locally via environment variables to arbitrary commands.  Those credentials expire after a short amount of time, so any leaked credentials are already outdated.
 
 `cludo` currently only supports AWS, but we plan to expand to many other backends in the future.
 
@@ -89,3 +89,6 @@ Environment Variable | Description
 
 Each time a `cludo` command that uses an environment is run, a new AWS session token is generated.
 
+## Comparisons to other tools
+
+Cludo is heavily inspired by [the venerable `aws-vault` tool](https://github.com/99designs/aws-vault).  `aws-vault` is entirely client-side, meaning you don't need a centralized authentication server.  But this also means that each developer is responsible for configuring the tool correctly and consistently.  This also requires that the master credentials be stored on each workstation (via one of many encrypted backends).  If you're a solo developer, then Cludo is overkill, and `aws-vault` is the right tool for you.
