@@ -124,7 +124,8 @@ CodeQL is a  semantic code analysis engine that is used to discover vulnerabilit
 #### CI Pipeline (`ci.yaml`)
 
 Our CI pipeline uses [GitHub Actions](https://github.com/features/actions) and [GitHub Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets) to test, build, and release our code.
-  *Note: With the exception of GITHUB_TOKEN, secrets are not passed to the runner when a workflow is triggered from a forked repository.*
+
+*Note: With the exception of GITHUB_TOKEN, secrets are not passed to the runner when a workflow is triggered from a forked repository.*
 
 The workflow looks something like this:
 
