@@ -39,10 +39,48 @@ jobs:
           state: open
       - name: Run Tests
         run: make test
-      - name: Build Binaries
-        run: make build
+      - name: Get Last Version from Tag
+        id: lasttag
+        shell: bash
+        run: echo ::set-output name=version::$(git describe --abbrev=0 --tags --match 'v[0-9]*\.[0-9]*\.[0-9]*' | cut -c2-)
+      - name: Parse Changelog
+        id: changelog
+        uses: coditory/changelog-parser@v1
       - name: Build and Push Container Images
+        # Only build/push on main when there is not already a release
+        # But always build/push on other branches
+        if: "(github.ref == 'refs/heads/main' && steps.changelog.outputs.version != steps.lasttag.outputs.version) || (github.ref != 'refs/heads/main')"
         run: make docker-build-push
         env:
           BUILDKIT_PROGRESS: plain
           PR_NUM: ${{ steps.findPr.outputs.pr }}
+      - name: Build Binaries for Github Release
+        # We are on the main branch and do not have an existing tagged release
+        if: "github.ref == 'refs/heads/main' && steps.changelog.outputs.version != steps.lasttag.outputs.version"
+        run: make build
+      - name: GitHub Release - Non-Production
+        if: "github.ref == 'refs/heads/main' && steps.changelog.outputs.version != steps.lasttag.outputs.version && steps.changelog.outputs.status == 'prerelease'"
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          files: |
+            builds/*
+          prerelease: true
+          fail_on_unmatched_files: true
+          draft: false
+          body: ${{ steps.changelog.outputs.description }}
+          tag_name: ${{ steps.changelog.outputs.version }}
+          name: Release ${{ steps.changelog.outputs.version }}
+      - name: GitHub Release - Production
+        if: "github.ref == 'refs/heads/main' && steps.changelog.outputs.version != steps.lasttag.outputs.version && steps.changelog.outputs.status == 'release'"
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          files: |
+            builds/*
+          prerelease: false
+          fail_on_unmatched_files: true
+          draft: false
+          body: ${{ steps.changelog.outputs.description }}
+          tag_name: ${{ steps.changelog.outputs.version }}
+          name: Release ${{ steps.changelog.outputs.version }}

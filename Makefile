@@ -46,7 +46,7 @@ ifeq ($(shell git rev-parse --abbrev-ref HEAD),main)
 else ifneq ($(PR_NUM),"")
 # This appears to be a Pull Request
 		docker buildx build --platform linux/amd64,linux/arm64 -t superorbital/cludo:development.git-PR-$(PR_NUM) -t superorbital/cludo:development -f ./Dockerfile --push .
-		docker buildx build --platform linux/amd64,linux/arm64 -t superorbital/cludod:development.it-PR-$(PR_NUM) -t superorbital/cludod:development -f ./Dockerfile.cludod --push .
+		docker buildx build --platform linux/amd64,linux/arm64 -t superorbital/cludod:development.git-PR-$(PR_NUM) -t superorbital/cludod:development -f ./Dockerfile.cludod --push .
 else
 # This appears to be a non-default branch
 		docker buildx build --platform linux/amd64,linux/arm64 -t superorbital/cludo:development.git-$(GITBRANCH)  -t superorbital/cludo:development -f ./Dockerfile --push .
