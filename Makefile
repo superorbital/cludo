@@ -7,7 +7,7 @@ GITBRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 VERSION := $(shell cat VERSION)
 
 # Use linker flags to provide version/build settings
-LDFLAGS=-ldflags "$(shell govvv -flags -pkg github.com/superorbital/cludo/pkg/build)"
+LDFLAGS=-ldflags "$(shell go run github.com/ahmetb/govvv -flags -pkg github.com/superorbital/cludo/pkg/build)"
 
 # Make is verbose in Linux. Make it silent.
 # MAKEFLAGS += --silent
@@ -24,10 +24,8 @@ swagger:
 
 # Naming the file with the os/arch makes it super simple to upload to a Github release, as is.
 build:
-	go install github.com/mitchellh/gox@latest
-	go install github.com/ahmetb/govvv@latest
 	go mod tidy
-	gox $(LDFLAGS) -output "builds/{{.OS}}_{{.Arch}}_{{.Dir}}" -osarch="darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64" ./...
+	go run github.com/mitchellh/gox $(LDFLAGS) -output "builds/{{.OS}}_{{.Arch}}_{{.Dir}}" -osarch="darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64" ./...
 
 docker: docker-local-arch-build
 

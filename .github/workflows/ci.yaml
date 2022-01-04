@@ -28,9 +28,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Install Dependencies
         run: |
-          go mod download
-          go install github.com/ahmetb/govvv@latest
-          go install github.com/mitchellh/gox@latest
+          go mod tidy
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
       - name: Detect Pull Request
         uses: jwalton/gh-find-current-pr@v1
