@@ -1,5 +1,5 @@
 name: cludo CI
-on: [ push]
+on: [push]
 jobs:
   cludo-pipeline:
     runs-on: ubuntu-latest
