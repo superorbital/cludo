@@ -92,3 +92,65 @@ Each time a `cludo` command that uses an environment is run, a new AWS session t
 ## Comparisons to other tools
 
 Cludo is heavily inspired by [the venerable `aws-vault` tool](https://github.com/99designs/aws-vault).  `aws-vault` is entirely client-side, meaning you don't need a centralized authentication server.  But this also means that each developer is responsible for configuring the tool correctly and consistently.  This also requires that the master credentials be stored on each workstation (via one of many encrypted backends).  If you're a solo developer, then Cludo is overkill, and `aws-vault` is the right tool for you.
+
+## Development
+
+### Download Source Code
+
+```sh
+git clone https://github.com/superorbital/cludo
+```
+
+### Build Locally
+
+```sh
+make
+```
+
+### Github Actions
+
+#### Dependency Management (`dependabot.yaml`)
+
+Dependabot creates pull requests for any dependencies that are in need of an update.
+
+* [Documentation](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/about-dependabot-version-updates)
+
+#### Code Analysis (`codeql-analysis.yaml`)
+
+CodeQL is a  semantic code analysis engine that is used to discover vulnerabilities across a codebase. CodeQL lets you query code as though it were data. Write a query to find all variants of a vulnerability and eradicating it forever. Then share your query to help others do the same.
+
+* [Documentation](https://codeql.github.com/)
+
+#### CI Pipeline (`ci.yaml`)
+
+Our CI pipeline uses [GitHub Actions](https://github.com/features/actions) and [GitHub Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets) to test, build, and release our code.
+  *Note: With the exception of GITHUB_TOKEN, secrets are not passed to the runner when a workflow is triggered from a forked repository.*
+
+The workflow looks something like this:
+
+* On any push:
+  * Set up `qemu` and `binfmt` to support multi-architecture container image builds.
+  * Checkout source code.
+  * Setup `go` environment.
+  * Setup `docker buildx` and run `docker login`
+  * Install `go` dependencies.
+  * Detect if this is a Pull Request (PR).
+  * Run `go` tests.
+  * Determine the most recent version tag in `git`
+  * Parse the Change Log.
+  * Build and push `cludo` and `cludod` container images
+    * We only do this step if:
+      * We **ARE NOT** on the `main` branch **OR**
+      * We **ARE** on the `main` branch and a new version has been identified in `CHANGELOG.md`.
+  * Build  `cludo` and `cludod` binaries for Github release
+    * We only do this step if:
+      * We **ARE** on the `main` branch and a new version has been identified in `CHANGELOG.md`.
+  * Create a **non-production release** on Github
+    * We only do this step if:
+      * We **ARE** on the `main` branch, a new version has been identified in `CHANGELOG.md`, and the release version has a suffix (*e.g. `v0.0.1-alpha`*)
+  * Create a **production release** on Github
+    * We only do this step if:
+      * We **ARE** on the `main` branch, a new version has been identified in `CHANGELOG.md`, and the release version does not have a suffix (*e.g. `v1.0.0`*)
+  * Trigger a Slack message via a workflow.
+    * We only do this step if:
+      * A Github release was created.
