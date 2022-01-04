@@ -84,3 +84,14 @@ jobs:
           body: ${{ steps.changelog.outputs.description }}
           tag_name: ${{ steps.changelog.outputs.version }}
           name: Release ${{ steps.changelog.outputs.version }}
+      - name: Send GitHub Action trigger data to Slack workflow
+        id: slack
+        if: "github.ref == 'refs/heads/main' && steps.changelog.outputs.version != steps.lasttag.outputs.version && steps.changelog.outputs.status != 'unreleased'"
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "version": "${{ steps.changelog.outputs.version }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
