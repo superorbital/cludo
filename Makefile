@@ -15,7 +15,7 @@ LDFLAGS=-ldflags "$(shell go run github.com/ahmetb/govvv -flags -pkg github.com/
 PR_NUM ?= ""
 
 all: test build docker
-.PHONY: all swagger build test clean docker docker-build docker-push
+.PHONY: all swagger build test clean docker docker-local-arch-build
 
 swagger:
 	./bin/gen-swagger.sh
