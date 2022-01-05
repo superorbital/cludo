@@ -1,7 +1,11 @@
-name: cludo CI
+name: cludo CI Pipeline
 on: [push]
 jobs:
-  cludo-pipeline:
+  cludo-ci-pipeline:
+    permissions:
+      id-token: write
+      packages: write
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
@@ -66,7 +70,12 @@ jobs:
           prerelease: true
           fail_on_unmatched_files: true
           draft: false
-          body: ${{ steps.changelog.outputs.description }}
+          body: |
+            ${{ steps.changelog.outputs.description }}
+
+            ### Container Images
+            * [cludo](https://hub.docker.com/r/superorbital/cludo)
+            * [cludod](https://hub.docker.com/r/superorbital/cludod)
           tag_name: ${{ steps.changelog.outputs.version }}
           name: Release ${{ steps.changelog.outputs.version }}
       - name: GitHub Release - Production
@@ -82,11 +91,20 @@ jobs:
           body: |
             ${{ steps.changelog.outputs.description }}
 
-            ## Container Images
+            ### Container Images
             * [cludo](https://hub.docker.com/r/superorbital/cludo)
             * [cludod](https://hub.docker.com/r/superorbital/cludod)
           tag_name: ${{ steps.changelog.outputs.version }}
           name: Release ${{ steps.changelog.outputs.version }}
+      - name: Install Cosign
+        if: "github.ref == 'refs/heads/main' && steps.changelog.outputs.version != steps.lasttag.outputs.version"
+        uses: sigstore/cosign-installer@main
+      - name: Add cosign signature to cludo latest
+        if: "github.ref == 'refs/heads/main' && steps.changelog.outputs.version != steps.lasttag.outputs.version"
+        run: COSIGN_EXPERIMENTAL=1 cosign sign --recursive -a git_sha=$GITHUB_SHA docker.io/superorbital/cludo:latest
+      - name: Add cosign signature to cludod latest
+        if: "github.ref == 'refs/heads/main' && steps.changelog.outputs.version != steps.lasttag.outputs.version"
+        run: COSIGN_EXPERIMENTAL=1 cosign sign --recursive -a git_sha=$GITHUB_SHA docker.io/superorbital/cludod:latest
       - name: Send GitHub Action trigger data to Slack workflow
         id: slack
         if: "github.ref == 'refs/heads/main' && steps.changelog.outputs.version != steps.lasttag.outputs.version && steps.changelog.outputs.status != 'unreleased'"

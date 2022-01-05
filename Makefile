@@ -12,9 +12,7 @@ LDFLAGS=-ldflags "$(shell go run github.com/ahmetb/govvv -flags -pkg github.com/
 # Make is verbose in Linux. Make it silent.
 # MAKEFLAGS += --silent
 
-ifndef PR_NUM
-override PR_NUM = 
-endif
+PR_NUM ?= ""
 
 all: test build docker
 .PHONY: all swagger build test clean docker docker-build docker-push
@@ -42,13 +40,17 @@ ifeq ($(shell git rev-parse --abbrev-ref HEAD),main)
 	docker buildx build --platform linux/amd64,linux/arm64 -t superorbital/cludo:$(VERSION) -t superorbital/cludo:latest -f ./Dockerfile --push .
 	docker buildx build --platform linux/amd64,linux/arm64 -t superorbital/cludod:$(VERSION) -t superorbital/cludod:latest -f ./Dockerfile.cludod --push .
 else ifneq ($(PR_NUM),"")
+# FIXME: We appear to get through here with an empty value in some cases...
 # This appears to be a Pull Request
-		docker buildx build --platform linux/amd64,linux/arm64 -t superorbital/cludo:development.git-PR-$(PR_NUM) -t superorbital/cludo:development -f ./Dockerfile --push .
-		docker buildx build --platform linux/amd64,linux/arm64 -t superorbital/cludod:development.git-PR-$(PR_NUM) -t superorbital/cludod:development -f ./Dockerfile.cludod --push .
+		docker buildx build --platform linux/amd64,linux/arm64 -t superorbital/cludo:development.git-PR-$(PR_NUM) -f ./Dockerfile --push .
+		docker buildx build --platform linux/amd64,linux/arm64 -t superorbital/cludod:development.git-PR-$(PR_NUM) -f ./Dockerfile.cludod --push .
 else
 # This appears to be a non-default branch
-		docker buildx build --platform linux/amd64,linux/arm64 -t superorbital/cludo:development.git-$(GITBRANCH)  -t superorbital/cludo:development -f ./Dockerfile --push .
-		docker buildx build --platform linux/amd64,linux/arm64 -t superorbital/cludod:development.git-$(GITBRANCH) -t superorbital/cludod:development -f ./Dockerfile.cludod --push .
+# (for now do nothing , as this is unusual and we don't have a cleanup strategy)
+# We will also need to make GITBRANCH valid for an image tag.
+		echo "Not building for non-main branch"
+#docker buildx build --platform linux/amd64,linux/arm64 -t superorbital/cludo:development.git-$(GITBRANCH) -f ./Dockerfile --push .
+#docker buildx build --platform linux/amd64,linux/arm64 -t superorbital/cludod:development.git-$(GITBRANCH) -f ./Dockerfile.cludod --push .
 endif
 
 test:
