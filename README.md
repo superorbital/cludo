@@ -1,10 +1,13 @@
 # Cludo - Cloud Sudo
 
-Distributing AWS credentials is painful and dangerous.  Leaked credentials result in hours to days of operations headaches and developing an automated rotation system is expensive. Enter `cludo`!
+* [Github Repo](https://github.com/superorbital/cludo)
+* [cludo](https://hub.docker.com/r/superorbital/cludo) and  [cludod](https://hub.docker.com/r/superorbital/cludod) container images
 
-> Never distribute or rotate AWS credentials again, with `cludo`
+Distributing AWS credentials is painful and dangerous. Leaked credentials result in hours to days of operations headaches and developing an automated rotation system is expensive. Enter `cludo`!
 
-The `cludo` command is run locally on the developer machine.  It gets temporary AWS credentials from the centralized `cludod` server, and provides them locally via environment variables to arbitrary commands.  Those credentials expire after a short amount of time, so any leaked credentials are already outdated.
+> Never distribute or force developers to rotate AWS credentials again.
+
+The `cludo` command is run locally on the developer machine. It gets temporary AWS credentials from the centralized `cludod` server, and then provides the credentials locally via environment variables to arbitrary commands. Those credentials expire after a short amount of time, so any leaked credentials are already outdated.
 
 `cludo` currently only supports AWS, but we plan to expand to many other backends in the future.
 
@@ -152,6 +155,6 @@ The workflow looks something like this:
   * Create a **production release** on Github
     * We only do this step if:
       * We **ARE** on the `main` branch, a new version has been identified in `CHANGELOG.md`, and the release version does not have a suffix (*e.g. `v1.0.0`*)
-  * Trigger a Slack message via a workflow.
+  * Trigger a Slack message via [a workflow created from this file](https://github.com/superorbital/cludo/blob/main/.slack/workflows/cludo_github_actions.slackworkflow).
     * We only do this step if:
       * A Github release was created.
