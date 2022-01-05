@@ -2,6 +2,10 @@ name: cludo CI
 on: [push]
 jobs:
   cludo-pipeline:
+    permissions:
+      id-token: write
+      packages: write
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
@@ -87,6 +91,12 @@ jobs:
             * [cludod](https://hub.docker.com/r/superorbital/cludod)
           tag_name: ${{ steps.changelog.outputs.version }}
           name: Release ${{ steps.changelog.outputs.version }}
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@main
+      - name: Add cosign signature to cludo latest
+        run: COSIGN_EXPERIMENTAL=1 cosign sign --recursive -a git_sha=$GITHUB_SHA docker.io/superorbital/cludo:latest
+      - name: Add cosign signature to cludod latest
+        run: COSIGN_EXPERIMENTAL=1 cosign sign --recursive -a git_sha=$GITHUB_SHA docker.io/superorbital/cludod:latest
       - name: Send GitHub Action trigger data to Slack workflow
         id: slack
         if: "github.ref == 'refs/heads/main' && steps.changelog.outputs.version != steps.lasttag.outputs.version && steps.changelog.outputs.status != 'unreleased'"

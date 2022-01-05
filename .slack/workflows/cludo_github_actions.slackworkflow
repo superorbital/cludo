@@ -1,0 +1,69 @@
+{
+  "source_id": "388895284979118133",
+  "version": "1",
+  "workflow": {
+    "name": "cludo Github Actions",
+    "blueprint": {
+      "version": "1",
+      "trigger": {
+        "type": "webhook",
+        "id": "ea21dc26-224d-4af2-8797-2355980b4a03",
+        "config": {
+          "url": "",
+          "variables": [
+            {
+              "type": "text",
+              "key": "version",
+              "client_id": "45d8c102-c9da-4dcc-b103-2b989128860a"
+            }
+          ],
+          "revoked_token": false
+        }
+      },
+      "steps": [
+        {
+          "type": "message",
+          "id": "ef6ca435-0fa7-4353-b9f6-5b953f558b14",
+          "config": {
+            "channel": {
+              "value": "C020VHKD5TM"
+            },
+            "has_button": false,
+            "message_text": "cludo version {{ea21dc26-224d-4af2-8797-2355980b4a03==45d8c102-c9da-4dcc-b103-2b989128860a==text}} released!",
+            "message_blocks": [
+              {
+                "type": "rich_text",
+                "elements": [
+                  {
+                    "type": "rich_text_section",
+                    "elements": [
+                      {
+                        "url": "https://github.com/superorbital/cludo/releases",
+                        "text": "cludo",
+                        "type": "link"
+                      },
+                      {
+                        "text": " version ",
+                        "type": "text"
+                      },
+                      {
+                        "type": "workflowtoken",
+                        "id": "ea21dc26-224d-4af2-8797-2355980b4a03==45d8c102-c9da-4dcc-b103-2b989128860a==text",
+                        "property": "",
+                        "data_type": "text"
+                      },
+                      {
+                        "text": " released!",
+                        "type": "text"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
