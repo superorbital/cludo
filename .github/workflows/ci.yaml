@@ -79,7 +79,12 @@ jobs:
           prerelease: false
           fail_on_unmatched_files: true
           draft: false
-          body: ${{ steps.changelog.outputs.description }}
+          body: |
+            ${{ steps.changelog.outputs.description }}
+
+            ## Container Images
+            * [cludo](https://hub.docker.com/r/superorbital/cludo)
+            * [cludod](https://hub.docker.com/r/superorbital/cludod)
           tag_name: ${{ steps.changelog.outputs.version }}
           name: Release ${{ steps.changelog.outputs.version }}
       - name: Send GitHub Action trigger data to Slack workflow
