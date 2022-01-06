@@ -1,4 +1,4 @@
-# Cludo (Cloud Sudo) Client
+# Cludo (Cloud Sudo)
 
 * [Github Repo](https://github.com/superorbital/cludo)
 * [cludo](https://hub.docker.com/r/superorbital/cludo) and  [cludod](https://hub.docker.com/r/superorbital/cludod) container images
@@ -11,23 +11,17 @@ The `cludo` command is run locally on the developer machine. It gets temporary A
 
 `cludo` currently only supports AWS, but we plan to expand to many other backends in the future.
 
-This README documents the client (`cludo`).
+This README primarily documents the client (`cludo`). [A list of additional documentation can be found here](#other-documentation).
 
-## Other Documentation
+## Client Documentation
 
-* [Changelog](./CHANGELOG.md)
-* [Code of Conduct](./CODE_OF_CONDUCT.md)
-* [Development](./DEVELOPMENT.md)
-* [License](./LICENSE)
-* [Server - cludod](./SERVER.md)
-
-## Installation
+### Installation
 
 ``` bash
 go get -u github.com/superorbital/cludo/cmd/cludo/cludo
 ```
 
-## Configuration
+### Configuration
 
 The `cludo` client will read _both_ your user's `~/.cludo/cludo.yaml` file and the `cludo.yaml` file in your current working directory.  This allows you to configure per-repo and per-user aspects separately.
 
@@ -59,11 +53,11 @@ Key             |  Description                                        | Environm
 `target`        |  URL of the `cludo-server` instance to connect to.  | `CLUDO_TARGET`
 `ssh_key_paths` |  Paths to the private keys used for authentication. | `CLUDO_SSH_KEY_PATHS`
 
-## Authentication with the `cludod` server
+### Authentication with the `cludod` server
 
 Cludo uses SSH keys for authentication.  The client will try all of the keys listed in the `ssh_key_paths` setting when authenticating with the server until one succeeds (or they all fail).
 
-## Usage
+### Usage
 
 ```
 cludo <command> [options]
@@ -87,7 +81,7 @@ You can add `--debug` to get some extra debugging output.
 
 We also provide a docker image (`superorbital/cludo`). Just provide a `/etc/cludo/cludo.yaml` config file!
 
-## AWS
+### AWS
 
 The AWS backend provides the following environment variables:
 
@@ -99,6 +93,14 @@ Environment Variable | Description
 `AWS_SESSION_EXPIRATION` | Time when generated AWS session token will expire.
 
 Each time a `cludo` command that uses an environment is run, a new AWS session token is generated.
+
+## Other Documentation
+
+* [Changelog](./CHANGELOG.md)
+* [Code of Conduct](./CODE_OF_CONDUCT.md)
+* [Development](./DEVELOPMENT.md)
+* [License](./LICENSE)
+* [Server - cludod](./SERVER.md)
 
 ## Comparisons to other tools
 
