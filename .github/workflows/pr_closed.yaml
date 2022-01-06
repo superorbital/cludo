@@ -11,8 +11,8 @@ jobs:
         # https://github.com/docker/hub-tool/pull/198
         # https://github.com/docker/hub-tool/issues/58#issuecomment-1006058934
         run: |
-          curl -sL https://github.com/superorbital/docker-hub-tool/releases/download/2022-01-06-patched/hub-tool_linux_amd64 -o /usr/bin/hub-tool
-          chmod a+rx /usr/bin/hub-tool
+          sudo curl -sL https://github.com/superorbital/docker-hub-tool/releases/download/2022-01-06-patched/hub-tool_linux_amd64 -o /usr/bin/hub-tool
+          sudo chmod a+rx /usr/bin/hub-tool
       - name: Remove PR container image via hub-tool
         run: |
           /usr/bin/hub-tool login
