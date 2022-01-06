@@ -95,6 +95,9 @@ The workflow looks something like this:
   * Build  `cludo` and `cludod` binaries for Github release
     * We only do this step if:
       * We **ARE** on the `main` branch and a new version has been identified in `CHANGELOG.md`.
+  * Compress Binaries via UPX
+    * We only do this step if:
+      * We **ARE** on the `main` branch and a new version has been identified in `CHANGELOG.md`.
   * Create a **non-production release** on Github
     * We only do this step if:
       * We **ARE** on the `main` branch, a new version has been identified in `CHANGELOG.md`, and the release version has a suffix (*e.g. `v0.0.1-alpha`*)

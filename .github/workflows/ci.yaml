@@ -60,13 +60,20 @@ jobs:
         # We are on the main branch and do not have an existing tagged release
         if: "github.ref == 'refs/heads/main' && steps.changelog.outputs.version != steps.lasttag.outputs.version"
         run: make build
+      - name: Compress Binaries via UPX
+        uses: crazy-max/ghaction-upx@v1
+        with:
+          version: latest
+          files: |
+            ./builds/*
+          args: -fq9
       - name: GitHub Release - Non-Production
         if: "github.ref == 'refs/heads/main' && steps.changelog.outputs.version != steps.lasttag.outputs.version && steps.changelog.outputs.status == 'prerelease'"
         uses: softprops/action-gh-release@v1
         with:
           token: ${{ secrets.GH_TOKEN }}
           files: |
-            builds/*
+            ./builds/*
           prerelease: true
           fail_on_unmatched_files: true
           draft: false
@@ -76,6 +83,22 @@ jobs:
             ### Container Images
             * [cludo](https://hub.docker.com/r/superorbital/cludo)
             * [cludod](https://hub.docker.com/r/superorbital/cludod)
+            
+            #### Software Supply Chain Security
+            
+            We sign all release containers with [cosign](https://github.com/sigstore/cosign/blob/main/KEYLESS.md).
+            
+            You can verify these signatures using the following commands:
+            
+            ```sh
+            COSIGN_EXPERIMENTAL=1 cosign verify superorbital/cludo:${{ steps.changelog.outputs.version }}
+            COSIGN_EXPERIMENTAL=1 cosign verify superorbital/cludod:${{ steps.changelog.outputs.version }}
+            ```
+            
+            ### Binaries
+            
+            * All binaries are compressed with [UPX](https://upx.github.io/), to save on bandwidth and storage space.
+            
           tag_name: ${{ steps.changelog.outputs.version }}
           name: Release ${{ steps.changelog.outputs.version }}
       - name: GitHub Release - Production
@@ -94,6 +117,22 @@ jobs:
             ### Container Images
             * [cludo](https://hub.docker.com/r/superorbital/cludo)
             * [cludod](https://hub.docker.com/r/superorbital/cludod)
+            
+            #### Software Supply Chain Security
+            
+            We sign all release containers with [cosign](https://github.com/sigstore/cosign/blob/main/KEYLESS.md).
+            
+            You can verify these signatures using the following commands:
+            
+            ```sh
+            COSIGN_EXPERIMENTAL=1 cosign verify superorbital/cludo:${{ steps.changelog.outputs.version }}
+            COSIGN_EXPERIMENTAL=1 cosign verify superorbital/cludod:${{ steps.changelog.outputs.version }}
+            ```
+            
+            ### Binaries
+            
+            * All binaries are compressed with [UPX](https://upx.github.io/), to save on bandwidth and storage space.
+            
           tag_name: ${{ steps.changelog.outputs.version }}
           name: Release ${{ steps.changelog.outputs.version }}
       - name: Install Cosign

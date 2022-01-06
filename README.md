@@ -1,4 +1,4 @@
-# Cludo - Cloud Sudo
+# Cludo (Cloud Sudo) Client
 
 * [Github Repo](https://github.com/superorbital/cludo)
 * [cludo](https://hub.docker.com/r/superorbital/cludo) and  [cludod](https://hub.docker.com/r/superorbital/cludod) container images
@@ -11,7 +11,15 @@ The `cludo` command is run locally on the developer machine. It gets temporary A
 
 `cludo` currently only supports AWS, but we plan to expand to many other backends in the future.
 
-This README documents the client.  See also [SERVER.md](SERVER.md) and [DEVELOPMENT.md](DEVELOPMENT.md).
+This README documents the client (`cludo`).
+
+## Other Documentation
+
+* [Changelog](./CHANGELOG.md)
+* [Code of Conduct](./CODE_OF_CONDUCT.md)
+* [Development](./DEVELOPMENT.md)
+* [License](./LICENSE)
+* [Server - cludod](./SERVER.md)
 
 ## Installation
 
