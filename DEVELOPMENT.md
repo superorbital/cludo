@@ -85,6 +85,7 @@ The workflow looks something like this:
   * Setup `docker buildx` and run `docker login`
   * Set up Helm
   * Setup Python
+  * Prepare cludod config stub files
   * Set up helm chart-testing tool (ct)
   * Run chart-testing (list-changed)
   * Run chart-testing (lint)
