@@ -1,6 +1,10 @@
 apiVersion: v2
 name: cludod
 description: A Cludo Server (cludod) Helm chart for Kubernetes
+# <a href="https://iconscout.com/icons/upload-to-cloud" target="_blank">Upload To Cloud Icon</a>
+# by <a href="https://iconscout.com/contributors/eva-icons">Akveo</a>
+# on <a href="https://iconscout.com">Iconscout</a>
+icon: https://raw.githubusercontent.com/superorbital/cludo/main/images/upload-to-cloud.png
 
 # A chart can be either an 'application' or a 'library' chart.
 #
