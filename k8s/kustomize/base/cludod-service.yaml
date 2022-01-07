@@ -1,11 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: cludod-service
+  name: cludod
 spec:
   selector:
     app: cludod
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 80
+      targetPort: http
+      name: http

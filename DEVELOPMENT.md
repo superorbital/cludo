@@ -50,7 +50,7 @@ docker run -ti \
 
 * Create a new branch from main
 * Make your changes
-* Update VERSION and CHANGELOG.md
+* Update [VERSION](./VERSION), [CHANGELOG.md](./CHANGELOG.md), and the helm [Chart.yaml](./k8s/helm/cludo/Chart.yaml)
 * Create a PR
 * Get approval
 * Merge the PR

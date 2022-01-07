@@ -1,0 +1,9 @@
+commonLabels:
+ env: development
+bases:
+- ../../base
+patches:
+- replica_count.yaml
+images:
+- name: superorbital/cludod:latest
+  newTag: latest

@@ -1,0 +1,10 @@
+commonLabels:
+  app: cludod
+resources:
+- cludod-deployment.yaml
+- cludod-service.yaml
+
+secretGenerator:
+- name: cludod-config
+  files:
+    - cludod.yaml=files-secrets/secret-cludod.yaml

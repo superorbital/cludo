@@ -1,0 +1,9 @@
+commonLabels:
+ env: staging
+bases:
+- ../../base
+patches:
+- replica_count.yaml
+images:
+- name: superorbital/cludod:latest
+  newTag: 0.0.1-alpha
