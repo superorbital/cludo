@@ -122,8 +122,5 @@ The workflow looks something like this:
 The workflow looks something like this:
 
 * On any PR closure:
-  * Set up `qemu` and `binfmt` to support multi-architecture container image builds.
-  * Setup `go` environment.
-  * Run `docker login`
-  * Patch and Build Docker 's `hub-tool`
+  * Install a fork of Docker 's `hub-tool`
   * Remove all PR-related container images via `hub-tool`
