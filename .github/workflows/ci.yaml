@@ -55,10 +55,11 @@ jobs:
         run: |
           cd k8s/helm/cludod
           changed=$(ct list-changed --target-branch main)
+          # Create an empty config file
+          touch secret-cludod.yaml
           if [[ -n "$changed" ]]; then
             echo "::set-output name=changed::true"
           fi
-
       - name: Run chart-testing (lint)
         run: |
           cd k8s/helm/cludod
@@ -72,6 +73,15 @@ jobs:
         run: |
           cd k8s/helm/cludod
           ct install --target-branch main
+
+      - name: Install and Run Kustomize
+        uses: int128/kustomize-action@v1
+        id: kustomize
+        with:
+          kustomization: overlays/*/kustomization.yaml
+
+      - name: List Kustomize Generated Manifests
+        run: find ${{ steps.kustomize.outputs.directory }}
 
       - name: Install Dependencies
         run: |
