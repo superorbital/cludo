@@ -78,7 +78,7 @@ jobs:
         uses: int128/kustomize-action@v1
         id: kustomize
         with:
-          kustomization: overlays/*/kustomization.yaml
+          kustomization: k8s/kustomize/overlays/*/kustomization.yaml
 
       - name: List Kustomize Generated Manifests
         run: find ${{ steps.kustomize.outputs.directory }}
