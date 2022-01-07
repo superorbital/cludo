@@ -83,6 +83,19 @@ The workflow looks something like this:
   * Checkout source code.
   * Setup `go` environment.
   * Setup `docker buildx` and run `docker login`
+  * Set up Helm
+  * Setup Python
+  * Set up helm chart-testing tool (ct)
+  * Run chart-testing (list-changed)
+  * Run chart-testing (lint)
+    * We only do this step if:
+      * If chart-testing (lint) detects changes between this branch and the main branch.
+  * Create kind cluster
+    * We only do this step if:
+      * If chart-testing (list-changed) detected changed between this branch and the main branch.
+  * Run chart-testing (install)
+    * We only do this step if:
+      * If chart-testing (install) detects changes between this branch and the main branch.
   * Install `go` dependencies.
   * Detect if this is a Pull Request (PR).
   * Run `go` tests.
