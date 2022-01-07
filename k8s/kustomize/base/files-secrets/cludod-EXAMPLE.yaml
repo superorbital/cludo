@@ -1,0 +1,10 @@
+server:
+  users:
+    - public_key: "REDACTED"
+      roles:
+        aws:
+          test:
+            session_duration: "30m"
+            access_key_id: "REDACTED"
+            secret_access_key: "REDACTED"
+      default_role: "test"
