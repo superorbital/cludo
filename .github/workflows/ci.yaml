@@ -47,6 +47,11 @@ jobs:
         with:
           python-version: "3.10"
 
+      - name: Prepare cludod config stub files
+        run: |
+          cp k8s/kustomize/base/files-secrets/cludod-EXAMPLE.yaml k8s/kustomize/base/files-secrets/secret-cludod.yaml
+          cp k8s/kustomize/base/files-secrets/cludod-EXAMPLE.yaml k8s/helm/cludod/secret-cludod.yaml
+
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.2.0
 
@@ -55,8 +60,6 @@ jobs:
         run: |
           cd k8s/helm/cludod
           changed=$(ct list-changed --target-branch main)
-          # Create an empty config file
-          touch secret-cludod.yaml
           if [[ -n "$changed" ]]; then
             echo "::set-output name=changed::true"
           fi
