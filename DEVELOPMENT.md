@@ -96,6 +96,8 @@ The workflow looks something like this:
   * Run chart-testing (install)
     * We only do this step if:
       * If chart-testing (install) detects changes between this branch and the main branch.
+  * Install and Run Kustomize
+  * List Kustomize Generated Manifests
   * Install `go` dependencies.
   * Detect if this is a Pull Request (PR).
   * Run `go` tests.
