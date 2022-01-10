@@ -50,7 +50,7 @@ docker run -ti \
 
 * Create a new branch from main
 * Make your changes
-* Update [VERSION](./VERSION), [CHANGELOG.md](./CHANGELOG.md), and the helm [Chart.yaml](./k8s/helm/cludo/Chart.yaml)
+* Update [VERSION](./VERSION), [CHANGELOG.md](./CHANGELOG.md), helm [Chart.yaml](./k8s/helm/cludo/Chart.yaml), and [the kustomization.yaml files under k8s/kustomize/overlays](./k8s/kustomize/overlays) to reflect/install the new version.
 * Create a PR
 * Get approval
 * Merge the PR
