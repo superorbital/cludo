@@ -1,12 +1,12 @@
 # Cludo Server (cludod) Kubernetes Manifests
 
-It is easy to install the cludo server (cludod) using either [kustomize](https://kustomize.io/) or [helm](https://helm.sh/).
+It is easy to install the cludo server (cludod) using either [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/), [kustomize](https://kustomize.io/) or [helm](https://helm.sh/).
 
-## Kustomize
+## kustomize (and kubectl)
 
 * **Note**: You must provide a `cludod.yaml` that contains your real secrets. At the moment `kustomize` looks for a `.gitignored` file here: `k8s/kustomize/base/files-secrets/secret-cludod.yaml`. You can find an example of what this file should look like here: `k8s/kustomize/base/files-secrets/cludod-EXAMPLE.yaml`
 
-* With recent`kubectl` releases
+* With recent `kubectl` releases
 
 ```sh
 kubectl kustomize k8s/kustomize/base
@@ -24,13 +24,11 @@ kustomize build k8s/kustomize/overlays/staging
 kustomize build k8s/kustomize/overlays/production
 ```
 
-## Helm
-
-* **Note**: You must provide a `cludod.yaml` that contains your real secrets. At the moment `helm` looks for a `.gitignored` file here: `k8s/helm/cludod/secret-cludod.yaml`. You can find an example of what this file should look like, in the kustomize folder, here: `k8s/kustomize/base/files-secrets/cludod-EXAMPLE.yaml`
+## helm
 
 * With `helm` 3+
 
 ```
-helm install cludod ./k8s/helm/cludod/
-helm uninstall cludod
+helm repo add superorbital https://helm.superorbital.io/
+helm install cludod superorbital/cludod
 ```
