@@ -39,6 +39,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Prepare cludod config stub files
+        run: |
+          cp k8s/kustomize/base/files-secrets/cludod-EXAMPLE.yaml k8s/kustomize/base/files-secrets/secret-cludod.yaml
+
       - name: Install and Run Kustomize
         uses: int128/kustomize-action@v1
         id: kustomize
