@@ -50,7 +50,7 @@ docker run -ti \
 
 * Create a new branch from main
 * Make your changes
-* Update [VERSION](./VERSION), [CHANGELOG.md](./CHANGELOG.md), helm [Chart.yaml](./k8s/helm/cludo/Chart.yaml), and [the kustomization.yaml files under k8s/kustomize/overlays](./k8s/kustomize/overlays) to reflect/install the new version.
+* Update [VERSION](./VERSION), [CHANGELOG.md](./CHANGELOG.md), [the kustomization.yaml files under k8s/kustomize/overlays](./k8s/kustomize/overlays), and the helm [Chart.yaml in superorbital/helm-charts](.[/k8s/helm/cludo/Chart.yaml](https://github.com/superorbital/helm-charts/blob/main/charts/cludod/Chart.yaml) to reflect/install the new version.
 * Create a PR
 * Get approval
 * Merge the PR
@@ -83,20 +83,6 @@ The workflow looks something like this:
   * Checkout source code.
   * Setup `go` environment.
   * Setup `docker buildx` and run `docker login`
-  * Set up Helm
-  * Setup Python
-  * Prepare cludod config stub files
-  * Set up helm chart-testing tool (ct)
-  * Run chart-testing (list-changed)
-  * Run chart-testing (lint)
-    * We only do this step if:
-      * If chart-testing (lint) detects changes between this branch and the main branch.
-  * Create kind cluster
-    * We only do this step if:
-      * If chart-testing (list-changed) detected changed between this branch and the main branch.
-  * Run chart-testing (install)
-    * We only do this step if:
-      * If chart-testing (install) detects changes between this branch and the main branch.
   * Install and Run Kustomize
   * List Kustomize Generated Manifests
   * Install `go` dependencies.

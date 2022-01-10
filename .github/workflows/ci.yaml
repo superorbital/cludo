@@ -39,44 +39,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set up Helm
-        uses: azure/setup-helm@v1
-
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.10"
-
-      - name: Prepare cludod config stub files
-        run: |
-          cp k8s/kustomize/base/files-secrets/cludod-EXAMPLE.yaml k8s/kustomize/base/files-secrets/secret-cludod.yaml
-          cp k8s/kustomize/base/files-secrets/cludod-EXAMPLE.yaml k8s/helm/cludod/secret-cludod.yaml
-
-      - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.2.0
-
-      - name: Run chart-testing (list-changed)
-        id: list-changed
-        run: |
-          cd k8s/helm/cludod
-          changed=$(ct list-changed --target-branch main)
-          if [[ -n "$changed" ]]; then
-            echo "::set-output name=changed::true"
-          fi
-      - name: Run chart-testing (lint)
-        run: |
-          cd k8s/helm/cludod
-          ct lint --target-branch main
-        
-      - name: Create kind cluster
-        uses: helm/kind-action@v1.2.0
-        if: steps.list-changed.outputs.changed == 'true'
-
-      - name: Run chart-testing (install)
-        run: |
-          cd k8s/helm/cludod
-          ct install --target-branch main
-
       - name: Install and Run Kustomize
         uses: int128/kustomize-action@v1
         id: kustomize

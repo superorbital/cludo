@@ -17,6 +17,8 @@ This README primarily documents the client (`cludo`). [A list of additional docu
 
 ### Installation
 
+* For direction on installing with helm, kubectl, or kustomize see [./k8s/README.md](./k8s/README.md).
+
 ``` bash
 go get -u github.com/superorbital/cludo/cmd/cludo/cludo
 ```
