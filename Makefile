@@ -15,7 +15,9 @@ LDFLAGS=-ldflags "$(shell go run github.com/ahmetb/govvv -flags -pkg github.com/
 PR_NUM ?= ""
 
 all: test build docker
-.PHONY: all swagger build test clean docker docker-local-arch-build
+.PHONY: all swagger build test clean docker docker-local-arch-build nerdctl nerdctl-local-arch-build
+
+all-nerdctl: test build nerdctl
 
 swagger:
 	./bin/gen-swagger.sh
@@ -27,12 +29,20 @@ build:
 
 docker: docker-local-arch-build
 
+nerdctl: nerdctl-local-arch-build
+
 # Can't currently sideload manifest-based builds, so we
 # have to split this into multiple builds.
 docker-local-arch-build:
 # Build images for local testing
 	docker buildx build --platform linux/$(ARCH) -t superorbital/cludo:$(VERSION).git-$(GITCOMMIT)-local -t superorbital/cludo:$(VERSION)-local -t superorbital/cludo:local -f ./Dockerfile --load .
 	docker buildx build --platform linux/$(ARCH) -t superorbital/cludod:$(VERSION).git-$(GITCOMMIT)-local -t superorbital/cludod:$(VERSION)-local -t superorbital/cludod:local -f ./Dockerfile.cludod --load .
+
+nerdctl-local-arch-build:
+# Build images for local testing
+# Nerdctl v0.15.0 does not support multiple tags (v0.15.0)
+	nerdctl build --namespace k8s.io --platform linux/$(ARCH) -t superorbital/cludo:local -f ./Dockerfile .
+	nerdctl build --namespace k8s.io --platform linux/$(ARCH) -t superorbital/cludod:local -f ./Dockerfile.cludod .
 
 docker-build-push:
 ifeq ($(shell git rev-parse --abbrev-ref HEAD),main)

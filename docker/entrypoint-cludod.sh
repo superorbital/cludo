@@ -13,7 +13,7 @@ if [ -z "${PORT}" ]; then
 fi
 
 if [ -z "${@}" ]; then
-    cludod --port=${PORT} --scheme=http --host=0.0.0.0
+    cludod --config=/etc/cludod/cludod.yaml --port=${PORT} --scheme=http --host=0.0.0.0
 else
     ${@}
 fi
