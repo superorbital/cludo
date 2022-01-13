@@ -11,6 +11,7 @@ metadata:
       targets:
         prod:
           aws:
+            region: "us-west-2"
             arn: "REDACTED"
             session_duration: "20m"
             access_key_id: "REDACTED"

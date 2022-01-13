@@ -5,34 +5,32 @@ go 1.16
 require (
 	github.com/ahmetb/govvv v0.3.0
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
-	github.com/aws/aws-sdk-go v1.38.38
-	github.com/fsnotify/fsnotify v1.4.9
-	github.com/go-openapi/analysis v0.20.1 // indirect
-	github.com/go-openapi/errors v0.20.0
-	github.com/go-openapi/loads v0.20.2
-	github.com/go-openapi/runtime v0.19.28
-	github.com/go-openapi/spec v0.20.3
-	github.com/go-openapi/strfmt v0.20.1
+	github.com/aws/aws-sdk-go v1.42.34
+	github.com/felixge/httpsnoop v1.0.2 // indirect
+	github.com/fsnotify/fsnotify v1.5.1
+	github.com/go-openapi/analysis v0.21.1 // indirect
+	github.com/go-openapi/errors v0.20.1
+	github.com/go-openapi/loads v0.21.0
+	github.com/go-openapi/runtime v0.21.0
+	github.com/go-openapi/spec v0.20.4
+	github.com/go-openapi/strfmt v0.21.1
 	github.com/go-openapi/swag v0.19.15
-	github.com/go-openapi/validate v0.20.2
+	github.com/go-openapi/validate v0.20.3
+	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/gorilla/handlers v1.5.1
+	github.com/hashicorp/go-version v1.4.0 // indirect
 	github.com/jessevdk/go-flags v1.5.0
-	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/mattn/go-isatty v0.0.13
+	github.com/mattn/go-isatty v0.0.14
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/gox v1.0.1
-	github.com/pelletier/go-toml v1.9.1 // indirect
-	github.com/spf13/afero v1.6.0 // indirect
-	github.com/spf13/cast v1.3.1 // indirect
-	github.com/spf13/cobra v1.1.3
-	github.com/spf13/jwalterweatherman v1.1.0 // indirect
-	github.com/spf13/viper v1.7.1
+	github.com/spf13/afero v1.8.0 // indirect
+	github.com/spf13/cobra v1.3.0
+	github.com/spf13/viper v1.10.1
 	github.com/stretchr/testify v1.7.0
-	go.mongodb.org/mongo-driver v1.5.2 // indirect
-	golang.org/x/crypto v0.0.0-20210506145944-38f3c27a63bf
-	golang.org/x/net v0.0.0-20210510120150-4163338589ed
-	golang.org/x/sys v0.0.0-20210511113859-b0526f3d8744 // indirect
-	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1
-	gopkg.in/ini.v1 v1.62.0 // indirect
+	go.mongodb.org/mongo-driver v1.8.2 // indirect
+	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce
+	golang.org/x/net v0.0.0-20220111093109-d55c255bac03
+	golang.org/x/sys v0.0.0-20220111092808-5a964db01320 // indirect
+	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211
 )
