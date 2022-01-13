@@ -15,12 +15,12 @@ import (
 const CludoProfileEnvVar = "CLUDO_PROFILE"
 
 // GenerateEnvironment generates an environment bundle on a remote cludod service.
-func GenerateEnvironment(cc *config.ClientConfig, target string, debug bool, dryRun bool) (models.ModelsEnvironmentBundle, error) {
+func GenerateEnvironment(cc *config.ClientConfig, target string, keys []string, debug bool, dryRun bool) (models.ModelsEnvironmentBundle, error) {
 	cludodClient, err := config.NewClient(target, debug)
 	if err != nil {
 		return nil, err
 	}
-	signer, err := cc.NewDefaultSigner()
+	signer, err := cc.NewDefaultSigner(keys)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func ProfileURL(targetURL string) (string, error) {
 	}
 	u, err := url.Parse(targetURL)
 	if err != nil {
-		return "", fmt.Errorf("Failed to parse server_url '%s': %v", targetURL, err)
+		return "", fmt.Errorf("Failed to parse target URL '%s': %v", targetURL, err)
 	}
 	return u.String(), nil
 }

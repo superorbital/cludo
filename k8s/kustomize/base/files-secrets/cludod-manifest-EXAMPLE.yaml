@@ -1,0 +1,28 @@
+# Example k8s secret manifest containing a cludod.yaml config file
+#
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: cludod-config
+  stringData:
+    cludod.yaml: |-
+    server:
+      targets:
+        prod:
+          aws:
+            arn: "REDACTED"
+            session_duration: "20m"
+            access_key_id: "REDACTED"
+            secret_access_key: "REDACTED"
+          dev:
+            aws:
+              arn: "REDACTED"
+              session_duration: "8h"
+              access_key_id: "REDACTED"
+              secret_access_key: "REDACTED"
+      users:
+        - public_key: "REDACTED"
+          targets: ["prod", "dev"]
+        - public_key: "REDACTED"
+          targets: ["dev"]

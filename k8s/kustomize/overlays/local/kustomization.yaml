@@ -2,7 +2,9 @@ commonLabels:
  env: development
 bases:
 - ../../base
-patches:
+patchesStrategicMerge:
+# This makes it much easier to reach the cludod server during local development
+- local-service.yaml
 - replica_count.yaml
 images:
 - name: superorbital/cludod:latest

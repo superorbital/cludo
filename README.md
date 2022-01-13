@@ -36,13 +36,17 @@ ssh_key_paths:
 ```
 
 Then your team would include this `cludo.yaml` file in a directory in the project's git
-repository to configure the target `cludod` server and environment:
+repository to configure the `cludod` server enpoint **and** target environment.
+
+* In the example below:
+  * `https://cludo.bigco.com/` is the endpoint where the `cludod` server is listening for connections.
+  * `staging` is the name of a target that is configured in the `cludod` server config file.
 
 ``` yaml
 target: https://cludo.bigco.com/staging
 ```
 
-Alternatively, you can provide the values as environment variables: 
+Alternatively, you can provide the values as environment variables:
 
 ``` console
 $ export CLUDO_TARGET=https://cludo.bigco.com/staging
