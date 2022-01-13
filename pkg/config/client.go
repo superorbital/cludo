@@ -17,15 +17,20 @@ import (
 
 type ClientConfig struct {
 	Interactive bool   `mapstructure:"interactive"`
-	KeyPath     string `mapstructure:"key_path"`
 	Passphrase  string `mapstructure:"passphrase"`
 	ShellPath   string `mapstructure:"shell_path"`
 }
 
-func (cc *ClientConfig) NewDefaultSigner() (*auth.Signer, error) {
-	keyPath, err := homedir.Expand(cc.KeyPath)
+func (cc *ClientConfig) NewDefaultSigner(keys []string) (*auth.Signer, error) {
+	// Warn users that we only use the first key at the moment
+	// see: https://github.com/superorbital/cludo/issues/81
+	if len(keys) != 1 {
+		fmt.Printf("[WARN] Currently cludo only uses the first SSH key in the config list.\nSee: https://github.com/superorbital/cludo/issues/81\n\n")
+	}
+	// At the moment we forcefully use the first key in the list.
+	keyPath, err := homedir.Expand(keys[0])
 	if err != nil {
-		return nil, fmt.Errorf("Failed to expand ~ (homedir) path characters in '%s': %v", cc.KeyPath, err)
+		return nil, fmt.Errorf("Failed to expand ~ (homedir) path characters in '%s': %v", keys[0], err)
 	}
 	if keyPath == "" {
 		homeDir, err := os.UserHomeDir()

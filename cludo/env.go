@@ -21,7 +21,7 @@ func MakeEnvCmd(debug bool, dryRun bool) (*cobra.Command, error) {
 
 			userConfig, err := config.NewConfigFromViper()
 			cobra.CheckErr(err)
-			bundle, err := GenerateEnvironment(userConfig.Client, userConfig.Target, debug, dryRun)
+			bundle, err := GenerateEnvironment(userConfig.Client, userConfig.Target, userConfig.SSHKeyPaths, debug, dryRun)
 			cobra.CheckErr(err)
 
 			_, err = fmt.Fprintln(out, FormatBundle(bundle))
