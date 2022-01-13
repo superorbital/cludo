@@ -4,12 +4,14 @@ server:
   targets:
     prod:
       aws:
+        region: "us-west-2"
         arn: "REDACTED"
         session_duration: "20m"
         access_key_id: "REDACTED"
         secret_access_key: "REDACTED"
       dev:
         aws:
+          region: "us-west-2"
           arn: "REDACTED"
           session_duration: "8h"
           access_key_id: "REDACTED"
