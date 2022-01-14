@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: cludod
 spec:
+  externalTrafficPolicy: Local
   selector:
     app: cludod
   ports:
