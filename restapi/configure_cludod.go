@@ -121,7 +121,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 		requestedTargetURI, err := url.Parse(params.Body.Target)
 		trunc_pubkey := user.PublicKey[0:40] + "..." + user.PublicKey[len(user.PublicKey)-40:]
 		remoteIP := GetIP(params.HTTPRequest)
-		api.Logger("AUDIT: A user from %s with pubkey '%s' is attempting to authenticate to: %s", remoteIP, trunc_pubkey, requestedTargetURI)
+		api.Logger("AUDIT: A user from (%s) with pubkey '%s' is attempting to authenticate to: %s", remoteIP, trunc_pubkey, requestedTargetURI)
 		if err != nil {
 			errMsg := fmt.Sprintf("Expected target in URL format, received: %s", params.Body.Target)
 			api.Logger("ERROR: %s", err)
@@ -177,7 +177,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 			})
 		}
 
-		api.Logger("AUDIT: A user from %s with pubkey '%s' authenticated to target: %s", remoteIP, trunc_pubkey, target)
+		api.Logger("AUDIT: A user from (%s) with pubkey '%s' authenticated to target: %s", remoteIP, trunc_pubkey, target)
 
 		return environment.NewGenerateEnvironmentOK().WithPayload(payload)
 	})
@@ -253,10 +253,10 @@ func setupGlobalMiddleware(handler http.Handler) http.Handler {
 
 // GetIP gets a requests IP address by reading off the forwarded-for
 // header (for proxies) and falls back to use the remote address.
-func GetIP(r *http.Request) string {
+func GetIP(r *http.Request) []string {
 	forwarded := r.Header.Get("X-FORWARDED-FOR")
 	if forwarded != "" {
-		return forwarded
+		return []string{forwarded, r.RemoteAddr}
 	}
-	return r.RemoteAddr
+	return []string{r.RemoteAddr}
 }
