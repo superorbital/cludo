@@ -69,7 +69,7 @@ jobs:
       - name: Get Last Version from Tag
         id: lasttag
         shell: bash
-        run: echo ::set-output name=version::$(git describe --abbrev=0 --tags --match 'v[0-9]*\.[0-9]*\.[0-9]*' | cut -c2-)
+        run: echo ::set-output name=version::$(git describe --abbrev=0 --tags --match '*[0-9]*\.[0-9]*\.[0-9]*')
 
       - name: Parse Changelog
         id: changelog
