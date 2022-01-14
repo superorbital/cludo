@@ -17,7 +17,8 @@ PR_NUM ?= ""
 all: test build docker
 .PHONY: all swagger build test clean docker docker-local-arch-build nerdctl nerdctl-local-arch-build
 
-all-nerdctl: test build nerdctl
+all-nc: test build nerdctl
+nc: all-nc
 
 swagger:
 	./bin/gen-swagger.sh
