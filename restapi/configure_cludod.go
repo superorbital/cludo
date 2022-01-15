@@ -69,8 +69,6 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 			return nil, errors.New(500, "Failed to read cludod configuration: %v", err)
 		}
 
-		api.Logger("DEBUG: Read in viper config: %#v", conf)
-
 		if conf.Server == nil {
 			api.Logger("ERROR: Server configuration is missing")
 			return nil, errors.New(500, "Server configuration is missing")
@@ -121,6 +119,9 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 		var role *config.AWSRoleConfig
 		user, ok := conf.Server.GetUser(string(*principal))
 		requestedTargetURI, err := url.Parse(params.Body.Target)
+		trunc_pubkey := user.PublicKey[0:40] + "..." + user.PublicKey[len(user.PublicKey)-40:]
+		remoteIP := GetIP(params.HTTPRequest)
+		api.Logger("AUDIT: A user from (%s) with pubkey '%s' is attempting to authenticate to: [%s]", remoteIP, trunc_pubkey, requestedTargetURI)
 		if err != nil {
 			errMsg := fmt.Sprintf("Expected target in URL format, received: %s", params.Body.Target)
 			api.Logger("ERROR: %s", err)
@@ -175,6 +176,8 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 				Message: &errMsg,
 			})
 		}
+
+		api.Logger("AUDIT: A user from (%s) with pubkey '%s' authenticated to target: [%s]", remoteIP, trunc_pubkey, target)
 
 		return environment.NewGenerateEnvironmentOK().WithPayload(payload)
 	})
@@ -246,4 +249,14 @@ func setupMiddlewares(handler http.Handler) http.Handler {
 // So this is a good place to plug in a panic handling middleware, logging and metrics.
 func setupGlobalMiddleware(handler http.Handler) http.Handler {
 	return handlers.LoggingHandler(os.Stdout, handler)
+}
+
+// GetIP gets a requests IP address by reading off the forwarded-for
+// header (for proxies) and falls back to use the remote address.
+func GetIP(r *http.Request) string {
+	forwarded := r.Header.Get("X-FORWARDED-FOR")
+	if forwarded != "" {
+		return forwarded
+	}
+	return r.RemoteAddr
 }
