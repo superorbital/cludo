@@ -22,7 +22,7 @@ func MakeShellCmd(debug bool, dryRun bool, exit func(int)) (*cobra.Command, erro
 			cobra.CheckErr(err)
 			clientConfig := userConfig.Client
 
-			bundle, err := GenerateEnvironment(clientConfig, userConfig.Target, debug, dryRun)
+			bundle, err := GenerateEnvironment(clientConfig, userConfig.Target, userConfig.SSHKeyPaths, debug, dryRun)
 			cobra.CheckErr(err)
 
 			shell, err := GetShellPath(clientConfig)

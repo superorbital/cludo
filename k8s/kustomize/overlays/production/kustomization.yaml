@@ -2,7 +2,7 @@ commonLabels:
  env: production
 bases:
 - ../../base
-patches:
+patchesStrategicMerge:
 - replica_count.yaml
 images:
 - name: superorbital/cludod:latest

@@ -13,8 +13,8 @@ import (
 
 const testConfig1Raw = `
 target: https://cludo.superorbital.io/my-role
+ssh_key_paths: ["~/.ssh/id_rsa"]
 client:
-  key_path: "~/.ssh/id_rsa"
   passphrase: ""
   shell_path: "/usr/local/bin/bash"
 server:
@@ -40,9 +40,9 @@ server:
 var testConfig1Duration1, _ = time.ParseDuration("10m")
 var testConfig1Duration2, _ = time.ParseDuration("8h")
 var testConfig1 = &config.Config{
-	Target: "https://cludo.superorbital.io/my-role",
+	Target:      "https://cludo.superorbital.io/my-role",
+	SSHKeyPaths: []string{"~/.ssh/id_rsa"},
 	Client: &config.ClientConfig{
-		KeyPath:    "~/.ssh/id_rsa",
 		Passphrase: "",
 		ShellPath:  "/usr/local/bin/bash",
 	},

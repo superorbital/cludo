@@ -1,10 +1,23 @@
+# Example cludod.yaml config file
+#
 server:
+  targets:
+    prod:
+      aws:
+        region: "us-west-2"
+        arn: "REDACTED"
+        session_duration: "20m"
+        access_key_id: "REDACTED"
+        secret_access_key: "REDACTED"
+      dev:
+        aws:
+          region: "us-west-2"
+          arn: "REDACTED"
+          session_duration: "8h"
+          access_key_id: "REDACTED"
+          secret_access_key: "REDACTED"
   users:
     - public_key: "REDACTED"
-      roles:
-        aws:
-          test:
-            session_duration: "30m"
-            access_key_id: "REDACTED"
-            secret_access_key: "REDACTED"
-      default_role: "test"
+      targets: ["prod", "dev"]
+    - public_key: "REDACTED"
+      targets: ["dev"]

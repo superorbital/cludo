@@ -3,11 +3,10 @@ kind: Service
 metadata:
   name: cludod
 spec:
-  externalTrafficPolicy: Local
-  selector:
-    app: cludod
+  type: NodePort
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
       targetPort: http
-      name: http
+      nodePort: 30080

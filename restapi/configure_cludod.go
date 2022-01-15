@@ -65,8 +65,8 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 	api.APIKeyHeaderAuth = func(token string) (*models.ModelsPrincipal, error) {
 		conf, err := config.NewConfigFromViper()
 		if err != nil {
-			api.Logger("ERROR: Failed to read cludo configuration: %v", err)
-			return nil, errors.New(500, "Failed to read cludo configuration: %v", err)
+			api.Logger("ERROR: Failed to read cludod configuration: %v", err)
+			return nil, errors.New(500, "Failed to read cludod configuration: %v", err)
 		}
 
 		if conf.Server == nil {
@@ -99,7 +99,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 	api.EnvironmentGenerateEnvironmentHandler = environment.GenerateEnvironmentHandlerFunc(func(params environment.GenerateEnvironmentParams, principal *models.ModelsPrincipal) middleware.Responder {
 		conf, err := config.NewConfigFromViper()
 		if err != nil {
-			errMsg := fmt.Sprintf("Failed to read cludo configuration: %v", err)
+			errMsg := fmt.Sprintf("Failed to read cludod configuration: %v", err)
 			api.Logger("ERROR: %s", err)
 			return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
 				Code:    500,
@@ -190,7 +190,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 	api.RoleListRolesHandler = role.ListRolesHandlerFunc(func(params role.ListRolesParams, principal *models.ModelsPrincipal) middleware.Responder {
 		conf, err := config.NewConfigFromViper()
 		if err != nil {
-			errMsg := fmt.Sprintf("Failed to read cludo configuration: %v", err)
+			errMsg := fmt.Sprintf("Failed to read cludod configuration: %v", err)
 			api.Logger("ERROR: %s", err)
 			return role.NewListRolesDefault(500).WithPayload(&models.Error{
 				Code:    500,

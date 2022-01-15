@@ -10,7 +10,7 @@ RUN CGO_ENABLED=0 go build -ldflags "$(go run github.com/ahmetb/govvv -flags -pk
 FROM ${ARCH}alpine:latest
 RUN apk --no-cache add ca-certificates
 RUN mkdir /etc/cludo
-WORKDIR /app/
+WORKDIR /
 COPY --from=builder /usr/bin/cludo /usr/bin/cludo
 COPY ./docker/entrypoint-cludo.sh /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]
