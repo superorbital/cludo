@@ -51,7 +51,6 @@ server:
   users:
     - public_key: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489..."
       name: "Amka Etok"
-      description: "Principal Production Operations Engineer"
       targets: ["prod", "dev"]
 ```
 
