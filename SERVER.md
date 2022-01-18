@@ -44,17 +44,15 @@ server:
           session_duration: "8h"
           access_key_id: "123ABC..."
           secret_access_key: "ZXY098..."
-      sean:
-      robert:
       qa:
       prod_frontend:
       prod_backend:
       prod_db:
   users:
     - public_key: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489..."
-      name: "Sean P. Kane"
-      description: "SuperOrbital LLC - Principal Production Operations Engineer"
-      targets: ["prod", "dev", "sean"]
+      name: "Amka Etok"
+      description: "Principal Production Operations Engineer"
+      targets: ["prod", "dev"]
 ```
 
 ### Run
