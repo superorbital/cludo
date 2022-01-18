@@ -18,6 +18,8 @@ server:
           secret_access_key: "REDACTED"
   users:
     - public_key: "REDACTED"
+      name: "first_name last_name"
+      description: "any_useful_identifying_information"
       targets: ["prod", "dev"]
     - public_key: "REDACTED"
       targets: ["dev"]

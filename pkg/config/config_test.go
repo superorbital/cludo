@@ -34,6 +34,8 @@ server:
         secret_access_key: "ZXY098..."
   users:
   - public_key: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489..."
+    name: "Aleema Bashir"
+    description: "Distinguished Engineer"
     targets: ["prod", "dev"]
 `
 
@@ -50,8 +52,10 @@ var testConfig1 = &config.Config{
 		Port: 443,
 		Users: []*config.UserConfig{
 			{
-				PublicKey: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489...",
-				Targets:   []string{"prod", "dev"},
+				PublicKey:   "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489...",
+				Name:        "Aleema Bashir",
+				Description: "Distinguished Engineer",
+				Targets:     []string{"prod", "dev"},
 			},
 		},
 		Targets: map[string]*config.UserRolesConfig{
