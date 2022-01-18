@@ -136,7 +136,7 @@ func TestDecodePrivateKey(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			actual, actualErr := auth.DecodePrivateKey(tc.encoded, nil, false)
+			actual, actualErr := auth.DecodePrivateKey(tc.encoded, false)
 
 			assert.EqualValues(t, tc.want, actual)
 			assert.EqualValues(t, tc.wantErr, actualErr)
@@ -154,30 +154,22 @@ func TestDecodePrivateKeyWithPassPhrase(t *testing.T) {
 	}
 
 	passphrase1 := "cludo123"
-	passphrase2 := "cludo456"
-	key1, encoded1 := GenerateSSHPrivateKey(t, passphrase1)
-	_, encoded2 := GenerateSSHPrivateKey(t, passphrase2)
+	_, encoded1 := GenerateSSHPrivateKey(t, passphrase1)
 
 	tests := []test{
 		{
 			name:       "Test passphrase key 1",
 			encoded:    encoded1,
-			passphrase: "cludo123",
-			want:       key1,
-		},
-		{
-			name:       "Test passphrase key 2",
-			encoded:    encoded2,
 			passphrase: "badpassphrase",
 			want:       nil,
-			wantErr:    errors.New("Failed to parse private key: x509: decryption password incorrect"),
+			wantErr:    errors.New("Failed to parse private key: ssh: this private key is passphrase protected"),
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			fmt.Println(tc.passphrase)
-			actual, actualErr := auth.DecodePrivateKey(tc.encoded, []byte(tc.passphrase), false)
+			actual, actualErr := auth.DecodePrivateKey(tc.encoded, false)
 
 			assert.EqualValues(t, tc.want, actual)
 			assert.EqualValues(t, tc.wantErr, actualErr)
