@@ -4,6 +4,7 @@ Changelog for cludo The Cloud Sudo toolset
 
 ## [Unreleased]
 ### Added
+- Server side config can now contain a user's name and description [[#53]](https://github.com/superorbital/cludo/issues/53)
 - Convert SSH key path to a list and move to the top level of the user config [[#52]](https://github.com/superorbital/cludo/issues/52)
 - Added Github Actions for Release Pipeline and Code Scanning
 
