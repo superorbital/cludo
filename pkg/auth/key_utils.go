@@ -37,8 +37,7 @@ func EncodeAuthorizedKey(key *rsa.PublicKey) (string, error) {
 }
 
 func GetPassphrase() ([]byte, error) {
-	fmt.Printf("\nUnable to decode SSH key on first attempt.\n")
-	fmt.Print("Please enter the correct SSH passphrase: ")
+	fmt.Print("Please enter the SSH key passphrase: ")
 	bytePassword, err := term.ReadPassword(int(syscall.Stdin))
 	if err != nil {
 		return []byte(""), err
@@ -49,19 +48,14 @@ func GetPassphrase() ([]byte, error) {
 	return []byte(strings.TrimSpace(password)), nil
 }
 
-func DecodePrivateKey(encoded []byte, password []byte, interactive bool) (*rsa.PrivateKey, error) {
+func DecodePrivateKey(encoded []byte, interactive bool) (*rsa.PrivateKey, error) {
 	var parsedKey interface{}
 	var err error
 
 	// See if we can decode without a passphrase
 	parsedKey, err = ssh.ParseRawPrivateKey(encoded)
-	if err != nil && len(password) > 0 {
-		// if not, let's try the passphrase the user provided
-		parsedKey, err = ssh.ParseRawPrivateKeyWithPassphrase(encoded, password)
-	}
-	// If we still have an error the passphrase is likely unset or wrong,
-	// so let's prompt for it instead.
 	if err != nil && interactive == true {
+		// In this case, let's try to prompt for the passphrase
 		var passphrase []byte
 		if utils.DetectTerminal() == true {
 			passphrase, err = GetPassphrase()

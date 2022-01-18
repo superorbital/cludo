@@ -17,7 +17,6 @@ import (
 
 type ClientConfig struct {
 	Interactive bool   `mapstructure:"interactive"`
-	Passphrase  string `mapstructure:"passphrase"`
 	ShellPath   string `mapstructure:"shell_path"`
 }
 
@@ -47,11 +46,7 @@ func (cc *ClientConfig) NewDefaultSigner(keys []string) (*auth.Signer, error) {
 		return nil, fmt.Errorf("Failed to read user private key %v: %v", keyPath, err)
 	}
 
-	var passphrase []byte = nil
-	if cc.Passphrase != "" {
-		passphrase = []byte(cc.Passphrase)
-	}
-	key, err := auth.DecodePrivateKey(encodedKey, passphrase, cc.Interactive)
+	key, err := auth.DecodePrivateKey(encodedKey, cc.Interactive)
 	if err != nil {
 		return nil, fmt.Errorf("Failed decoding private key %v: %v", keyPath, err)
 	}
