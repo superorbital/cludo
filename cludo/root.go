@@ -38,8 +38,6 @@ func MakeRootCmd(exit func(int)) (*cobra.Command, error) {
 	viper.BindPFlag("client.default.interactive", rootCmd.PersistentFlags().Lookup("interactive"))
 	rootCmd.PersistentFlags().StringSliceP("ssh-key-paths", "k", []string{"~/.ssh/id_rsa"}, "A comma seperated list of SSH private key filesystem paths")
 	viper.BindPFlag("ssh_key_paths", rootCmd.PersistentFlags().Lookup("ssh-key-paths"))
-	rootCmd.PersistentFlags().StringP("passphrase", "a", "", "Passphrase for private key (consider using config or setting CLUDO_PASSPHRASE)")
-	viper.BindPFlag("client.passphrase", rootCmd.PersistentFlags().Lookup("passphrase"))
 
 	// Register regular flags.
 	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", "Path to cludo.yaml config file. Overrides normal search paths.")

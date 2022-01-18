@@ -15,7 +15,6 @@ const testConfig1Raw = `
 target: https://cludo.superorbital.io/my-role
 ssh_key_paths: ["~/.ssh/id_rsa"]
 client:
-  passphrase: ""
   shell_path: "/usr/local/bin/bash"
 server:
   port: 443
@@ -45,8 +44,7 @@ var testConfig1 = &config.Config{
 	Target:      "https://cludo.superorbital.io/my-role",
 	SSHKeyPaths: []string{"~/.ssh/id_rsa"},
 	Client: &config.ClientConfig{
-		Passphrase: "",
-		ShellPath:  "/usr/local/bin/bash",
+		ShellPath: "/usr/local/bin/bash",
 	},
 	Server: &config.ServerConfig{
 		Port: 443,

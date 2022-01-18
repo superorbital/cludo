@@ -32,32 +32,44 @@ For example, it's common to have the following in your `~/.cludo/cludo.yaml` fil
 ``` yaml
 ssh_key_paths: 
 - ~/.ssh/superorbial_cludo
-- ~/.ssh/bigco_cludo
+- ~/.ssh/example_cludo
 ```
 
 Then your team would include this `cludo.yaml` file in a directory in the project's git
 repository to configure the `cludod` server enpoint **and** target environment.
 
 * In the example below:
-  * `https://cludo.bigco.com/` is the endpoint where the `cludod` server is listening for connections.
+  * `https://cludo.example.com/` is the endpoint where the `cludod` server is listening for connections.
   * `staging` is the name of a target that is configured in the `cludod` server config file.
 
 ``` yaml
-target: https://cludo.bigco.com/staging
+target: https://cludo.example.com/staging
 ```
 
 Alternatively, you can provide the values as environment variables:
 
 ``` console
-$ export CLUDO_TARGET=https://cludo.bigco.com/staging
+$ export CLUDO_TARGET=https://cludo.example.com/staging
 ```
 
-Currently, only the following two values are configurable for the client:
+Currently, only the following values are configurable for the client:
 
-Key             |  Description                                        | Environment Variable 
----------       |  -----------                                        | -------------------- 
-`target`        |  URL of the `cludo-server` instance to connect to.  | `CLUDO_TARGET`
+Key             |  Description                                        | Environment Variable
+---------       |  -----------                                        | --------------------
+`target`        |  `cludod` server URL and appended config target (_e.g. dev,prod, etc_)  | `CLUDO_TARGET`
 `ssh_key_paths` |  Paths to the private keys used for authentication. | `CLUDO_SSH_KEY_PATHS`
+`client.shell_path` | The path to the shell to launch when using `cludo shell` | `CLUDO_SHELL_PATH`
+`client.interactive` | Wether the user can be prompted for additional information (like SSH passphrases) | `CLUDO_INTERACTIVE`
+
+* _e.g._
+
+```yaml
+target: "https://cludo.example.com/dev"
+ssh_key_paths: ["~/.ssh/id_rsa"]
+client:
+  shell_path: "/usr/local/bin/bash"
+  interactive: true
+```
 
 ### Authentication with the `cludod` server
 
