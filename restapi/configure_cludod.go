@@ -119,9 +119,13 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 		var role *config.AWSRoleConfig
 		user, ok := conf.Server.GetUser(string(*principal))
 		requestedTargetURI, err := url.Parse(params.Body.Target)
+		name := user.Name
+		if name == "" {
+			name = "UNKNOWN"
+		}
 		trunc_pubkey := user.PublicKey[0:40] + "..." + user.PublicKey[len(user.PublicKey)-40:]
 		remoteIP := GetIP(params.HTTPRequest)
-		api.Logger("AUDIT: A user from (%s) with pubkey '%s' is attempting to authenticate to: [%s]", remoteIP, trunc_pubkey, requestedTargetURI)
+		api.Logger("AUDIT: Someone from (%s) matching %s's pubkey {%s} is attempting to authenticate to: [%s]", remoteIP, name, trunc_pubkey, requestedTargetURI)
 		if err != nil {
 			errMsg := fmt.Sprintf("Expected target in URL format, received: %s", params.Body.Target)
 			api.Logger("ERROR: %s", err)
@@ -177,7 +181,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 			})
 		}
 
-		api.Logger("AUDIT: A user from (%s) with pubkey '%s' authenticated to target: [%s]", remoteIP, trunc_pubkey, target)
+		api.Logger("AUDIT: Someone from (%s) matching %s's pubkey '%s' authenticated to target: [%s]", remoteIP, name, trunc_pubkey, target)
 
 		return environment.NewGenerateEnvironmentOK().WithPayload(payload)
 	})

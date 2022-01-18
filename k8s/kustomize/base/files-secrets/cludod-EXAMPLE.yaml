@@ -18,6 +18,7 @@ server:
           secret_access_key: "REDACTED"
   users:
     - public_key: "REDACTED"
+      name: "first_name last_name"
       targets: ["prod", "dev"]
     - public_key: "REDACTED"
       targets: ["dev"]

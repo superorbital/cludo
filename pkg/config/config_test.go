@@ -33,6 +33,7 @@ server:
         secret_access_key: "ZXY098..."
   users:
   - public_key: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489..."
+    name: "Aleema Bashir"
     targets: ["prod", "dev"]
 `
 
@@ -49,6 +50,7 @@ var testConfig1 = &config.Config{
 		Users: []*config.UserConfig{
 			{
 				PublicKey: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489...",
+				Name:      "Aleema Bashir",
 				Targets:   []string{"prod", "dev"},
 			},
 		},

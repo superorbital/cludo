@@ -28,6 +28,7 @@ type UserRolesConfig struct {
 
 type UserConfig struct {
 	PublicKey string   `mapstructure:"public_key"`
+	Name      string   `mapstructure:"name"`
 	Targets   []string `mapstructure:"targets"`
 }
 
