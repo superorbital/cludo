@@ -38,16 +38,16 @@ server:
         session_duration: "20m"
         access_key_id: "456DEF..."
         secret_access_key: "UVW789..."
-      dev:
-        aws:
-          arn: "aws:arn:iam:..."
-          session_duration: "8h"
-          access_key_id: "123ABC..."
-          secret_access_key: "ZXY098..."
-      qa:
-      prod_frontend:
-      prod_backend:
-      prod_db:
+    dev:
+      aws:
+        arn: "aws:arn:iam:..."
+        session_duration: "8h"
+        access_key_id: "123ABC..."
+        secret_access_key: "ZXY098..."
+    qa:
+    prod_frontend:
+    prod_backend:
+    prod_db:
   users:
     - public_key: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489..."
       name: "Amka Etok"
