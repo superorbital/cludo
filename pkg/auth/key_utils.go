@@ -23,8 +23,13 @@ func DecodeAuthorizedKey(encoded []byte) (*rsa.PublicKey, error) {
 	// Then, we can call CryptoPublicKey() to get the actual crypto.PublicKey
 	pubCrypto := parsedCryptoKey.CryptoPublicKey()
 
+	pubkey, ok := pubCrypto.(*rsa.PublicKey)
+	if !ok {
+		return nil, fmt.Errorf("expected an RSA public key, got %T", pubCrypto)
+	}
+
 	// Finally, we can convert back to an *rsa.PublicKey
-	return pubCrypto.(*rsa.PublicKey), nil
+	return pubkey, nil
 }
 
 func EncodeAuthorizedKey(key *rsa.PublicKey) (string, error) {

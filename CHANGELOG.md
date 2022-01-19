@@ -4,6 +4,7 @@ Changelog for cludo The Cloud Sudo toolset
 
 ## [Unreleased]
 ### Added
+- Support for reading additional SSH public keys from Github if the user has a `github_id` defined in the server-side config [[#47]](https://github.com/superorbital/cludo/issues/47)
 - Server side config can now contain a user's name [[#53]](https://github.com/superorbital/cludo/issues/53)
 - Github Actions for release pipeline and basic code scanning [[#60]](https://github.com/superorbital/cludo/issues/60)
 - and almost certainly more small tweaks, etc...

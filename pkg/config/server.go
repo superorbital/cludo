@@ -8,6 +8,7 @@ import (
 
 	"github.com/superorbital/cludo/pkg/auth"
 	"github.com/superorbital/cludo/pkg/aws"
+	"github.com/superorbital/cludo/pkg/providers"
 )
 
 type AWSRoleConfig struct {
@@ -29,6 +30,7 @@ type UserRolesConfig struct {
 type UserConfig struct {
 	PublicKey string   `mapstructure:"public_key"`
 	Name      string   `mapstructure:"name"`
+	GithubID  string   `mapstructure:"github_id"`
 	Targets   []string `mapstructure:"targets"`
 }
 
@@ -36,11 +38,16 @@ func (uc *UserConfig) ID() string {
 	return base64.StdEncoding.EncodeToString([]byte(uc.PublicKey))
 }
 
+type GithubConfig struct {
+	APIEndpoint string `mapstructure:"api_endpoint"`
+}
+
 type ServerConfig struct {
 	Port    int                         `yaml:"port"`
 	Targets map[string]*UserRolesConfig `mapstructure:"targets"`
 
-	Users []*UserConfig `mapstructure:"users"`
+	Github *GithubConfig `mapstructure:"github"`
+	Users  []*UserConfig `mapstructure:"users"`
 }
 
 func (sc *ServerConfig) NewAuthorizer() (*auth.Authorizer, error) {
@@ -48,10 +55,31 @@ func (sc *ServerConfig) NewAuthorizer() (*auth.Authorizer, error) {
 	for _, user := range sc.Users {
 		pub, err := auth.DecodeAuthorizedKey([]byte(user.PublicKey))
 		if err != nil {
-			return nil, fmt.Errorf("Failed to decode user public key: %v, %#v", err, user.PublicKey)
+			fmt.Printf("[WARN] Failed to decode user public key: %v, %#v\n", err, user.PublicKey)
 		}
 		users[user.ID()] = pub
+		if user.GithubID != "" {
+			api_endpoint := ""
+			if sc.Github != nil {
+				api_endpoint = sc.Github.APIEndpoint
+			}
+			provider_keys, err := providers.CollectGithubPublicKeys(api_endpoint, user.GithubID)
+			if err != nil {
+				return nil, err
+			}
+			for _, pkey := range provider_keys {
+				pub, err := auth.DecodeAuthorizedKey([]byte(pkey))
+				if err != nil {
+					fmt.Printf("[WARN] Failed to decode user public key: %v, %#v\n", err, pkey)
+				} else {
+					users[user.ID()] = pub
+				}
+			}
+		} else {
+			fmt.Println("[INFO] No github_id specified for user:", user.Name)
+		}
 	}
+
 	return auth.NewAuthorizer(users), nil
 }
 

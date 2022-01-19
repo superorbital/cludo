@@ -1,9 +1,9 @@
 # Binaries for programs and plugins
+*.dll
+*.dylib
 *.exe
 *.exe~
-*.dll
 *.so
-*.dylib
 
 # Test binary, built with `go test -c`
 *.test
@@ -28,8 +28,7 @@ bin/cludod
 builds
 
 #misc temp and hidden items
-tmp
-secret*
 cludo.y*ml
 cludod.y*ml
-
+secret*
+tmp
