@@ -72,15 +72,14 @@ func (sc *ServerConfig) NewGithubAuthorizer() (*auth.Authorizer, error) {
 				api_endpoint = sc.Github.APIEndpoint
 			}
 			provider_keys, err := providers.CollectGithubPublicKeys(api_endpoint, user.GithubID)
-			if err != nil {
-				return nil, err
-			}
-			for _, pkey := range provider_keys {
-				pub, err := auth.DecodeAuthorizedKey([]byte(pkey))
-				if err != nil {
-					log.Printf("[WARN] Failed to decode user public key: %v, %#v\n", err, pkey)
-				} else {
-					users[user.ID()] = pub
+			if err == nil {
+				for _, pkey := range provider_keys {
+					pub, err := auth.DecodeAuthorizedKey([]byte(pkey))
+					if err != nil {
+						log.Printf("[WARN] Failed to decode user public key: %v, %#v\n", err, pkey)
+					} else {
+						users[user.ID()] = pub
+					}
 				}
 			}
 		}
