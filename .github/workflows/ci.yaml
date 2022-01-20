@@ -79,7 +79,7 @@ jobs:
         # Only build/push on main when there is not already a release
         # But always build/push on other branches
         if: "(github.ref == 'refs/heads/main' && steps.changelog.outputs.version != steps.lasttag.outputs.version) || (github.ref != 'refs/heads/main')"
-        run: make docker-build-push
+        run: make -j $(nproc) docker-build-push
         env:
           BUILDKIT_PROGRESS: plain
           PR_NUM: ${{ steps.findPr.outputs.pr }}

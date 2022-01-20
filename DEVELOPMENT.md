@@ -19,7 +19,7 @@ There's also:
 ```sh
 make build
 make test
-make docker-local-arch-build
+make -j $(nproc) docker-local-arch-build
 make swagger
 # and more...
 ```
