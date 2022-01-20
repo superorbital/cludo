@@ -20,10 +20,10 @@ func MakeLintCmd(debug bool, dryRun bool) (*cobra.Command, error) {
 			out := cmd.OutOrStdout()
 
 			_, err := config.NewConfigFromViper()
-			cobra.CheckErr(err)
+			CheckErr(err)
 
 			_, err = fmt.Fprintln(out, PrintConfig())
-			cobra.CheckErr(err)
+			CheckErr(err)
 		},
 	}
 

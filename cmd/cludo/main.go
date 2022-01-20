@@ -13,7 +13,7 @@ import (
 func main() {
 	rootCmd, err := cludo.MakeRootCmd(os.Exit)
 	if err != nil {
-		fmt.Println("Cmd construction error: ", err)
+		fmt.Println("[ERROR] Cmd construction error: ", err)
 		os.Exit(1)
 	}
 

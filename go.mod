@@ -17,6 +17,7 @@ require (
 	github.com/go-openapi/swag v0.19.15
 	github.com/go-openapi/validate v0.20.3
 	github.com/go-stack/stack v1.8.1 // indirect
+	github.com/google/go-github/v42 v42.0.0
 	github.com/gorilla/handlers v1.5.1
 	github.com/hashicorp/go-version v1.4.0 // indirect
 	github.com/jessevdk/go-flags v1.5.0

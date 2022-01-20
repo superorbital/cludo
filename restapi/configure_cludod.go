@@ -52,7 +52,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 	config.ConfigureViper(config.CludodExecutable, CludodFlags.Config)
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
-		api.Logger("Config file changed:", e.Name)
+		api.Logger("[WARN] Config file changed:", e.Name)
 	})
 
 	// api.UseSwaggerUI()
@@ -65,31 +65,50 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 	api.APIKeyHeaderAuth = func(token string) (*models.ModelsPrincipal, error) {
 		conf, err := config.NewConfigFromViper()
 		if err != nil {
-			api.Logger("ERROR: Failed to read cludod configuration: %v", err)
+			api.Logger("[ERROR] Failed to read cludod configuration: %v", err)
 			return nil, errors.New(500, "Failed to read cludod configuration: %v", err)
 		}
 
 		if conf.Server == nil {
-			api.Logger("ERROR: Server configuration is missing")
+			api.Logger("[ERROR] Server configuration is missing")
 			return nil, errors.New(500, "Server configuration is missing")
 		}
 
-		authz, err := conf.Server.NewAuthorizer()
+		authz, err := conf.Server.NewConfigAuthorizer()
 		if err != nil {
-			api.Logger("ERROR: Failed to create authorizer: %v", err)
-			return nil, errors.New(500, "Failed to create authorizer: %v", err)
+			api.Logger("[ERROR] Failed to create internal authorizer from server config: %v", err)
+			return nil, errors.New(500, "Failed to create internal authorizer from server config: %v", err)
 		}
 
 		id, ok, err := authz.CheckAuthHeader(token)
 		if err != nil {
-			api.Logger("ERROR: Failed to validate message signature: %v", err)
-			return nil, errors.New(500, "Failed to validate message signature: %v", err)
+			api.Logger("[ERROR] Failed to validate API request signature in header: %v", err)
+			return nil, errors.New(500, "Failed to validate API request signature in header: %v", err)
 		}
 		if ok {
 			for _, user := range conf.Server.Users {
 				if user.ID() == id {
 					principalID := models.ModelsPrincipal(id)
 					return &principalID, nil
+				}
+			}
+		} else {
+			authz, err := conf.Server.NewGithubAuthorizer()
+			if err != nil {
+				api.Logger("[ERROR] Failed to create internal authorizer from Github API: %v", err)
+				return nil, errors.New(500, "Failed to create internal authorizer from Github API: %v", err)
+			}
+			id, ok, err := authz.CheckAuthHeader(token)
+			if err != nil {
+				api.Logger("[ERROR] Failed to validate API request signature in header: %v", err)
+				return nil, errors.New(500, "Failed to validate API request signature in header: %v", err)
+			}
+			if ok {
+				for _, user := range conf.Server.Users {
+					if user.ID() == id {
+						principalID := models.ModelsPrincipal(id)
+						return &principalID, nil
+					}
 				}
 			}
 		}
@@ -100,7 +119,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 		conf, err := config.NewConfigFromViper()
 		if err != nil {
 			errMsg := fmt.Sprintf("Failed to read cludod configuration: %v", err)
-			api.Logger("ERROR: %s", err)
+			api.Logger("[ERROR] %s", err)
 			return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
 				Code:    500,
 				Message: &errMsg,
@@ -109,7 +128,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 
 		if conf.Server == nil {
 			errMsg := fmt.Sprintf("Server configuration is missing")
-			api.Logger("ERROR: %s", err)
+			api.Logger("[ERROR] %s", err)
 			return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
 				Code:    500,
 				Message: &errMsg,
@@ -125,10 +144,10 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 		}
 		trunc_pubkey := user.PublicKey[0:40] + "..." + user.PublicKey[len(user.PublicKey)-40:]
 		remoteIP := GetIP(params.HTTPRequest)
-		api.Logger("AUDIT: Someone from (%s) matching %s's pubkey {%s} is attempting to authenticate to: [%s]", remoteIP, name, trunc_pubkey, requestedTargetURI)
+		api.Logger("[AUDIT] Someone from (%s) matching %s's pubkey {%s} is attempting to authenticate to: [%s]", remoteIP, name, trunc_pubkey, requestedTargetURI)
 		if err != nil {
 			errMsg := fmt.Sprintf("Expected target in URL format, received: %s", params.Body.Target)
-			api.Logger("ERROR: %s", err)
+			api.Logger("[ERROR] %s", err)
 			return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
 				Code:    500,
 				Message: &errMsg,
@@ -144,7 +163,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 			}
 			if !validTarget {
 				errMsg := fmt.Sprintf("User does not have access to requested target: %s", target)
-				api.Logger("Error: %s", errMsg)
+				api.Logger("[ERROR] %s", errMsg)
 				return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
 					Code:    403,
 					Message: &errMsg,
@@ -155,7 +174,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 
 		if role == nil {
 			errMsg := fmt.Sprintf("Failed to find any roles for user: %v", *principal)
-			api.Logger("ERROR: %s", err)
+			api.Logger("[ERROR] %s", err)
 			return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
 				Code:    500,
 				Message: &errMsg,
@@ -165,7 +184,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 		ap, err := role.NewPlugin()
 		if err != nil {
 			errMsg := fmt.Sprintf("Failed to initialize plugin: %v", err)
-			api.Logger("ERROR: %s", err)
+			api.Logger("[ERROR] %s", err)
 			return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
 				Code:    500,
 				Message: &errMsg,
@@ -174,14 +193,14 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 		payload, err := ap.GenerateEnvironment()
 		if err != nil {
 			errMsg := fmt.Sprintf("Failed to generate environment: %v", err)
-			api.Logger("ERROR: %s", err)
+			api.Logger("[ERROR] %s", err)
 			return environment.NewGenerateEnvironmentDefault(500).WithPayload(&models.Error{
 				Code:    500,
 				Message: &errMsg,
 			})
 		}
 
-		api.Logger("AUDIT: Someone from (%s) matching %s's pubkey '%s' authenticated to target: [%s]", remoteIP, name, trunc_pubkey, target)
+		api.Logger("[AUDIT] Someone from (%s) matching %s's pubkey '%s' authenticated to target: [%s]", remoteIP, name, trunc_pubkey, target)
 
 		return environment.NewGenerateEnvironmentOK().WithPayload(payload)
 	})
@@ -195,7 +214,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 		conf, err := config.NewConfigFromViper()
 		if err != nil {
 			errMsg := fmt.Sprintf("Failed to read cludod configuration: %v", err)
-			api.Logger("ERROR: %s", err)
+			api.Logger("[ERROR] %s", err)
 			return role.NewListRolesDefault(500).WithPayload(&models.Error{
 				Code:    500,
 				Message: &errMsg,
@@ -204,7 +223,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 
 		if conf.Server == nil {
 			errMsg := "Server configuration is missing"
-			api.Logger("ERROR: %s", err)
+			api.Logger("[ERROR] %s", err)
 			return role.NewListRolesDefault(500).WithPayload(&models.Error{
 				Code:    500,
 				Message: &errMsg,

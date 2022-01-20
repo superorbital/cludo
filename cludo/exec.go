@@ -15,14 +15,14 @@ func MakeExecCmd(debug bool, dryRun bool, exit func(int)) (*cobra.Command, error
 		Long:  `Executes a command with an environment setup with cludo credentials for the configured cludo target.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			userConfig, err := config.NewConfigFromViper()
-			cobra.CheckErr(err)
+			CheckErr(err)
 			clientConfig := userConfig.Client
 
 			bundle, err := GenerateEnvironment(clientConfig, userConfig.Target, userConfig.SSHKeyPaths, debug, dryRun)
-			cobra.CheckErr(err)
+			CheckErr(err)
 
 			code, err := ExecWithEnv(args, bundle, !cleanEnv, userConfig.Target)
-			cobra.CheckErr(err)
+			CheckErr(err)
 
 			if code != 0 {
 				exit(code)
