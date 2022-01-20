@@ -91,6 +91,8 @@ jobs:
 
       - name: Compress Binaries via UPX
         uses: crazy-max/ghaction-upx@v1
+        # We are on the main branch and do not have an existing tagged release
+        if: "github.ref == 'refs/heads/main' && steps.changelog.outputs.version != steps.lasttag.outputs.version"
         with:
           version: latest
           files: |
