@@ -50,7 +50,7 @@ type ServerConfig struct {
 	Users  []*UserConfig `mapstructure:"users"`
 }
 
-func (sc *ServerConfig) NewAuthorizer() (*auth.Authorizer, error) {
+func (sc *ServerConfig) NewConfigAuthorizer() (*auth.Authorizer, error) {
 	users := map[string]*rsa.PublicKey{}
 	for _, user := range sc.Users {
 		pub, err := auth.DecodeAuthorizedKey([]byte(user.PublicKey))
@@ -58,6 +58,14 @@ func (sc *ServerConfig) NewAuthorizer() (*auth.Authorizer, error) {
 			fmt.Printf("[WARN] Failed to decode user public key: %v, %#v\n", err, user.PublicKey)
 		}
 		users[user.ID()] = pub
+	}
+	return auth.NewAuthorizer(users), nil
+}
+
+func (sc *ServerConfig) NewGithubAuthorizer() (*auth.Authorizer, error) {
+	users := map[string]*rsa.PublicKey{}
+
+	for _, user := range sc.Users {
 		if user.GithubID != "" {
 			api_endpoint := ""
 			if sc.Github != nil {
@@ -75,11 +83,8 @@ func (sc *ServerConfig) NewAuthorizer() (*auth.Authorizer, error) {
 					users[user.ID()] = pub
 				}
 			}
-		} else {
-			fmt.Println("[INFO] No github_id specified for user:", user.Name)
 		}
 	}
-
 	return auth.NewAuthorizer(users), nil
 }
 

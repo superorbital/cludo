@@ -74,7 +74,7 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 			return nil, errors.New(500, "Server configuration is missing")
 		}
 
-		authz, err := conf.Server.NewAuthorizer()
+		authz, err := conf.Server.NewConfigAuthorizer()
 		if err != nil {
 			api.Logger("ERROR: Failed to create authorizer: %v", err)
 			return nil, errors.New(500, "Failed to create authorizer: %v", err)
@@ -90,6 +90,25 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 				if user.ID() == id {
 					principalID := models.ModelsPrincipal(id)
 					return &principalID, nil
+				}
+			}
+		} else {
+			authz, err := conf.Server.NewGithubAuthorizer()
+			if err != nil {
+				api.Logger("ERROR: Failed to create authorizer: %v", err)
+				return nil, errors.New(500, "Failed to create authorizer: %v", err)
+			}
+			id, ok, err := authz.CheckAuthHeader(token)
+			if err != nil {
+				api.Logger("ERROR: Failed to validate message signature: %v", err)
+				return nil, errors.New(500, "Failed to validate message signature: %v", err)
+			}
+			if ok {
+				for _, user := range conf.Server.Users {
+					if user.ID() == id {
+						principalID := models.ModelsPrincipal(id)
+						return &principalID, nil
+					}
 				}
 			}
 		}
