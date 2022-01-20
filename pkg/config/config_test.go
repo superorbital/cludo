@@ -18,6 +18,8 @@ client:
   shell_path: "/usr/local/bin/bash"
 server:
   port: 443
+  github:
+    api_endpoint: https://api.github.com/
   targets:
     prod:
       aws:
@@ -34,6 +36,7 @@ server:
   users:
   - public_key: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489..."
     name: "Aleema Bashir"
+    github_id: "abashir"
     targets: ["prod", "dev"]
 `
 
@@ -46,11 +49,15 @@ var testConfig1 = &config.Config{
 		ShellPath: "/usr/local/bin/bash",
 	},
 	Server: &config.ServerConfig{
+		Github: &config.GithubConfig{
+			APIEndpoint: "https://api.github.com/",
+		},
 		Port: 443,
 		Users: []*config.UserConfig{
 			{
 				PublicKey: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489...",
 				Name:      "Aleema Bashir",
+				GithubID:  "abashir",
 				Targets:   []string{"prod", "dev"},
 			},
 		},
