@@ -8,8 +8,18 @@ import (
 	"github.com/google/go-github/v42/github"
 )
 
+type userKeyLister interface {
+	ListKeys(ctx context.Context, user string, opts *github.ListOptions) ([]*github.Key, *github.Response, error)
+}
+
+type userKeyClient struct {
+	ctx           context.Context
+	userKeyClient userKeyLister
+}
+
 func CollectGithubPublicKeys(api_endpoint string, username string) (pubkeys []string, err error) {
 
+	ctx := context.Background()
 	client := github.NewClient(nil)
 
 	if api_endpoint != "" {
@@ -19,8 +29,15 @@ func CollectGithubPublicKeys(api_endpoint string, username string) (pubkeys []st
 		}
 	}
 
+	kc := &userKeyClient{ctx: ctx, userKeyClient: client.Users}
+
+	return kc.listKeys(username)
+}
+
+func (kc *userKeyClient) listKeys(username string) (pubkeys []string, err error) {
+
 	// list all keys for the user
-	response, _, err := client.Users.ListKeys(context.Background(), username, nil)
+	response, _, err := kc.userKeyClient.ListKeys(context.Background(), username, nil)
 	if err != nil {
 		return nil, fmt.Errorf("Received error while trying to retrieve user (%s) public keys from Github: %v", username, err)
 	}
