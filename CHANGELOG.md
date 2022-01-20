@@ -10,9 +10,9 @@ Changelog for cludo The Cloud Sudo toolset
 - and almost certainly more small tweaks, etc...
 ### Changed
 - Made log message format more consistent
-- Convert SSH key path to a list and move to the top level of the user config [[#52]](https://github.com/superorbital/cludo/issues/52)
+- Converted SSH key path to a list and move to the top level of the user config [[#52]](https://github.com/superorbital/cludo/issues/52)
 ### Removed
-- Remove ability to pass in SSH passphrases [[#89]](https://github.com/superorbital/cludo/issues/89)
+- Removed the ability to pass in SSH passphrases [[#89]](https://github.com/superorbital/cludo/issues/89)
 
 ## [0.0.1-alpha] - 2022-01-04
 ### Added
