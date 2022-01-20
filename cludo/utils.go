@@ -2,7 +2,6 @@ package cludo
 
 import (
 	"fmt"
-	"log"
 	"net/url"
 	"os"
 	"os/exec"
@@ -13,6 +12,14 @@ import (
 )
 
 const CludoProfileEnvVar = "CLUDO_PROFILE"
+
+// CheckErr prints the msg with the prefix '[ERROR]' and exits with error code 1. If the msg is nil, it does nothing.
+func CheckErr(msg interface{}) {
+	if msg != nil {
+		fmt.Fprintf(os.Stderr, "\n[ERROR] %s", msg)
+		os.Exit(1)
+	}
+}
 
 // GenerateEnvironment generates an environment bundle on a remote cludod service.
 func GenerateEnvironment(cc *config.ClientConfig, target string, keys []string, debug bool, dryRun bool) (models.ModelsEnvironmentBundle, error) {
@@ -30,7 +37,7 @@ func GenerateEnvironment(cc *config.ClientConfig, target string, keys []string, 
 	})
 
 	if dryRun {
-		log.Printf("Dry run enabled: Would send %#v", params)
+		fmt.Printf("[INFO] Dry run enabled: Would send %#v", params)
 		return nil, nil
 	}
 

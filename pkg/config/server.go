@@ -3,7 +3,7 @@ package config
 import (
 	"crypto/rsa"
 	"encoding/base64"
-	"fmt"
+	"log"
 	"time"
 
 	"github.com/superorbital/cludo/pkg/auth"
@@ -55,7 +55,7 @@ func (sc *ServerConfig) NewConfigAuthorizer() (*auth.Authorizer, error) {
 	for _, user := range sc.Users {
 		pub, err := auth.DecodeAuthorizedKey([]byte(user.PublicKey))
 		if err != nil {
-			fmt.Printf("[WARN] Failed to decode user public key: %v, %#v\n", err, user.PublicKey)
+			log.Printf("[WARN] Failed to decode user public key: %v, %#v\n", err, user.PublicKey)
 		}
 		users[user.ID()] = pub
 	}
@@ -78,7 +78,7 @@ func (sc *ServerConfig) NewGithubAuthorizer() (*auth.Authorizer, error) {
 			for _, pkey := range provider_keys {
 				pub, err := auth.DecodeAuthorizedKey([]byte(pkey))
 				if err != nil {
-					fmt.Printf("[WARN] Failed to decode user public key: %v, %#v\n", err, pkey)
+					log.Printf("[WARN] Failed to decode user public key: %v, %#v\n", err, pkey)
 				} else {
 					users[user.ID()] = pub
 				}

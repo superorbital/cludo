@@ -2,7 +2,6 @@ package cludo
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/spf13/cobra"
 	"github.com/superorbital/cludo/client/system"
@@ -21,13 +20,13 @@ func MakeVersionCmd(debug bool, dryRun bool) (*cobra.Command, error) {
 			out := cmd.OutOrStdout()
 
 			userConfig, err := config.NewConfigFromViper()
-			cobra.CheckErr(err)
+			CheckErr(err)
 
 			serverVersion, err := GetVersion(userConfig.Target, debug, dryRun)
-			cobra.CheckErr(err)
+			CheckErr(err)
 
 			_, err = fmt.Fprintf(out, "Client: %s\nServer: %s\n", build.VersionFull(), serverVersion)
-			cobra.CheckErr(err)
+			CheckErr(err)
 		},
 	}
 
@@ -44,7 +43,7 @@ func GetVersion(target string, debug bool, dryRun bool) (string, error) {
 	params := system.NewHealthParams()
 
 	if dryRun {
-		log.Printf("Dry run enabled: Would send %#v", params)
+		fmt.Printf("[INFO] Dry run enabled: Would send %#v", params)
 		return "", nil
 	}
 

@@ -24,7 +24,7 @@ func (cc *ClientConfig) NewDefaultSigner(keys []string) (*auth.Signer, error) {
 	// Warn users that we only use the first key at the moment
 	// see: https://github.com/superorbital/cludo/issues/81
 	if len(keys) != 1 {
-		fmt.Printf("[WARN] Currently cludo only uses the first SSH key in the config list.\nSee: https://github.com/superorbital/cludo/issues/81\n\n")
+		fmt.Printf("[WARN] Currently cludo only uses the first SSH key in the config list.\n[INFO] See: https://github.com/superorbital/cludo/issues/81\n\n")
 	}
 	// At the moment we forcefully use the first key in the list.
 	keyPath, err := homedir.Expand(keys[0])

@@ -7,7 +7,6 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -168,7 +167,6 @@ func TestDecodePrivateKeyWithPassPhrase(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			fmt.Println(tc.passphrase)
 			actual, actualErr := auth.DecodePrivateKey(tc.encoded, false)
 
 			assert.EqualValues(t, tc.want, actual)

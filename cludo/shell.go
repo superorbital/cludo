@@ -19,17 +19,17 @@ func MakeShellCmd(debug bool, dryRun bool, exit func(int)) (*cobra.Command, erro
 		Long:  `Executes a command with an environment setup with cludo credentials for the target cludo server endpoint`,
 		Run: func(cmd *cobra.Command, args []string) {
 			userConfig, err := config.NewConfigFromViper()
-			cobra.CheckErr(err)
+			CheckErr(err)
 			clientConfig := userConfig.Client
 
 			bundle, err := GenerateEnvironment(clientConfig, userConfig.Target, userConfig.SSHKeyPaths, debug, dryRun)
-			cobra.CheckErr(err)
+			CheckErr(err)
 
 			shell, err := GetShellPath(clientConfig)
-			cobra.CheckErr(err)
+			CheckErr(err)
 
 			code, err := ExecWithEnv(append([]string{shell}, args...), bundle, !cleanEnv, userConfig.Target)
-			cobra.CheckErr(err)
+			CheckErr(err)
 
 			if code != 0 {
 				exit(code)
