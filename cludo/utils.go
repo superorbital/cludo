@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/superorbital/cludo/client"
 	"github.com/superorbital/cludo/client/environment"
 	"github.com/superorbital/cludo/models"
 	"github.com/superorbital/cludo/pkg/config"
@@ -27,7 +28,29 @@ func GenerateEnvironment(cc *config.ClientConfig, target string, keys []string, 
 	if err != nil {
 		return nil, err
 	}
-	signer, err := cc.NewDefaultSigner(keys)
+
+	var response *environment.GenerateEnvironmentOK
+
+	for _, key := range keys {
+		response, err := AttemptKeyAuth(cludodClient, cc, target, key, debug, dryRun)
+		if err != nil {
+			continue
+		}
+		if response != nil && response.Payload != nil {
+			return response.Payload.Bundle, nil
+		}
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("The server reported an error: %v, %#v", err, response)
+	}
+
+	return nil, fmt.Errorf("Did not find any authorized SSH keys: %#v", response)
+}
+
+func AttemptKeyAuth(client *client.Cludod, cc *config.ClientConfig, target string, key string, debug bool, dryRun bool) (*environment.GenerateEnvironmentOK, error) {
+
+	signer, err := cc.NewDefaultSigner(key)
 	if err != nil {
 		return nil, err
 	}
@@ -41,16 +64,9 @@ func GenerateEnvironment(cc *config.ClientConfig, target string, keys []string, 
 		return nil, nil
 	}
 
-	response, err := cludodClient.Environment.GenerateEnvironment(params, signer.CludoAuth())
-	if err != nil {
-		return nil, fmt.Errorf("[1] Failed to generate environment: %v, %#v", err, response)
-	}
+	response, err := client.Environment.GenerateEnvironment(params, signer.CludoAuth())
 
-	if response != nil && response.Payload != nil {
-		return response.Payload.Bundle, nil
-	}
-
-	return nil, nil
+	return response, err
 }
 
 func ProfileURL(targetURL string) (string, error) {
