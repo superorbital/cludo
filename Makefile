@@ -88,7 +88,7 @@ else
 endif
 
 test:
-	go test ./...
+	go test -cover ./...
 
 clean:
 	-rm -rf bin/*
