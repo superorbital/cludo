@@ -1,24 +1,21 @@
+target: "http://127.0.0.1:80/dev"
+ssh_key_paths: ["./id_rsa"]
 client:
-  default:
-    server_url: "http://127.0.0.1:8080/"
-    key_path: "./id_rsa_TEST_KEY_PP"
-    passphrase: "cludo"
-    #shell_path: "/usr/local/bin/bash" # Leave unset for tests
-    roles: ["default"]
+  shell_path: "/usr/local/bin/bash"
+  interactive: true
 server:
-  port: 443
-  users:
-    - public_key: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489..."
-      roles:
+  targets:
+      dev:
         aws:
-          so_org:
-            arn: "aws:arn:iam:..."
-            session_duration: "10m"
-            access_key_id: "456DEF..."
-            secret_access_key: "UVW789..."
-          so_dev:
-            arn: "aws:arn:iam:..."
-            session_duration: "8h"
-            access_key_id: "123ABC..."
-            secret_access_key: "ZXY098..."
-      default_role: "aws_so_org"
+          region: "us-west-2"
+          arn: "arn:aws:iam::..."
+          session_duration: "1h"
+          access_key_id: "AKI..."
+          secret_access_key: "wLb..."
+  users:
+    - public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDD2ll7CNP8qq5CqXda7vAGevhES4nFB9qLVE5dvZHw1Gsl0hBubRgvNpQskjUX2KSejGSxSK7gXdF0P5w1P84E4wofRM251C688lGLkLZRNl2THQUTHEgycSokEkCSXDzjDYqF6OTW6cQ7NdLvdhZFNWO+3nparZNpEsKoQ8Xu5jkYzQxUXbwc66psIZfD6yTT1QtvgcsgmGH3aL/3RaiznFwsVa5Zq4qA3wwgrnuV9Q/si4wJAuOVtnmAKgnxwrHbrb0WwPOhPa5P4QlntnWi6jexeJ39A9gKhwh7QMF00VSkiiWv4V4dsq6eXVT/lyNLy8p5yStkBV43l6DGHGvBMCZhJkNb85/M79S4KhjlHLeaVBLj648ImTrDqzrFD4G5k5cEL3VTsQ3kus839TH5xdOj8iCJ9x/lVCuSmrF53US6+dL4NXRSGixyo+DhUlWUlMhsor3cgmjA2bSS6h/h7c/qaM5Q7YZ7QZtGSMqA9sS+mV8YL5rd6XFckWUCyOjt6ehiDfGH6E49l4S6NxPdQI1OpSmdVVdlsspprSTGfoD/2voXFdMSLLFtudeglYjPteXoF+Nj80iOPUXRwHRgj2HKi+B7BS3c4TPL+MlrlTOznyq565rJ2DJ9u9BD0PB4Z7snOB7eUiI2OkKODQ6WWsH3u0qCO0kVjEotdB5yQQ== test-key-pp@example.com DO NOT USE!"
+      name: "TEST-PP"
+      targets: ["dev"]
+    - public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC8zJJNfH4szhN+FU+5I8mtmbPU16F1ObcxY7rcwX9t5UxTMLB5PtTuw1LWNSp9b9XMHE4/Y/So9+P+CwgtjdyrfYeQ5aX+YeikK1+BC8Az0erY2JHfg8dsLJ8JGRw0SN7eYfJ/Kss4gTBF0NNFMTiity91i7A6yF+LcidjmYly4Qa0HWXxFcYpZ+u0Uj9BynkmDtJyfKWEBTqe/VlXV5N/tLOXvyotkPUlfSKv+d+6YOBVIMctlC0e7zIPxgG0UWr0ntzhzO9kYaOxmwelxjtE32rm+tt2RAs5JcxmgtppOn0SesvhgpF/iDt9TSZmqM0zc5FZjeY/ilQ5q7eMW0ZjP9kWeRnamJx0Cx5gNmPpUYLLdKOrEQNXT8FwkyfmRtQcgOkiPVFPXMnhHYO6DVAH0L5lGHL6jFHxX0SjfOEC63y7ehz7BFPVCxFpA12+HP93RzFV3d/ohaKobZkYa0qkMk+Nn2DAmV2msjGvwSS6QlFoUtbkcArqnqciTnNY3IF9IV+FRg2omzzoPA1rOLLthNsW84ycD58YzQrQ+8pkHpmDfspeSTr2Jges5E1Z6koBdOaeC6p/Ud6EnDG9Plo7I1yeBaYKh1zZEVO7L6GvMB17xqSk5sXIj0AupavGqEiju10SnnnDfZ1aroMPWKT+4aaE5WEarzYeuqiouDxDoQ== test-key-nopp@example.com DO NOT USE!!"
+      name: "TEST-NOPP"
+      targets: ["dev"]

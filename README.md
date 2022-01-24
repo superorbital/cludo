@@ -65,7 +65,7 @@ Key             |  Description                                        | Environm
 
 ```yaml
 target: "https://cludo.example.com/dev"
-ssh_key_paths: ["~/.ssh/id_rsa"]
+ssh_key_paths: ["~/.ssh/id_rsa", "~/.ssh/id_rsa_2"]
 client:
   shell_path: "/usr/local/bin/bash"
   interactive: true

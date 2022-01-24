@@ -20,16 +20,13 @@ type ClientConfig struct {
 	ShellPath   string `mapstructure:"shell_path"`
 }
 
-func (cc *ClientConfig) NewDefaultSigner(keys []string) (*auth.Signer, error) {
-	// Warn users that we only use the first key at the moment
-	// see: https://github.com/superorbital/cludo/issues/81
-	if len(keys) != 1 {
-		fmt.Printf("[WARN] Currently cludo only uses the first SSH key in the config list.\n[INFO] See: https://github.com/superorbital/cludo/issues/81\n\n")
-	}
-	// At the moment we forcefully use the first key in the list.
-	keyPath, err := homedir.Expand(keys[0])
+// NewDefaultSigner attempts to read and decode the provided private key
+// and then generate a signer that can be used to sign requests to the server.
+// It returns a *auth.Signer and any errors that were encountered.
+func (cc *ClientConfig) NewDefaultSigner(pkey string) (*auth.Signer, error) {
+	keyPath, err := homedir.Expand(pkey)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to expand ~ (homedir) path characters in '%s': %v", keys[0], err)
+		return nil, fmt.Errorf("Failed to expand ~ (homedir) path characters in '%s': %v", pkey, err)
 	}
 	if keyPath == "" {
 		homeDir, err := os.UserHomeDir()
@@ -46,7 +43,7 @@ func (cc *ClientConfig) NewDefaultSigner(keys []string) (*auth.Signer, error) {
 		return nil, fmt.Errorf("Failed to read user private key %v: %v", keyPath, err)
 	}
 
-	key, err := auth.DecodePrivateKey(encodedKey, cc.Interactive)
+	key, err := auth.DecodePrivateKey(keyPath, encodedKey, cc.Interactive)
 	if err != nil {
 		return nil, fmt.Errorf("Failed decoding private key %v: %v", keyPath, err)
 	}

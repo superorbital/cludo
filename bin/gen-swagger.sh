@@ -10,7 +10,7 @@ else
   export TEMPLATE_DIR="$2"
 fi
 
-echo "[INFO} TEMPLATE_DIR: ${TEMPLATE_DIR}"
+echo "[INFO] TEMPLATE_DIR: ${TEMPLATE_DIR}"
 
 commands=( "docker" )
 sites=("https://docs.docker.com/get-docker/")
