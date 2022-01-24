@@ -26,6 +26,7 @@ cmd/cludod/cludod
 bin/cludo
 bin/cludod
 builds
+main
 
 #misc temp and hidden items
 cludo.y*ml

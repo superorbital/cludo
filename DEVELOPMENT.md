@@ -5,11 +5,12 @@
 ```sh
 git clone https://github.com/superorbital/cludo
 ```
+
 * [Code Documentation](https://pkg.go.dev/github.com/superorbital/cludo)
 
 ## Build Locally
 
-Development is driven by make (see the [Makefile](https://github.com/superorbital/cludo/blob/main/Makefile)). Running make will run the tests, build the `cludo` and `cludod` binaries, and create the docker images.
+Development is driven by make (see the [Makefile](https://github.com/superorbital/cludo/blob/main/Makefile)). Running `make` will run the tests, build the `cludo` and `cludod` binaries, and create the docker images.
 
 ```sh
 make
@@ -25,7 +26,7 @@ make swagger
 # and more...
 ```
 
-* Binaries are cross compiled for various OS's and architectures and are available in the `builds/` directory.
+* Binaries are cross-compiled for various OS's and architectures and are available in the `builds/` directory.
 
 ## Running the server locally
 
@@ -56,6 +57,18 @@ docker run -ti \
 * Get approval
 * Merge the PR
 * Sit back and let the CI pipeline do it's job
+
+## Kubernetes & ContainerD
+
+If you are running Kubernetes locally with containerd via something like [colima](https://github.com/abiosoft/colima) or [Rancher Desktop](https://rancher.com/downloads/rancher-desktop/) then you can use something like the following to automate building and running the client and server.
+
+* *NOTE*: You will need:
+  * A valid `cludod.yaml` config file stored at `k8s/kustomize/base/files-secrets/secret-cludod.yaml` for this to work as expected.
+  * `nerdctl` aliased to the correct version of `nerdctl` for your setup.
+
+```sh
+make nc && { k delete -k ./k8s/kustomize/overlays/local ; k apply -k ./k8s/kustomize/overlays/local && sleep 10; echo -e "\n\n\n\n"; }  && ./builds/darwin_amd64_cludo exec aws sts get-caller-identity
+```
 
 ## Github Actions
 

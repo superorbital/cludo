@@ -30,9 +30,7 @@ The `cludo` client will read _both_ your user's `~/.cludo/cludo.yaml` file and t
 For example, it's common to have the following in your `~/.cludo/cludo.yaml` file to configure your user's SSH keys for authenticating with `cludod`:
 
 ``` yaml
-ssh_key_paths: 
-- ~/.ssh/superorbial_cludo
-- ~/.ssh/example_cludo
+ssh_key_paths: ["~/.ssh/superorbial_cludo", "~/.ssh/example_cludo"]
 ```
 
 Then your team would include this `cludo.yaml` file in a directory in the project's git
@@ -57,7 +55,7 @@ Currently, only the following values are configurable for the client:
 Key             |  Description                                        | Environment Variable
 ---------       |  -----------                                        | --------------------
 `target`        |  `cludod` server URL and appended config target (_e.g. dev,prod, etc_)  | `CLUDO_TARGET`
-`ssh_key_paths` |  Paths to the private keys used for authentication. | `CLUDO_SSH_KEY_PATHS`
+`ssh_key_paths` |  Paths to private (direct) and public keys (ssh agent) used for authentication. | `CLUDO_SSH_KEY_PATHS`
 `client.shell_path` | The path to the shell to launch when using `cludo shell` | `CLUDO_SHELL_PATH`
 `client.interactive` | Wether the user can be prompted for additional information (like SSH passphrases) | `CLUDO_INTERACTIVE`
 
@@ -65,7 +63,7 @@ Key             |  Description                                        | Environm
 
 ```yaml
 target: "https://cludo.example.com/dev"
-ssh_key_paths: ["~/.ssh/id_rsa", "~/.ssh/id_rsa_2"]
+ssh_key_paths: ["~/.ssh/id_rsa", "~/.ssh/id_rsa_2.pub"]
 client:
   shell_path: "/usr/local/bin/bash"
   interactive: true
@@ -73,7 +71,9 @@ client:
 
 ### Authentication with the `cludod` server
 
-Cludo uses SSH keys for authentication.  The client will try all of the keys listed in the `ssh_key_paths` setting when authenticating with the server until one succeeds (or they all fail).
+Cludo uses SSH keys for authentication. The client will try all of the private keys (directly) and public keys (via a local SSH agent) listed in the `ssh_key_paths` setting when authenticating with the server until one succeeds (or they all fail).
+
+If you want to use a local SSH agent with `cludo` then you should add the local path to a public key that matches a private key which is loaded into your SSH agent. If `cludo` can connect to the agent, then it will try to use that for signing requests.
 
 ### Usage
 

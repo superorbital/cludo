@@ -8,4 +8,5 @@ package tools
 import (
 	_ "github.com/ahmetb/govvv"
 	_ "github.com/mitchellh/gox"
+	_ "github.com/ofabry/go-callvis"
 )
