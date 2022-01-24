@@ -62,7 +62,7 @@ func TestSigner(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			signer := auth.NewDefaultSigner(tc.privateKey)
+			signer := auth.NewDefaultSigner(tc.privateKey, nil)
 			actual, actualErr := signer.GenerateAuthHeader(tc.message)
 
 			assert.EqualValues(t, tc.wantErr, actualErr)
@@ -72,3 +72,5 @@ func TestSigner(t *testing.T) {
 		})
 	}
 }
+
+// TODO: Create tests for SSH Public Key/Agent workflow

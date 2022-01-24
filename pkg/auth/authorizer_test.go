@@ -27,7 +27,7 @@ func GenerateSHA512Signature(t *testing.T, key *rsa.PrivateKey, message string) 
 	if err != nil {
 		t.Fatalf("Failed to generate signature: %v, %#v, %#v", err, key, hashed)
 	}
-	encoded := base64.StdEncoding.EncodeToString(signature)
+	encoded := "sha512|" + base64.StdEncoding.EncodeToString(signature)
 	return fmt.Sprintf("%s:%s", message, encoded)
 }
 

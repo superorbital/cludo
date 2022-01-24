@@ -56,7 +56,7 @@ func getPassphrase(path string) ([]byte, error) {
 }
 
 // DecodePrivateKey tries to decode the given private key.
-// It wil try and handle passphrase-protected keys when encountered.
+// It will try and handle passphrase-protected keys when encountered.
 // It returns the decoded private key and any errors that were encountered.
 func DecodePrivateKey(path string, encoded []byte, interactive bool) (*rsa.PrivateKey, error) {
 	var parsedKey interface{}

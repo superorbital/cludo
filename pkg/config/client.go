@@ -13,6 +13,7 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/superorbital/cludo/client"
 	"github.com/superorbital/cludo/pkg/auth"
+	"golang.org/x/crypto/ssh"
 )
 
 type ClientConfig struct {
@@ -20,10 +21,10 @@ type ClientConfig struct {
 	ShellPath   string `mapstructure:"shell_path"`
 }
 
-// NewDefaultSigner attempts to read and decode the provided private key
+// NewDefaultClientSigner attempts to read and decode the provided private key
 // and then generate a signer that can be used to sign requests to the server.
 // It returns a *auth.Signer and any errors that were encountered.
-func (cc *ClientConfig) NewDefaultSigner(pkey string) (*auth.Signer, error) {
+func (cc *ClientConfig) NewDefaultClientSigner(pkey string) (*auth.Signer, error) {
 	keyPath, err := homedir.Expand(pkey)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to expand ~ (homedir) path characters in '%s': %v", pkey, err)
@@ -38,17 +39,24 @@ func (cc *ClientConfig) NewDefaultSigner(pkey string) (*auth.Signer, error) {
 		keyPath = path.Join(homeDir, ".ssh", "id_rsa")
 	}
 
-	encodedKey, err := ioutil.ReadFile(keyPath)
+	rawKey, err := ioutil.ReadFile(keyPath)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to read user private key %v: %v", keyPath, err)
+		return nil, fmt.Errorf("Failed to read user key %v: %v", keyPath, err)
 	}
 
-	key, err := auth.DecodePrivateKey(keyPath, encodedKey, cc.Interactive)
+	publicKey, _, _, _, err := ssh.ParseAuthorizedKey([]byte(rawKey))
 	if err != nil {
-		return nil, fmt.Errorf("Failed decoding private key %v: %v", keyPath, err)
-	}
+		// This is not a public key, so it might be a private key
 
-	return auth.NewDefaultSigner(key), nil
+		key, err := auth.DecodePrivateKey(keyPath, rawKey, cc.Interactive)
+		if err != nil {
+			return nil, fmt.Errorf("Failed decoding key %v: %v", keyPath, err)
+		}
+		return auth.NewDefaultSigner(key, nil), nil
+	} else {
+		// This is a public key, so we pass it through
+		return auth.NewDefaultSigner(nil, publicKey), nil
+	}
 }
 
 func NewClient(target string, debug bool) (*client.Cludod, error) {

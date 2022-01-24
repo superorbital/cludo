@@ -45,14 +45,14 @@ func GenerateEnvironment(cc *config.ClientConfig, target string, keys []string, 
 		return nil, fmt.Errorf("The server reported an error: %v, %#v", err, response)
 	}
 
-	return nil, fmt.Errorf("Did not find any authorized SSH keys: %#v", response)
+	return nil, fmt.Errorf("Did not find any authorized SSH keys. Ensure that your keys are unlocked in your SSH agent or talk to your administrator: %#v", response)
 }
 
 // attemptKeyAuth attempts to authenticate with the server using the given key.
 // It returns the environment response and any error encountered.
 func attemptKeyAuth(client *client.Cludod, cc *config.ClientConfig, target string, key string, debug bool, dryRun bool) (*environment.GenerateEnvironmentOK, error) {
 
-	signer, err := cc.NewDefaultSigner(key)
+	signer, err := cc.NewDefaultClientSigner(key)
 	if err != nil {
 		return nil, err
 	}
