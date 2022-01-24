@@ -20,6 +20,9 @@ type ClientConfig struct {
 	ShellPath   string `mapstructure:"shell_path"`
 }
 
+// NewDefaultSigner attempts to read and decode the provided private key
+// and then generate a signer that can be used to sign requests to the server.
+// It returns a *auth.Signer and any errors that were encountered.
 func (cc *ClientConfig) NewDefaultSigner(pkey string) (*auth.Signer, error) {
 	keyPath, err := homedir.Expand(pkey)
 	if err != nil {
