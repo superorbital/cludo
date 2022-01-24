@@ -1,0 +1,12 @@
+# See: http://help.houndci.com/en/collections/33942-configuration
+fail_on_violations: true
+
+golint:
+  enabled: true
+
+shellcheck:
+  enabled: true
+
+remark:
+  enabled: true
+
