@@ -30,11 +30,11 @@ The `cludo` client will read _both_ your user's `~/.cludo/cludo.yaml` file and t
 For example, it's common to have the following in your `~/.cludo/cludo.yaml` file to configure your user's SSH keys for authenticating with `cludod`:
 
 ``` yaml
-ssh_key_paths: ["~/.ssh/superorbial_cludo", "~/.ssh/example_cludo"]
+ssh_key_paths: ["~/.ssh/superorbial_cludo", "~/.ssh/example_cludo.pub"]
 ```
 
 Then your team would include this `cludo.yaml` file in a directory in the project's git
-repository to configure the `cludod` server enpoint **and** target environment.
+repository to configure the `cludod` server endpoint **and** target environment.
 
 * In the example below:
   * `https://cludo.example.com/` is the endpoint where the `cludod` server is listening for connections.

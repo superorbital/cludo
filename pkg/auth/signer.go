@@ -25,10 +25,14 @@ type Signer struct {
 	publicKey  ssh.PublicKey
 }
 
+// NewDefaultSigner runs the NewSigner() function
+// It return the response from NewSigner()
 func NewDefaultSigner(privkey *rsa.PrivateKey, pubkey ssh.PublicKey) *Signer {
 	return NewSigner(privkey, pubkey, rand.Reader)
 }
 
+// NewSigner creates a new Signer that can be used to sign requests
+// It returns a pointer to the signer.
 func NewSigner(privkey *rsa.PrivateKey, pubkey ssh.PublicKey, rng io.Reader) *Signer {
 	return &Signer{
 		rng:        rng,
@@ -57,7 +61,7 @@ func (signer *Signer) GenerateAuthHeader(message string) (string, error) {
 			client := agent.NewClient(conn)
 			sig, err := client.Sign(signer.publicKey, []byte(message))
 			if err != nil {
-				return "", fmt.Errorf("Failed to sign message via SSH Auth Socket: %v:", err)
+				return "", fmt.Errorf("failed to sign message via SSH Auth Socket: %v", err)
 			}
 			encoded = "sha1|" + base64.StdEncoding.EncodeToString(sig.Blob)
 
@@ -71,7 +75,7 @@ func (signer *Signer) GenerateAuthHeader(message string) (string, error) {
 		signature, err := rsa.SignPKCS1v15(signer.rng, signer.privateKey, crypto.SHA512, hashed[:])
 		encoded = "sha512|" + base64.StdEncoding.EncodeToString(signature)
 		if err != nil {
-			return "", fmt.Errorf("Failed to sign message via SSH private key: %v:", err)
+			return "", fmt.Errorf("failed to sign message via SSH private key: %v", err)
 		}
 	}
 
