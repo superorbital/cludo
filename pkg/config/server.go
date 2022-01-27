@@ -1,7 +1,6 @@
 package config
 
 import (
-	"crypto/rsa"
 	"encoding/base64"
 	"log"
 	"time"
@@ -9,6 +8,7 @@ import (
 	"github.com/superorbital/cludo/pkg/auth"
 	"github.com/superorbital/cludo/pkg/aws"
 	"github.com/superorbital/cludo/pkg/providers"
+	"golang.org/x/crypto/ssh"
 )
 
 type AWSRoleConfig struct {
@@ -51,11 +51,11 @@ type ServerConfig struct {
 }
 
 func (sc *ServerConfig) NewConfigAuthorizer() (*auth.Authorizer, error) {
-	users := map[string]*rsa.PublicKey{}
+	users := map[string]*ssh.PublicKey{}
 	for _, user := range sc.Users {
-		pub, err := auth.DecodeAuthorizedKey([]byte(user.PublicKey))
+		pub, err := auth.ParseAuthorizedKey([]byte(user.PublicKey))
 		if err != nil {
-			log.Printf("[WARN] Failed to decode user public key: %v, %#v\n", err, user.PublicKey)
+			log.Printf("[WARN] Failed to parse user public key: %v, %#v\n", err, user.PublicKey)
 		}
 		users[user.ID()] = pub
 	}
@@ -63,7 +63,7 @@ func (sc *ServerConfig) NewConfigAuthorizer() (*auth.Authorizer, error) {
 }
 
 func (sc *ServerConfig) NewGithubAuthorizer() (*auth.Authorizer, error) {
-	users := map[string]*rsa.PublicKey{}
+	users := map[string]*ssh.PublicKey{}
 
 	for _, user := range sc.Users {
 		if user.GithubID != "" {
@@ -76,9 +76,9 @@ func (sc *ServerConfig) NewGithubAuthorizer() (*auth.Authorizer, error) {
 				log.Printf("[WARN] Failed to collect public keys from Github for (%s): %v\n", user.GithubID, err)
 			} else {
 				for _, pkey := range provider_keys {
-					pub, err := auth.DecodeAuthorizedKey([]byte(pkey))
+					pub, err := auth.ParseAuthorizedKey([]byte(pkey))
 					if err != nil {
-						log.Printf("[WARN] Failed to decode user public key: %v, %#v\n", err, pkey)
+						log.Printf("[WARN] Failed to parse user public key from Github: %v, %#v\n", err, pkey)
 					} else {
 						users[user.ID()] = pub
 					}

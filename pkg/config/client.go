@@ -55,7 +55,7 @@ func (cc *ClientConfig) NewDefaultClientSigner(pkey string) (*auth.Signer, error
 		return auth.NewDefaultSigner(key, nil), nil
 	}
 	// This is a public key, so we pass it through
-	return auth.NewDefaultSigner(nil, publicKey), nil
+	return auth.NewDefaultSigner(nil, &publicKey), nil
 }
 
 func NewClient(target string, debug bool) (*client.Cludod, error) {

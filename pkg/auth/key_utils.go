@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"crypto/rsa"
 	"fmt"
 	"strings"
 	"syscall"
@@ -11,34 +10,23 @@ import (
 	"golang.org/x/term"
 )
 
-func DecodeAuthorizedKey(encoded []byte) (*rsa.PublicKey, error) {
+// ParseAuthorizedKey converts an authorized_key into a PublicKey
+// It returns the PublicKey and any errors encountered.
+func ParseAuthorizedKey(encoded []byte) (*ssh.PublicKey, error) {
 	parsed, _, _, _, err := ssh.ParseAuthorizedKey(encoded)
 	if err != nil {
 		return nil, err
 	}
 
-	// To get back to an *rsa.PublicKey, we need to first upgrade to the ssh.CryptoPublicKey interface
-	parsedCryptoKey := parsed.(ssh.CryptoPublicKey)
-
-	// Then, we can call CryptoPublicKey() to get the actual crypto.PublicKey
-	pubCrypto := parsedCryptoKey.CryptoPublicKey()
-
-	pubkey, ok := pubCrypto.(*rsa.PublicKey)
-	if !ok {
-		return nil, fmt.Errorf("expected an RSA public key, got %T", pubCrypto)
-	}
-
-	// Finally, we can convert back to an *rsa.PublicKey
-	return pubkey, nil
+	return &parsed, nil
 }
 
-func EncodeAuthorizedKey(key *rsa.PublicKey) (string, error) {
-	pub, err := ssh.NewPublicKey(key)
-	if err != nil {
-		return "", err
-	}
+// EncodeAuthorizedKey will encode the given public key
+// into the authorized_key format
+// It returns a string containing the authorized_key and any errors encountered.
+func EncodeAuthorizedKey(pub *ssh.PublicKey) (string, error) {
 
-	return string(ssh.MarshalAuthorizedKey(pub)), nil
+	return string(ssh.MarshalAuthorizedKey(*pub)), nil
 }
 
 // getPassphrase will prompt the user for a passphrase
@@ -50,7 +38,7 @@ func getPassphrase(path string) ([]byte, error) {
 		return []byte(""), err
 	}
 
-	fmt.Printf("\n")
+	fmt.Printf("\n\n")
 	password := string(bytePassword)
 	return []byte(strings.TrimSpace(password)), nil
 }
@@ -58,7 +46,7 @@ func getPassphrase(path string) ([]byte, error) {
 // DecodePrivateKey tries to decode the given private key.
 // It will try and handle passphrase-protected keys when encountered.
 // It returns the decoded private key and any errors that were encountered.
-func DecodePrivateKey(path string, encoded []byte, interactive bool) (*rsa.PrivateKey, error) {
+func DecodePrivateKey(path string, encoded []byte, interactive bool) (*interface{}, error) {
 	var parsedKey interface{}
 	var err error
 
@@ -81,10 +69,5 @@ func DecodePrivateKey(path string, encoded []byte, interactive bool) (*rsa.Priva
 		return nil, fmt.Errorf("Failed to parse private key: %v", err)
 	}
 
-	privateKey, ok := parsedKey.(*rsa.PrivateKey)
-	if !ok {
-		return nil, fmt.Errorf("Parsed private key is not an RSA private key: %#v", parsedKey)
-	}
-
-	return privateKey, nil
+	return &parsedKey, nil
 }

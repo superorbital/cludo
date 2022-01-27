@@ -34,7 +34,7 @@ func TestSigner(t *testing.T) {
 	type test struct {
 		name       string
 		message    string
-		privateKey *rsa.PrivateKey
+		privateKey *interface{}
 		publicKey  *rsa.PublicKey
 		want       bool
 		wantErr    error
@@ -42,18 +42,26 @@ func TestSigner(t *testing.T) {
 
 	testKey1, testPub1 := GenerateRSAKeyPair(t)
 	testKey2, _ := GenerateRSAKeyPair(t)
+	tprivkey1, err := PrivateKeyRSAToInterface(t, testKey1)
+	if err != nil {
+		t.Fatalf("Failed to create interface from RSA private key (tprivkey1): %v", err)
+	}
+	tprivkey2, err := PrivateKeyRSAToInterface(t, testKey2)
+	if err != nil {
+		t.Fatalf("Failed to create interface from RSA private key (tprivkey2): %v", err)
+	}
 
 	tests := []test{
 		{
 			name:       "Test matching keys",
 			message:    "test-message-1",
-			privateKey: testKey1,
+			privateKey: tprivkey1,
 			publicKey:  testPub1,
 		},
 		{
 			name:       "Test non-matching keys",
 			message:    "test-message-2",
-			privateKey: testKey2,
+			privateKey: tprivkey2,
 			publicKey:  testPub1,
 
 			want: false,

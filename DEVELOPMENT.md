@@ -43,7 +43,7 @@ You can run the CLI in a container using something like this:
 ```sh
 docker run -ti \
   -v ${PWD}/data/cludo.yaml:/root/.cludo/cludo.yaml \
-  -v ${PWD}/data/id_rsa_TEST_KEY_PP:/app/id_rsa_TEST_KEY_PP \
+  -v ${PWD}/data/id_ed25519_TEST_KEY_PP:/app/id_ed25519_TEST_KEY_PP \
   ${IMAGE_ID} \
   "cludo shell"
 ```

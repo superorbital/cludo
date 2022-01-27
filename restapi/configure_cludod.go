@@ -100,8 +100,8 @@ func configureAPI(api *operations.CludodAPI) http.Handler {
 			}
 			id, ok, err := authz.CheckAuthHeader(token)
 			if err != nil {
-				api.Logger("[ERROR] Failed to validate API request signature in header: %v", err)
-				return nil, errors.New(500, "Failed to validate API request signature in header: %v", err)
+				api.Logger("[ERROR] Failed to validate API request signature in header against Github: %v", err)
+				return nil, errors.New(500, "Failed to validate API request signature in header against Github: %v", err)
 			}
 			if ok {
 				for _, user := range conf.Server.Users {

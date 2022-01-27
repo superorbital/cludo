@@ -36,7 +36,7 @@ func MakeRootCmd(exit func(int)) (*cobra.Command, error) {
 	viper.BindPFlag("target", rootCmd.PersistentFlags().Lookup("target"))
 	rootCmd.PersistentFlags().Bool("interactive", true, "Should the CLI prompt the user for input")
 	viper.BindPFlag("client.default.interactive", rootCmd.PersistentFlags().Lookup("interactive"))
-	rootCmd.PersistentFlags().StringSliceP("ssh-key-paths", "k", []string{"~/.ssh/id_rsa"}, "A comma seperated list of SSH private key filesystem paths")
+	rootCmd.PersistentFlags().StringSliceP("ssh-key-paths", "k", []string{"~/.ssh/id_ed25519"}, "A comma seperated list of SSH private key filesystem paths")
 	viper.BindPFlag("ssh_key_paths", rootCmd.PersistentFlags().Lookup("ssh-key-paths"))
 
 	// Register regular flags.

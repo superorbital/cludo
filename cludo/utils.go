@@ -45,7 +45,7 @@ func GenerateEnvironment(cc *config.ClientConfig, target string, keys []string, 
 		return nil, fmt.Errorf("The server reported an error: %v, %#v", err, response)
 	}
 
-	return nil, fmt.Errorf("did not find any authorized SSH keys. Ensure that your keys are unlocked in your SSH agent or talk to your administrator: %#v", response)
+	return nil, fmt.Errorf("did not find any authorized SSH keys. Ensure that your keys are loaded into your SSH agent and/or talk to your administrator: %#v", response)
 }
 
 // attemptKeyAuth attempts to authenticate with the server using the given key.
