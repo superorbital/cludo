@@ -15,7 +15,7 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-func GenerateSSHAuthorizedKey(t *testing.T) (*rsa.PublicKey, []byte) {
+func GenerateSSHAuthorizedKey(t *testing.T) (*ssh.PublicKey, []byte) {
 	_, pubKey := GenerateRSAKeyPair(t)
 
 	pub, err := ssh.NewPublicKey(pubKey)
@@ -23,10 +23,10 @@ func GenerateSSHAuthorizedKey(t *testing.T) (*rsa.PublicKey, []byte) {
 		t.Fatalf("Failed to convert pubkey to authorized key format: %v, %#v", err, pubKey)
 	}
 
-	return pubKey, ssh.MarshalAuthorizedKey(pub)
+	return &pub, ssh.MarshalAuthorizedKey(pub)
 }
 
-func GenerateSSHPrivateKey(t *testing.T, passphrase string) (*rsa.PrivateKey, []byte) {
+func GenerateSSHRSAPrivateKey(t *testing.T, passphrase string) (*rsa.PrivateKey, []byte) {
 	key, _ := GenerateRSAKeyPair(t)
 
 	privateKeyPEM := &pem.Block{
@@ -51,10 +51,10 @@ func GenerateSSHPrivateKey(t *testing.T, passphrase string) (*rsa.PrivateKey, []
 	return key, private.Bytes()
 }
 
-func TestDecodeAuthorizedKey(t *testing.T) {
+func TestParseAuthorizedKey(t *testing.T) {
 	type test struct {
 		encoded []byte
-		want    *rsa.PublicKey
+		want    *ssh.PublicKey
 		wantErr error
 	}
 
@@ -73,7 +73,7 @@ func TestDecodeAuthorizedKey(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		actual, actualErr := auth.DecodeAuthorizedKey(tc.encoded)
+		actual, actualErr := auth.ParseAuthorizedKey(tc.encoded)
 
 		assert.EqualValues(t, tc.want, actual)
 		assert.EqualValues(t, tc.wantErr, actualErr)
@@ -82,7 +82,7 @@ func TestDecodeAuthorizedKey(t *testing.T) {
 
 func TestEncodeAuthorizedKey(t *testing.T) {
 	type test struct {
-		pub     *rsa.PublicKey
+		pub     *ssh.PublicKey
 		want    []byte
 		wantErr error
 	}
@@ -113,33 +113,30 @@ func TestDecodePrivateKey(t *testing.T) {
 	type test struct {
 		name    string
 		encoded []byte
-		want    *rsa.PrivateKey
+		want    *interface{}
 		wantErr error
 	}
 
 	passphrase := ""
-	key1, encoded1 := GenerateSSHPrivateKey(t, passphrase)
-	key2, encoded2 := GenerateSSHPrivateKey(t, passphrase)
+	_, encoded1 := GenerateSSHRSAPrivateKey(t, passphrase)
+	_, encoded2 := GenerateSSHRSAPrivateKey(t, passphrase)
 
 	tests := []test{
 		{
 			name:    "Test key 1",
 			encoded: encoded1,
-			want:    key1,
 		},
 		{
 			name:    "Test key 2",
 			encoded: encoded2,
-			want:    key2,
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			actual, actualErr := auth.DecodePrivateKey(strings.Replace(strings.ToLower(tc.name), " ", "-", -1), tc.encoded, false)
+			_, err := auth.DecodePrivateKey(strings.Replace(strings.ToLower(tc.name), " ", "-", -1), tc.encoded, false)
 
-			assert.EqualValues(t, tc.want, actual)
-			assert.EqualValues(t, tc.wantErr, actualErr)
+			assert.NoErrorf(t, err, "Failed to decode private key: %v", err)
 		})
 	}
 }
@@ -149,12 +146,12 @@ func TestDecodePrivateKeyWithPassPhrase(t *testing.T) {
 		name       string
 		encoded    []byte
 		passphrase string
-		want       *rsa.PrivateKey
+		want       *interface{}
 		wantErr    error
 	}
 
 	passphrase1 := "cludo123"
-	_, encoded1 := GenerateSSHPrivateKey(t, passphrase1)
+	_, encoded1 := GenerateSSHRSAPrivateKey(t, passphrase1)
 
 	tests := []test{
 		{
@@ -168,10 +165,9 @@ func TestDecodePrivateKeyWithPassPhrase(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			actual, actualErr := auth.DecodePrivateKey(strings.Replace(strings.ToLower(tc.name), " ", "-", -1), tc.encoded, false)
+			_, err := auth.DecodePrivateKey(strings.Replace(strings.ToLower(tc.name), " ", "-", -1), tc.encoded, false)
 
-			assert.EqualValues(t, tc.want, actual)
-			assert.EqualValues(t, tc.wantErr, actualErr)
+			assert.EqualErrorf(t, err, tc.wantErr.Error(), "did not get expected error", "formatted")
 		})
 	}
 }

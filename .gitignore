@@ -1,3 +1,6 @@
+#IDEs
+.vscode
+
 # Binaries for programs and plugins
 *.dll
 *.dylib
