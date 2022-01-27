@@ -13,7 +13,7 @@ import (
 
 const testConfig1Raw = `
 target: https://cludo.superorbital.io/my-role
-ssh_key_paths: ["~/.ssh/id_rsa_missing", "~/.ssh/id_rsa"]
+ssh_key_paths: ["~/.ssh/id_rsa_missing", "~/.ssh/id_ed25519"]
 client:
   shell_path: "/usr/local/bin/bash"
 server:
@@ -34,7 +34,7 @@ server:
         access_key_id: "123ABC..."
         secret_access_key: "ZXY098..."
   users:
-  - public_key: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489..."
+  - public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII2YNmNYja2pH/D3hr8wwFqtRXIAdCYA25kgQESiWoDc test-key-ed25519-nopp@example.com DO NOT USE!!"
     name: "Aleema Bashir"
     github_id: "abashir"
     targets: ["prod", "dev"]
@@ -44,7 +44,7 @@ var testConfig1Duration1, _ = time.ParseDuration("10m")
 var testConfig1Duration2, _ = time.ParseDuration("8h")
 var testConfig1 = &config.Config{
 	Target:      "https://cludo.superorbital.io/my-role",
-	SSHKeyPaths: []string{"~/.ssh/id_rsa_missing", "~/.ssh/id_rsa"},
+	SSHKeyPaths: []string{"~/.ssh/id_rsa_missing", "~/.ssh/id_ed25519"},
 	Client: &config.ClientConfig{
 		ShellPath: "/usr/local/bin/bash",
 	},
@@ -55,7 +55,7 @@ var testConfig1 = &config.Config{
 		Port: 443,
 		Users: []*config.UserConfig{
 			{
-				PublicKey: "ssh-rsa aisudpoifueuyrlkjhflkyhaosiduyflakjsdhflkjashdf7898798765489...",
+				PublicKey: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII2YNmNYja2pH/D3hr8wwFqtRXIAdCYA25kgQESiWoDc test-key-ed25519-nopp@example.com DO NOT USE!!",
 				Name:      "Aleema Bashir",
 				GithubID:  "abashir",
 				Targets:   []string{"prod", "dev"},

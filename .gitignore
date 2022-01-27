@@ -1,8 +1,11 @@
+#IDEs
+.vscode
+
 # Binaries for programs and plugins
 *.dll
 *.dylib
 *.exe
-*.exe~
+*~
 *.so
 
 # Test binary, built with `go test -c`

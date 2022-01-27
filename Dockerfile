@@ -1,14 +1,13 @@
-ARG ARCH=
-FROM ${ARCH}golang:1.17 AS builder
+FROM docker.io/golang:1.17 AS builder
 WORKDIR /go/src/github.com/superorbital/cludo/
 COPY go.mod go.mod
 COPY go.sum go.sum
-RUN go mod download
+RUN --mount=type=cache,target=/go/pkg/mod go mod download
 COPY . .
-RUN CGO_ENABLED=0 go build -ldflags "$(go run github.com/ahmetb/govvv -flags -pkg github.com/superorbital/cludo/pkg/build)" -o /usr/bin/cludo ./cmd/cludo
+RUN --mount=type=cache,target=/go/pkg/mod  CGO_ENABLED=0 go build -ldflags "$(go run github.com/ahmetb/govvv -flags -pkg github.com/superorbital/cludo/pkg/build)" -o /usr/bin/cludo ./cmd/cludo
 
-FROM ${ARCH}alpine:latest
-RUN apk --no-cache add ca-certificates
+FROM docker.io/alpine:latest
+RUN --mount=type=cache,target=/var/cache/apk apk add ca-certificates
 RUN mkdir /etc/cludo
 WORKDIR /
 COPY --from=builder /usr/bin/cludo /usr/bin/cludo

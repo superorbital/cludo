@@ -2,4 +2,5 @@
 
 ## SSH Keys
 
-* The passphrase for `id_rsa_TEST_KEY_PP` is *cludo*
+* The passphrase for any key ending in `_PP` is *cludo*`
+
