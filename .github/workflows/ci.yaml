@@ -117,6 +117,11 @@ jobs:
           # This is run inside a container, so the file paths are mounted volumes
           args: --severity-threshold=medium --file=Dockerfile --sarif-file-output=/github/workspace/cludo.sarif
 
+
+      - name: Run Tests
+        run: |
+          find /home/runner -name cludo.sarif
+
       - name: Upload cludo image scan results result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
         if: "(github.ref == 'refs/heads/main')"
