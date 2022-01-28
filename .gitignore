@@ -1,18 +1,19 @@
-#IDEs
+#IDEs and OS files
 .vscode
+*~
 
-# Binaries for programs and plugins
+# Binaries
 *.dll
 *.dylib
 *.exe
-*~
 *.so
 
 # Test binary, built with `go test -c`
 *.test
 
-# Output of the go coverage tool, specifically when used with LiteIDE
+# Output from various tools
 *.out
+*.sarif
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
@@ -22,6 +23,7 @@ swagger
 
 #cludo
 .cludo
+.cludod
 cmd/cludo/cludo
 cmd/cludod/cludod
 
@@ -36,3 +38,4 @@ cludo.y*ml
 cludod.y*ml
 secret*
 tmp
+
