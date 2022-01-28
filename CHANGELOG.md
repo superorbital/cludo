@@ -3,6 +3,8 @@
 Changelog for cludo The Cloud Sudo toolset
 
 ## [Unreleased]
+### Added
+- Nothing yet.
 
 [0.0.2-alpha] - 2022-01-28
 ### Added
@@ -22,6 +24,6 @@ Changelog for cludo The Cloud Sudo toolset
 ### Added
 - Initial Proof of Concept Release
 
-[Unreleased]: https://github.com/coditory/changelog-parser-action/compare/0.0.2-alpha...HEAD
-[0.0.2-alpha]: https://github.com/coditory/changelog-parser-action/releases/tag/0.0.2-alpha
-[0.0.1-alpha]: https://github.com/coditory/changelog-parser-action/releases/tag/0.0.1-alpha
+[Unreleased]: https://github.com/superorbital/cludo/compare/0.0.2-alpha...HEAD
+[0.0.2-alpha]: https://github.com/superorbital/cludo/releases/tag/0.0.2-alpha
+[0.0.1-alpha]: https://github.com/superorbital/cludo/releases/tag/0.0.1-alpha
