@@ -96,18 +96,23 @@ The workflow looks something like this:
   * Set up `qemu` and `binfmt` to support multi-architecture container image builds.
   * Checkout source code.
   * Setup `go` environment.
+  * Install `snyk` CLI
   * Setup `docker buildx` and run `docker login`
   * Install and Run Kustomize
   * List Kustomize Generated Manifests
   * Install `go` dependencies.
   * Detect if this is a Pull Request (PR).
   * Run `go` tests.
+  * Run `snyk` to check for Go vulnerabilities.
+  * Upload Snyk's `sarif` report to Github.
   * Determine the most recent version tag in `git`
   * Parse the Change Log.
   * Build and push `cludo` and `cludod` container images
     * We only do this step if:
       * We **ARE NOT** on the `main` branch **OR**
       * We **ARE** on the `main` branch and a new version has been identified in `CHANGELOG.md`.
+  * Run `snyk` to check for `cludo` and `cludod` image container vulnerabilities.
+  * Upload Snyk's `sarif` reports to Github.
   * Build  `cludo` and `cludod` binaries for Github release
     * We only do this step if:
       * We **ARE** on the `main` branch and a new version has been identified in `CHANGELOG.md`.
@@ -116,19 +121,19 @@ The workflow looks something like this:
       * We **ARE** on the `main` branch and a new version has been identified in `CHANGELOG.md`.
   * Create a **non-production release** on Github
     * We only do this step if:
-      * We **ARE** on the `main` branch, a new version has been identified in `CHANGELOG.md`, and the release version has a suffix (*e.g. `v0.0.1-alpha`*)
+      * We **ARE** on the `main` branch, a new version has been identified in `CHANGELOG.md`, and the release version has a suffix (*e.g. `0.0.1-alpha`*)
   * Create a **production release** on Github
     * We only do this step if:
-      * We **ARE** on the `main` branch, a new version has been identified in `CHANGELOG.md`, and the release version does not have a suffix (*e.g. `v1.0.0`*)
+      * We **ARE** on the `main` branch, a new version has been identified in `CHANGELOG.md`, and the release version does not have a suffix (*e.g. `1.0.0`*)
   * Install Cosign
     * We only do this step if:
-      * We **ARE** on the `main` branch, a new version has been identified in `CHANGELOG.md`, and the release version does not have a suffix (*e.g. `v1.0.0`*)
+      * We **ARE** on the `main` branch, a new version has been identified in `CHANGELOG.md`, and the release version does not have a suffix (*e.g. `1.0.0`*)
   * Add cosign signature to cludo latest
     * We only do this step if:
-      * We **ARE** on the `main` branch, a new version has been identified in `CHANGELOG.md`, and the release version does not have a suffix (*e.g. `v1.0.0`*)
+      * We **ARE** on the `main` branch, a new version has been identified in `CHANGELOG.md`, and the release version does not have a suffix (*e.g. `1.0.0`*)
   * Add cosign signature to cludod latest
     * We only do this step if:
-      * We **ARE** on the `main` branch, a new version has been identified in `CHANGELOG.md`, and the release version does not have a suffix (*e.g. `v1.0.0`*)
+      * We **ARE** on the `main` branch, a new version has been identified in `CHANGELOG.md`, and the release version does not have a suffix (*e.g. `1.0.0`*)
   * Trigger a Slack message via a workflow.
     * We only do this step if:
       * A Github release was created.

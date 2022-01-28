@@ -6,4 +6,4 @@ patchesStrategicMerge:
 - replica_count.yaml
 images:
 - name: superorbital/cludod:latest
-  newTag: 0.0.1-alpha
+  newTag: 0.0.2-alpha
