@@ -80,13 +80,13 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         # Unlike elsewhere, we are running Snyk outside a container here
         run: |
-          snyk test --severity-threshold=medium --sarif-file-output=/home/runner/work/cludo/cludo/golang.sarif
+          snyk test --severity-threshold=medium --sarif-file-output=/home/runner/work/golang.sarif
 
       - name: Upload golang vulnerability scan results result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
         if: "(github.ref == 'refs/heads/main')"
         with:
-          sarif_file: /home/runner/work/cludo/cludo/golang.sarif
+          sarif_file: /home/runner/work/golang.sarif
 
       - name: Get Last Version from Tag
         id: lasttag
@@ -106,44 +106,27 @@ jobs:
           BUILDKIT_PROGRESS: plain
           PR_NUM: ${{ steps.findPr.outputs.pr }}
 
-      - name: Run Snyk to check cludo image for vulnerabilities
-        uses: snyk/actions/docker@master
+      - name: Run Snyk to check images for vulnerabilities
         continue-on-error: true # To make sure that SARIF upload gets called
         if: "(github.ref == 'refs/heads/main')"
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          image: superorbital/cludo:latest
-          # This is run inside a container, so the file paths are mounted volumes
-          args: --severity-threshold=medium --file=Dockerfile --sarif-file-output=/github/workspace/cludo.sarif
-
-
-      - name: Run Tests
+        # Unlike elsewhere, we are running Snyk outside a container here
         run: |
-          find /home/runner -name cludo.sarif
+          snyk test --docker superorbital/cludo:latest --severity-threshold=medium --file=Dockerfile --sarif-file-output=/home/runner/work/cludo.sarif
+          snyk test --docker superorbital/cludod:latest --severity-threshold=medium --file=Dockerfile --sarif-file-output=/home/runner/work/cludod.sarif
 
       - name: Upload cludo image scan results result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
         if: "(github.ref == 'refs/heads/main')"
         with:
-          sarif_file: /home/runner/work/cludo/cludo/cludo.sarif
-
-      - name: Run Snyk to check cludod image for vulnerabilities
-        uses: snyk/actions/docker@master
-        continue-on-error: true # To make sure that SARIF upload gets called
-        if: "(github.ref == 'refs/heads/main')"
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          image: superorbital/cludod:latest
-          # This is run inside a container, so the file paths are mounted volumes
-          args: --severity-threshold=medium --file=Dockerfile.cludod --sarif-file-output=/github/workspace/cludod.sarif
+          sarif_file: /home/runner/work/cludo.sarif
 
       - name: Upload cludod image scan results result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
         if: "(github.ref == 'refs/heads/main')"
         with:
-          sarif_file: /home/runner/work/cludo/cludo/cludod.sarif
+          sarif_file: /home/runner/work/cludod.sarif
 
       - name: Build Binaries for Github Release
         # We are on the main branch and do not have an existing tagged release
