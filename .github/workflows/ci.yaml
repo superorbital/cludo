@@ -75,7 +75,6 @@ jobs:
       # so we are doing it this way instead. 2022-01-18
       - name: Run Snyk to check for Go vulnerabilities
         continue-on-error: true # To make sure that SARIF upload gets called
-        if: "(github.ref == 'refs/heads/main')"
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         # Unlike elsewhere, we are running Snyk outside a container here
@@ -84,7 +83,6 @@ jobs:
 
       - name: Upload golang vulnerability scan results result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
-        if: "(github.ref == 'refs/heads/main')"
         with:
           sarif_file: /home/runner/work/golang.sarif
           category: golang-vulnerability-scan
@@ -109,7 +107,6 @@ jobs:
 
       - name: Run Snyk to check images for vulnerabilities
         continue-on-error: true # To make sure that SARIF upload gets called
-        if: "(github.ref == 'refs/heads/main')"
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         # Unlike elsewhere, we are running Snyk outside a container here
@@ -119,14 +116,12 @@ jobs:
 
       - name: Upload cludo image scan results result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
-        if: "(github.ref == 'refs/heads/main')"
         with:
           sarif_file: /home/runner/work/cludo.sarif
           category: cludo-image-scan
 
       - name: Upload cludod image scan results result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
-        if: "(github.ref == 'refs/heads/main')"
         with:
           sarif_file: /home/runner/work/cludod.sarif
           category: cludod-image-scan
