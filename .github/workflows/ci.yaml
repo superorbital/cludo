@@ -87,6 +87,7 @@ jobs:
         if: "(github.ref == 'refs/heads/main')"
         with:
           sarif_file: /home/runner/work/golang.sarif
+          category: golang-vulnerability-scan
 
       - name: Get Last Version from Tag
         id: lasttag
@@ -121,12 +122,14 @@ jobs:
         if: "(github.ref == 'refs/heads/main')"
         with:
           sarif_file: /home/runner/work/cludo.sarif
+          category: cludo-image-scan
 
       - name: Upload cludod image scan results result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
         if: "(github.ref == 'refs/heads/main')"
         with:
           sarif_file: /home/runner/work/cludod.sarif
+          category: cludod-image-scan
 
       - name: Build Binaries for Github Release
         # We are on the main branch and do not have an existing tagged release
