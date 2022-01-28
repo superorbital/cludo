@@ -65,7 +65,10 @@ jobs:
           state: open
 
       - name: Run Tests
-        run: make test
+        run: |
+          pwd
+          ls -lFa
+          make test
 
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/golang@master
@@ -74,13 +77,13 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --severity-threshold=medium --sarif-file-output=golang.sarif
+          args: --severity-threshold=medium --sarif-file-output=/tmp/golang.sarif
 
       - name: Upload golang vulnerability scan results result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
         if: "(github.ref == 'refs/heads/main')"
         with:
-          sarif_file: golang.sarif
+          sarif_file: /tmp/golang.sarif
 
       - name: Get Last Version from Tag
         id: lasttag
@@ -108,13 +111,13 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: superorbital/cludo:latest
-          args: --severity-threshold=medium --file=Dockerfile --sarif-file-output=cludo.sarif
+          args: --severity-threshold=medium --file=Dockerfile --sarif-file-output=/tmp/cludo.sarif
 
       - name: Upload cludo image scan results result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
         if: "(github.ref == 'refs/heads/main')"
         with:
-          sarif_file: cludo.sarif
+          sarif_file: /tmp/cludo.sarif
 
       - name: Run Snyk to check cludod image for vulnerabilities
         uses: snyk/actions/docker@master
@@ -124,13 +127,13 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: superorbital/cludod:latest
-          args: --severity-threshold=medium --file=Dockerfile.cludod --sarif-file-output=cludod.sarif
+          args: --severity-threshold=medium --file=Dockerfile.cludod --sarif-file-output=/tmp/cludod.sarif
 
       - name: Upload cludod image scan results result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
         if: "(github.ref == 'refs/heads/main')"
         with:
-          sarif_file: cludod.sarif
+          sarif_file: /tmp/cludod.sarif
 
       - name: Build Binaries for Github Release
         # We are on the main branch and do not have an existing tagged release
