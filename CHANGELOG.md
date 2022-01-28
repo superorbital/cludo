@@ -1,12 +1,10 @@
-# cludo Change Log
+# Changelog - cludo
 
-Changelog for cludo The Cloud Sudo toolset
+Changelog for cludo - The Cloud Sudo toolset
 
 ## [Unreleased]
-### Added
-- Nothing yet.
 
-[0.0.2-alpha] - 2022-01-28
+## [0.0.2-alpha] - 2022-01-28
 ### Added
 - Support for additional SSH key types [[#20]](https://github.com/superorbital/cludo/issues/20)
 - Support for passing public keys to an active SSH agent for request signing [[#39]](https://github.com/superorbital/cludo/issues/39)
