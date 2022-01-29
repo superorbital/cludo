@@ -67,7 +67,7 @@ If you are running Kubernetes locally with containerd via something like [colima
   * `nerdctl` aliased to the correct version of `nerdctl` for your setup.
 
 ```sh
-make nc && { k delete -k ./k8s/kustomize/overlays/local ; k apply -k ./k8s/kustomize/overlays/local && sleep 10; echo -e "\n\n\n\n"; }  && ./builds/darwin_amd64_cludo exec aws sts get-caller-identity
+make nc && { kukectl delete -k ./k8s/kustomize/overlays/local ; kubectl apply -k ./k8s/kustomize/overlays/local && sleep 10; echo -e "\n\n"; }  && ./builds/darwin_amd64_cludo exec aws sts get-caller-identity
 ```
 
 ## Github Actions
