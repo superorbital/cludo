@@ -67,7 +67,7 @@ func ConfigureViper(executable string, configFile string) error {
 	}
 	// local repo cludo.yaml file
 	// Only check for this when we are using the client.
-	if executable == "cludo" {
+	if executable == CludoExecutable {
 		viper.AddConfigPath(".")
 		if err := viper.MergeInConfig(); err != nil {
 			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
