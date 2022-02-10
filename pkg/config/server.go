@@ -67,15 +67,15 @@ func (sc *ServerConfig) NewGithubAuthorizer() (*auth.Authorizer, error) {
 
 	for _, user := range sc.Users {
 		if user.GithubID != "" {
-			api_endpoint := ""
+			apiEndpoint := ""
 			if sc.Github != nil {
-				api_endpoint = sc.Github.APIEndpoint
+				apiEndpoint = sc.Github.APIEndpoint
 			}
-			provider_keys, err := providers.CollectGithubPublicKeys(api_endpoint, user.GithubID)
+			providerKeys, err := providers.CollectGithubPublicKeys(apiEndpoint, user.GithubID)
 			if err != nil {
 				log.Printf("[WARN] Failed to collect public keys from Github for (%s): %v\n", user.GithubID, err)
 			} else {
-				for _, pkey := range provider_keys {
+				for _, pkey := range providerKeys {
 					pub, err := auth.ParseAuthorizedKey([]byte(pkey))
 					if err != nil {
 						log.Printf("[WARN] Failed to parse user public key from Github: %v, %#v\n", err, pkey)

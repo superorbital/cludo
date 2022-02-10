@@ -62,9 +62,8 @@ func ConfigureViper(executable string, configFile string) error {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Config file not found; ignore error if desired
 			return errConfigNotFound
-		} else {
-			return errConfigLoadFailed(err)
 		}
+		return errConfigLoadFailed(err)
 	}
 	// local repo cludo.yaml file
 	// Only check for this when we are using the client.
@@ -73,9 +72,8 @@ func ConfigureViper(executable string, configFile string) error {
 		if err := viper.MergeInConfig(); err != nil {
 			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 				return errConfigNotFound
-			} else {
-				return errConfigLoadFailed(err)
 			}
+			return errConfigLoadFailed(err)
 		}
 	}
 	return nil
