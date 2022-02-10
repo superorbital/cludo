@@ -9,8 +9,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-const DefaultClientConfig = "default"
-
 const CludodExecutable = "cludod"
 const CludoExecutable = "cludo"
 
