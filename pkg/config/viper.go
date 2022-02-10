@@ -31,10 +31,6 @@ func errWorkingDirFailed(cause error) error {
 }
 
 func ConfigureViper(executable string, configFile string) error {
-	cwd, err := os.Getwd()
-	if err != nil {
-		return errWorkingDirFailed(err)
-	}
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		return errHomeDirFailed(err)
@@ -56,7 +52,6 @@ func ConfigureViper(executable string, configFile string) error {
 		viper.AddConfigPath(path.Join("/etc", executable))
 		viper.AddConfigPath(path.Join(homedir, fmt.Sprintf(".%s", executable)))
 		viper.AddConfigPath(path.Join(homedir, ".config", executable))
-		viper.AddConfigPath(cwd)
 	}
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
