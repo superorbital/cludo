@@ -82,7 +82,7 @@ jobs:
           snyk test --severity-threshold=medium --sarif-file-output=/home/runner/work/golang.sarif
 
       - name: Upload golang vulnerability scan results result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: /home/runner/work/golang.sarif
           category: golang-vulnerability-scan
@@ -115,13 +115,13 @@ jobs:
           snyk test --docker superorbital/cludod:latest --severity-threshold=medium --file=Dockerfile --sarif-file-output=/home/runner/work/cludod.sarif
 
       - name: Upload cludo image scan results result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: /home/runner/work/cludo.sarif
           category: cludo-image-scan
 
       - name: Upload cludod image scan results result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: /home/runner/work/cludod.sarif
           category: cludod-image-scan
